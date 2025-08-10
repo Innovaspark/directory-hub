@@ -180,6 +180,67 @@ For more details, see the [TypeScript documentation on path mapping](https://www
 
 ---
 
+## 🚀 Deployment
+
+ngXpress is designed to be deployment-ready out of the box and can be deployed to any server that supports Angular 20+ SSR applications. You can deploy this app like a regular Node.js application - no need to run frontend and backend separately as it's a single, unified application.
+
+**Note:** Work is in progress to add support for Vercel, Netlify, and Docker deployment. For now, traditional server deployment is recommended.
+
+### Traditional Server Deployment (Recommended)
+
+For VPS, dedicated servers, or any Node.js hosting provider:
+
+1. **Build the Application**
+   ```bash
+   npm run build
+   ```
+
+2. **Start Production Server**
+   ```bash
+   npm run start
+   ```
+
+3. **Environment Setup**
+   - Ensure Node.js 20+ is installed on your server
+   - Set production environment variables
+   - Use a process manager like PM2 for production
+
+### Environment Variables
+
+Ensure these environment variables are set in production:
+
+```bash
+# Database
+DATABASE_URL="your_database_connection_string"
+
+# Authentication
+BETTER_AUTH_SECRET="your_secret_key"
+BETTER_AUTH_URL="https://yourdomain.com"
+
+# Optional: Customize ports
+PORT=4000
+```
+
+### Database Considerations
+
+- **SQLite**: Good for development and small applications
+- **PostgreSQL/MySQL**: Recommended for production applications
+- **Database Migrations**: Run `npx prisma migrate deploy` in production
+- **Connection Pooling**: Configure in your Prisma schema for production databases
+
+### Supported Hosting Providers
+
+ngXpress works with any server that supports Angular 20+ SSR applications:
+
+- **VPS Providers**: DigitalOcean, Linode, Vultr, AWS EC2, Google Cloud Compute
+- **Shared Hosting**: Any provider with Node.js 20+ and Angular SSR support
+- **Traditional Hosting**: Any server with Node.js 20+ support
+- **Cloud Platforms**: AWS, Google Cloud, Azure (with proper Node.js setup)
+
+**Coming Soon:** Vercel, Netlify, and Docker deployment support
+
+---
+
 ## 📚 Documentation & Resources
 
 - **Angular Documentation**: [angular.dev](https://angular.dev)
