@@ -1,8 +1,6 @@
 import { Request, Response, Router } from "express";
-import todosRoute from "./features/todos/todos.routes";
 
 const router = Router();
-router.use("/todos", todosRoute);
 
 /**
  * Health check route

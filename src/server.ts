@@ -11,7 +11,7 @@ import helmet from 'helmet';
 import { join } from 'node:path';
 import apiRoutes from './api/api';
 import { toNodeHandler } from "better-auth/node";
-import { auth } from './api/lib/auth';
+// import { auth } from './api/lib/auth';
 import morgan from 'morgan';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -43,7 +43,7 @@ if (process.env['NODE_ENV'] === 'production') {
 }
 
 // Register better-auth route BEFORE body parsers and helmet
-app.all('/api/auth/{*any}', toNodeHandler(auth));
+// app.all('/api/auth/{*any}', toNodeHandler(auth));
 
 // Add body parsers
 app.use(express.json());

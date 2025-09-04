@@ -4,7 +4,7 @@ import {ActionButtonComponent} from "@components/buttons/action-button/action-bu
 
 @Component({
   selector: 'app-admin-sidebar',
-  imports: [RouterLink, ActionButtonComponent],
+  imports: [RouterLink],
   templateUrl: './admin-sidebar.component.html'
 })
 export class AdminSidebarComponent {
