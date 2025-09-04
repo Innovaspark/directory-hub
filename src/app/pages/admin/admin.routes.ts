@@ -6,10 +6,6 @@ export const routes: Routes = [
         loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
     },
     {
-        path: 'todos',
-        loadComponent: () => import('./todos/todos.component').then(m => m.TodosComponent)
-    },
-    {
         path: 'settings',
         loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent)
     },

@@ -59,8 +59,6 @@ export class AdminHeaderComponent implements AfterViewInit, OnDestroy {
     switch (path) {
       case 'dashboard':
         return 'Dashboard';
-      case 'todos':
-        return 'Todos';
       case 'users':
         return 'Users';
       case 'analytics':
