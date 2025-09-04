@@ -8,7 +8,6 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node dist/ngxpress/server/server.mjs",
-    "postbuild": "prisma generate"
   },
   "prettier": {
     "overrides": [
