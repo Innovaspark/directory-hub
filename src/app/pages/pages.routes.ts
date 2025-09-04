@@ -4,6 +4,7 @@ import { guestGuard } from '@core/guards/guest.guard';
 import { AdminLayoutComponent } from '@layouts/admin-layout/admin-layout.component';
 import { AuthLayoutComponent } from '@layouts/auth-layout/auth-layout.component';
 import { MainLayoutComponent } from '@layouts/main-layout/main-layout.component';
+import {DirectoryLayoutComponent} from "@layouts/directory-layout/directory-layout.component";
 
 export const routes: Routes = [
     {
@@ -24,6 +25,12 @@ export const routes: Routes = [
         component: AdminLayoutComponent,
         canMatch: [adminGuard],
         loadChildren: () => import('./admin/admin.routes').then(m => m.routes)
+    },
+    {
+        path: 'venues',
+        component: DirectoryLayoutComponent,
+        canMatch: [],
+        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes)
     },
     {
         path: '**',

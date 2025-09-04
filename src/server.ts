@@ -67,6 +67,18 @@ app.use(
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
+
+  // Relax CSP: allow all images and styles
+  // res.setHeader(
+  //   'Content-Security-Policy',
+  //   "default-src 'self'; img-src * data:; style-src * 'unsafe-inline';"
+  // );
+
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; img-src * data:; style-src * 'unsafe-inline'; font-src *;"
+  );
+
   angularApp
     .handle(req)
     .then((response) =>

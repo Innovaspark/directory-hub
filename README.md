@@ -89,7 +89,7 @@ Get started with your own ngXpress project in minutes:
 
 - **Beautiful SaaS Landing Page:** Modern, responsive, and ready to customize
 - **Authentication Screens:** Sign In, Sign Up, Forgot/Reset Password (secure, production-ready)
-- **Admin Dashboard:** Modular, extendable admin interface
+- **Admin DashboardComponent:** Modular, extendable admin interface
 - **Todos CRUD Example:** End-to-end CRUD with Angular, Express, and Prisma
 
 ---

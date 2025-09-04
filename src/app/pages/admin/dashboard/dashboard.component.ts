@@ -30,7 +30,7 @@ interface SystemService {
 export class DashboardComponent {
   constructor(private router: Router) {}
 
-  // Dashboard statistics
+  // DashboardComponent statistics
   stats = signal<DashboardStats>({
     totalUsers: 1247,
     activeTodos: 23,

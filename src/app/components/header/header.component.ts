@@ -1,10 +1,11 @@
 import { Component, HostListener, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
+import {ActionButtonComponent} from "@components/buttons/action-button/action-button.component";
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink],
+  imports: [RouterLink, ActionButtonComponent],
   templateUrl: './header.component.html'
 })
 export class HeaderComponent {

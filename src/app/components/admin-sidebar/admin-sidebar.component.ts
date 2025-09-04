@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import {ActionButtonComponent} from "@components/buttons/action-button/action-button.component";
 
 @Component({
   selector: 'app-admin-sidebar',
-  imports: [RouterLink],
+  imports: [RouterLink, ActionButtonComponent],
   templateUrl: './admin-sidebar.component.html'
 })
 export class AdminSidebarComponent {
