@@ -1,0 +1,178 @@
+<div class="">
+
+    <section x-data="{ mobileNavOpen: false, searchExpanded: false, filters: { band: false, openMic: false, jamSession: false, karaoke: false }, venues: [] }" class="min-h-screen bg-gray-50"><div x-data="{ scrolled: false }" window.scrolly class="fixed w-full top-0 z-50 transition-all duration-300" :class="scrolled ? 'bg-white shadow-lg py-2' : 'bg-gradient-to-b from-purple-900 to-purple-700 py-4'"><div class="container mx-auto px-4"><div class="flex items-center justify-between">
+        <div class="flex items-center"><img src="images/logos/logo-15a935690b95c28565055371caf67360.png" alt="VenueBeats" class="h-8" :class="scrolled ? 'filter brightness-0' : ''"></div>
+        <div class="hidden lg:flex items-center space-x-8">
+            <nav class="flex items-center space-x-6"><a href="#" class="font-heading text-lg hover:text-purple-300 transition-colors" :class="scrolled ? 'text-gray-900 hover:text-purple-600' : 'text-white'">Venues</a><a href="#" class="font-heading text-lg hover:text-purple-300 transition-colors" :class="scrolled ? 'text-gray-900 hover:text-purple-600' : 'text-white'">Events</a><a href="#" class="font-heading text-lg hover:text-purple-300 transition-colors" :class="scrolled ? 'text-gray-900 hover:text-purple-600' : 'text-white'">Submit Venue</a></nav><button class="group relative font-heading block py-2 px-5 text-base border-2 overflow-hidden rounded-lg transition-all" :class="scrolled ? 'text-purple-600 border-purple-600 hover:bg-purple-600 hover:text-white' : 'text-white border-white hover:bg-white hover:text-purple-700'"><span class="relative z-10">Add Listing</span></button>
+        </div>
+        <button x-on:click="mobileNavOpen = !mobileNavOpen" class="lg:hidden"><svg class="w-6 h-6" :class="scrolled ? 'text-gray-900' : 'text-white'" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+    </div></div></div>
+        <div class="pt-20">
+            <div class="bg-gradient-to-b from-purple-900 to-purple-700 py-16"><div class="container mx-auto px-4 text-center">
+                <h1 class="font-heading text-5xl md:text-7xl font-bold text-white mb-6">Find Live Music Venues</h1>
+                <p class="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">Discover bars, restaurants, and venues featuring live music, open mics, and jam sessions in your area</p>
+                <div class="max-w-4xl mx-auto"><div class="bg-white rounded-lg p-6 shadow-xl"><div class="flex flex-col lg:flex-row gap-4">
+                    <div class="flex-1"><input type="text" placeholder="Search venues, locations..." class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"></div>
+                    <div class="flex flex-wrap gap-2">
+                        <select class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"><option>All Types</option>
+                            <option>Live Bands</option>
+                            <option>Open Mic</option>
+                            <option>Jam Session</option>
+                            <option>Karaoke</option>
+                            <option>DJ Sets</option></select><select class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"><option>Any Distance</option>
+                        <option>Within 5 miles</option>
+                        <option>Within 10 miles</option>
+                        <option>Within 25 miles</option></select>
+                    </div>
+                    <button class="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors font-heading font-medium">Search</button>
+                </div></div></div>
+            </div></div>
+            <div class="container mx-auto px-4 py-12">
+                <div class="flex flex-wrap gap-4 mb-8 justify-center">
+                    <button class="px-6 py-2 rounded-full border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-colors font-heading">All Venues</button><button class="px-6 py-2 rounded-full border-2 border-gray-300 text-gray-600 hover:border-purple-600 hover:text-purple-600 transition-colors font-heading">Live Bands</button><button class="px-6 py-2 rounded-full border-2 border-gray-300 text-gray-600 hover:border-purple-600 hover:text-purple-600 transition-colors font-heading">Open Mic</button><button class="px-6 py-2 rounded-full border-2 border-gray-300 text-gray-600 hover:border-purple-600 hover:text-purple-600 transition-colors font-heading">Jam Sessions</button><button class="px-6 py-2 rounded-full border-2 border-gray-300 text-gray-600 hover:border-purple-600 hover:text-purple-600 transition-colors font-heading">Karaoke</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 venue-grid">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow venue-card">
+                        <img src="https://images.unsplash.com/photo-1601582219621-1a3e47dcc9fc?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3wzMzIzMzB8MHwxfHNlYXJjaHwxfHxtdXNpYyUyMHZlbnVlc3xlbnwwfDJ8fHwxNzU2OTc0OTYyfDA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080&amp;w=450" alt="The Blues Corner" class="w-full h-48 object-cover"><div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-heading text-xl font-bold text-gray-900">The Blues Corner</h3>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">Live Bands</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Intimate venue featuring blues, jazz, and rock bands every weekend</p>
+                        <div class="flex items-center text-gray-500 text-sm mb-4">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"></path></svg>Downtown District</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-yellow-500">
+                                <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><span class="ml-1 text-gray-700">4.5</span>
+                            </div>
+                            <button class="text-purple-600 hover:text-purple-800 font-heading font-medium">View Details</button>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow venue-card">
+                        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&amp;h=250&amp;fit=crop" alt="Acoustic Cafe" class="w-full h-48 object-cover"><div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-heading text-xl font-bold text-gray-900">Acoustic Cafe</h3>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Open Mic</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Cozy coffee shop with open mic nights every Tuesday and Thursday</p>
+                        <div class="flex items-center text-gray-500 text-sm mb-4">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"></path></svg>Arts Quarter</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-yellow-500">
+                                <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><span class="ml-1 text-gray-700">4.2</span>
+                            </div>
+                            <button class="text-purple-600 hover:text-purple-800 font-heading font-medium">View Details</button>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow venue-card">
+                        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&amp;h=250&amp;fit=crop" alt="Rhythm Room" class="w-full h-48 object-cover"><div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-heading text-xl font-bold text-gray-900">Rhythm Room</h3>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">Jam Session</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Weekly jam sessions with house band and open stage for musicians</p>
+                        <div class="flex items-center text-gray-500 text-sm mb-4">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"></path></svg>Music District</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-yellow-500">
+                                <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><span class="ml-1 text-gray-700">4.7</span>
+                            </div>
+                            <button class="text-purple-600 hover:text-purple-800 font-heading font-medium">View Details</button>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow venue-card">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&amp;h=250&amp;fit=crop" alt="Rock House" class="w-full h-48 object-cover"><div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-heading text-xl font-bold text-gray-900">Rock House</h3>
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">Live Bands</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">High-energy venue showcasing local and touring rock bands</p>
+                        <div class="flex items-center text-gray-500 text-sm mb-4">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"></path></svg>Entertainment District</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-yellow-500">
+                                <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><span class="ml-1 text-gray-700">4.3</span>
+                            </div>
+                            <button class="text-purple-600 hover:text-purple-800 font-heading font-medium">View Details</button>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow venue-card">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&amp;h=250&amp;fit=crop" alt="Sing Along Bar" class="w-full h-48 object-cover"><div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-heading text-xl font-bold text-gray-900">Sing Along Bar</h3>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Karaoke</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Fun karaoke bar with private rooms and group singing areas</p>
+                        <div class="flex items-center text-gray-500 text-sm mb-4">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"></path></svg>Nightlife District</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-yellow-500">
+                                <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><span class="ml-1 text-gray-700">4.1</span>
+                            </div>
+                            <button class="text-purple-600 hover:text-purple-800 font-heading font-medium">View Details</button>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow venue-card">
+                        <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400&amp;h=250&amp;fit=crop" alt="The Stage Door" class="w-full h-48 object-cover"><div class="p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-heading text-xl font-bold text-gray-900">The Stage Door</h3>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Open Mic</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Welcoming venue with supportive open mic community and great sound</p>
+                        <div class="flex items-center text-gray-500 text-sm mb-4">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"></path></svg>Theater District</div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-yellow-500">
+                                <svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg><span class="ml-1 text-gray-700">4.6</span>
+                            </div>
+                            <button class="text-purple-600 hover:text-purple-800 font-heading font-medium">View Details</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div></section>
+
+    <section class="py-20 bg-white"><div class="container mx-auto px-4"><div class="text-center mb-16"><h2 class="font-heading text-4xl md:text-6xl font-bold text-gray-900 mb-6">Why Choose VenueBeats</h2><p class="text-xl text-gray-600 max-w-3xl mx-auto">Your complete guide to live music venues with real-time updates, verified listings, and comprehensive event information</p></div><div class="grid md:grid-cols-3 gap-8"><div class="text-center p-8 bg-gray-50 rounded-xl hover:shadow-lg transition-shadow"><div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"><svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div><h3 class="font-heading text-2xl font-bold text-gray-900 mb-4">Advanced Search</h3><p class="text-gray-600">Filter by venue type, music genre, location, and event schedule to find exactly what you're looking for</p></div><div class="text-center p-8 bg-gray-50 rounded-xl hover:shadow-lg transition-shadow"><div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"><svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div><h3 class="font-heading text-2xl font-bold text-gray-900 mb-4">Verified Listings</h3><p class="text-gray-600">All venues are verified with up-to-date contact information, schedules, and accurate event details</p></div><div class="text-center p-8 bg-gray-50 rounded-xl hover:shadow-lg transition-shadow"><div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6"><svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div><h3 class="font-heading text-2xl font-bold text-gray-900 mb-4">Real-time Updates</h3><p class="text-gray-600">Get instant notifications about new events, schedule changes, and special performances at your favorite venues</p></div></div></div></section>
+
+    <section class="relative py-24 overflow-hidden"><img class="absolute bottom-0 left-0" src="gradia-assets/elements/footers/radial.svg" alt=""><div class="relative z-10 container mx-auto px-4"><div class="flex flex-wrap -m-6">
+        <div class="w-full md:w-1/2 lg:w-5/12 p-6"><div class="flex flex-col justify-between h-full">
+            <div><img class="mb-16" src="images/logos/logo-ee3de08a645b024505dcc37089a5d94e.png" alt="VenueBeats"></div>
+            <div>
+                <p class="mb-4 font-heading font-medium text-base">Discover live music venues everywhere.</p>
+                <p class="text-gray-600 text-sm">© Copyright 2025. All Rights Reserved by VenueBeats.</p>
+            </div>
+        </div></div>
+        <div class="w-full md:w-1/2 lg:w-2/12 p-6"><div class="h-full">
+            <h3 class="mb-9 font-heading font-semibold text-xs text-gray-500 uppercase tracking-px">Venues</h3>
+            <ul>
+                <li class="mb-4"><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Browse All</a></li>
+                <li class="mb-4"><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Live Bands</a></li>
+                <li class="mb-4"><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Open Mic</a></li>
+                <li><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Jam Sessions</a></li>
+            </ul>
+        </div></div>
+        <div class="w-full md:w-1/2 lg:w-2/12 p-6"><div class="h-full">
+            <h3 class="mb-9 font-heading font-semibold text-xs text-gray-500 uppercase tracking-px">Support</h3>
+            <ul>
+                <li class="mb-4"><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Add Venue</a></li>
+                <li class="mb-4"><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Help Center</a></li>
+                <li class="mb-4"><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Contact Us</a></li>
+                <li><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Report Issue</a></li>
+            </ul>
+        </div></div>
+        <div class="w-full md:w-1/2 lg:w-3/12 p-6"><div class="h-full">
+            <h3 class="mb-9 font-heading font-semibold text-xs text-gray-500 uppercase tracking-px">Legal</h3>
+            <ul>
+                <li class="mb-4"><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Terms &amp; Conditions</a></li>
+                <li class="mb-4"><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Privacy Policy</a></li>
+                <li><a class="font-heading font-medium text-base text-gray-900 hover:text-gray-700" href="#">Cookie Policy</a></li>
+            </ul>
+        </div></div>
+    </div></div></section>
+</div>
