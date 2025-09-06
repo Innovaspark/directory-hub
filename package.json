@@ -7,7 +7,7 @@
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "start": "node dist/ngxpress/server/server.mjs",
+    "start": "node dist/ngxpress/server/server.mjs"
   },
   "prettier": {
     "overrides": [

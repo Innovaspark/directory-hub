@@ -1,0 +1,5 @@
+version: 3
+endpoint: https://jneykstixikhsieyjsjd.hasura.eu-central-1.nhost.run/v1/graphql
+admin_secret: Y4T,NzMbxVnT8D(o4WXJRU3'xm(9M#XP
+migrations_directory: migrations
+metadata_directory: metadata
