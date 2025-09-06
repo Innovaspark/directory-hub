@@ -7,6 +7,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideApollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache } from '@apollo/client/core';
+import {provideApolloConfig} from "./apollo.config";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,15 +15,18 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withFetch()),
-    provideClientHydration(withEventReplay()), provideHttpClient(), provideApollo(() => {
-      const httpLink = inject(HttpLink);
-
-      return {
-        link: httpLink.create({
-          uri: '<%= endpoint %>',
-        }),
-        cache: new InMemoryCache(),
-      };
-    })
+    provideClientHydration(withEventReplay()),
+    ...provideApolloConfig()
+    // provideApollo(() => {
+    //   const httpLink = inject(HttpLink);
+    //
+    //   return {
+    //     link: httpLink.create({
+    //       uri: '<%= endpoint %>',
+    //     }),
+    //     cache: new InMemoryCache(),
+    //   };
+    // })
   ]
 };
+

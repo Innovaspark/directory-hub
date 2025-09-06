@@ -1,0 +1,4 @@
+
+.venue-card {
+  @apply bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300;
+}

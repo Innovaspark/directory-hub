@@ -76,7 +76,7 @@ app.use((req, res, next) => {
 
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; img-src * data:; style-src * 'unsafe-inline'; font-src *;"
+    "default-src 'self'; img-src * data:; style-src * 'unsafe-inline'; font-src *; connect-src 'self' https://jneykstixikhsieyjsjd.hasura.eu-central-1.nhost.run;"
   );
 
   angularApp
