@@ -18,11 +18,15 @@ export interface Venue {
   country?: string;
   phone?: string;
   site?: string;
-  reviews?: string;
+  review_count?: number;
+  review_summary?: string;
+  rating?: number;
   latitude?: number;
   longitude?: number;
   photo?: string;
   street_view?: string;
+  primary_type: string;
+  venue_types: string;
   working_hours?: string;
   business_status?: string;
   location_link?: string;
@@ -36,66 +40,72 @@ export interface VenuesResponse {
 }
 
 const GET_VENUES = gql`
-  query GetVenues($limit: Int, $offset: Int) {
-    venues(limit: $limit, offset: $offset, order_by: {name: asc}) {
-      id
-      name
-      keywords
-      province
-      city
-      full_address
-      street
-      postal_code
-      state
-      country
-      phone
-      site
-      reviews
-      latitude
-      longitude
-      photo
-      street_view
-      working_hours
-      business_status
-      location_link
-      created_at
-      updated_at
-    }
-    venues_aggregate {
-      aggregate {
-        count
-      }
-    }
-  }
+ query GetVenues($limit: Int, $offset: Int) {
+   venues(limit: $limit, offset: $offset, order_by: {name: asc}) {
+     id
+     name
+     keywords
+     province
+     city
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     primary_type
+     venue_types
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+   venues_aggregate {
+     aggregate {
+       count
+     }
+   }
+ }
 `;
 
 const GET_VENUE_BY_ID = gql`
-  query GetVenueById($id: uuid!) {
-    venues_by_pk(id: $id) {
-      id
-      name
-      keywords
-      province
-      city
-      full_address
-      street
-      postal_code
-      state
-      country
-      phone
-      site
-      reviews
-      latitude
-      longitude
-      photo
-      street_view
-      working_hours
-      business_status
-      location_link
-      created_at
-      updated_at
-    }
-  }
+ query GetVenueById($id: uuid!) {
+   venues_by_pk(id: $id) {
+     id
+     name
+     keywords
+     province
+     city
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+ }
 `;
 
 @Injectable({

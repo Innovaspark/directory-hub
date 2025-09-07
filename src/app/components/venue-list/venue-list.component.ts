@@ -1,9 +1,10 @@
 import {Component, input} from '@angular/core';
 import {Venue} from "@services/venues.service";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-venue-list',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './venue-list.component.html'
 })
 export class VenueListComponent {
