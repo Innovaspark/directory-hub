@@ -1,10 +1,7 @@
 import {Component, DestroyRef, inject, OnInit, signal, Signal} from '@angular/core';
-import {map, shareReplay} from "rxjs";
-import {VenuesResponse, VenueService} from "@services/venue.service";
+import {shareReplay} from "rxjs";
 import {CommonModule} from "@angular/common";
 import {VenueListComponent} from "@components/venue-list/venue-list.component";
-import {toSignal} from "@angular/core/rxjs-interop";
-import {Venue} from "@core/models/venue.model";
 import {ActivatedRoute, Router} from "@angular/router";
 import {CityService} from "@core/services/city.service";
 import {TenantService} from "@core/services/tenant.service";
@@ -13,6 +10,7 @@ import {ScrollToTop} from "@components/scroll-to-top/scroll-to-top";
 import {VenuesDumpComponent} from "@components/venues-dump/venues-dump";
 import {FilterOption, VenueStateService} from "@core/services/venue-state.service";
 import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
+import {VenueService} from "@core/services/venue.service";
 
 @Component({
   selector: 'app-venue-hub',

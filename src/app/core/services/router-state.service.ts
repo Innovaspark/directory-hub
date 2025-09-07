@@ -57,11 +57,10 @@ export class RouterStateService {
     const params: Record<string, any> = {};
     const segments = urlTree.root.children['primary']?.segments || [];
 
-    // Handle /venues/:city pattern
-    if (segments.length >= 2 && segments[0].path === 'venues') {
-      params['city'] = segments[1].path;
+    // Handle /:city/venues pattern
+    if (segments.length >= 2 && segments[1].path === 'venues') {
+      params['city'] = segments[0].path;
     }
-
     this._routeData.set({
       params,
       queryParams: urlTree.queryParams,

@@ -84,7 +84,7 @@
           </div>
           <div class="city-grid">
             @for (city of cities; track city.slug) {
-        <a [routerLink]="['/venues', city.slug]" class="city-card">
+        <a [routerLink]="[city.slug, 'venues']" class="city-card">
             <span class="city-emoji">{{ city.emoji }}</span>
             <div class="city-name">{{ city.name }}</div>
             <div class="city-count">{{ city.venueCount }} {{ config.venuesLabel.toLowerCase() }}</div>
@@ -153,7 +153,7 @@
         </div>
         <div class="cards-grid">
           @for (venue of featuredVenues; track venue.id) {
-        <a [routerLink]="['/venue', venue.city, venue.id]" class="card">
+        <a [routerLink]="[venue.city, 'venues', venue.id]" class="card">
             <div class="card-image">
                 <span class="venue-type-badge">{{ getVenueTypeLabel(venue.primary_type) }}</span>
                 {{ venue.name }}

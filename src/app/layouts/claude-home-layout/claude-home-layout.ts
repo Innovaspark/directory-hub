@@ -9,9 +9,9 @@ import {VenueType} from "@core/models/venue-type.model";
 import {DirectoryConfig} from "@core/models/directory-config.model";
 import {CityService} from "@core/services/city.service";
 import {TenantService} from "@core/services/tenant.service";
-import {VenueService} from "@services/venue.service";
 import {DirectoryConfigService} from "@core/services/directory-config.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {VenueService} from "@core/services/venue.service";
 
 
 @Component({
@@ -97,7 +97,7 @@ export class ClaudeHomeLayout implements OnInit {
     // Route to city-specific venue page
     const targetCity = this.isMultiCity ? this.searchForm.city : this.primaryCity?.slug;
     if (targetCity) {
-      this.router.navigate(['/venues', targetCity], { queryParams });
+      this.router.navigate([targetCity, 'venues'], { queryParams });
     } else {
       // Fallback to general venues page if no city selected
       this.router.navigate(['/venues'], { queryParams });
@@ -112,7 +112,7 @@ export class ClaudeHomeLayout implements OnInit {
     // Route to city-specific venue page with type filter
     const targetCity = this.primaryCity?.slug;
     if (targetCity) {
-      this.router.navigate(['/venues', targetCity], { queryParams });
+      this.router.navigate([targetCity, 'venues'], { queryParams });
     } else {
       this.router.navigate(['/venues'], { queryParams });
     }

@@ -9,7 +9,7 @@ import { TenantService } from './tenant.service';
 import { Venue } from '../models/venue.model';
 import { City } from '../models/city.model';
 import { VenueType } from '../models/venue-type.model';
-import {VenueService, VenuesResponse} from "@services/venue.service";
+import {VenueService, VenuesResponse} from "@core/services/venue.service";
 
 export interface FilterOption {
   slug: string;
@@ -200,7 +200,7 @@ export class VenueStateService {
     });
 
     const city = this.citySlug();
-    const url = city ? ['/venues', city] : ['/venues'];
+    const url = city ? [city, 'venues'] : ['/venues'];
 
     this.router.navigate(url, {
       queryParams,

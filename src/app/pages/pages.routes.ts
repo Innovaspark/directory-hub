@@ -48,14 +48,10 @@ export const routes: Routes = [
         data: { title: 'All Venues' }
     },
     {
-        path: 'venues/:city',
+        path: ':city',
         component: DirectoryLayoutComponent,
-        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes),
-        data: { title: 'Venues' }
-    },
-    {
-        path: 'venue/:city/:venueId',
-        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes)
+        loadChildren: () => import('./city/city.routes').then(m => m.routes),
+        data: { title: 'City' }
     },
     {
         path: '**',

@@ -13,13 +13,20 @@ import {VenueStateService} from "@core/services/venue-state.service";
           <div class="container">
               <!-- Search Bar -->
               <div class="search-bar">
-                  <input
-                          type="text"
-                          class="search-input"
-                          [placeholder]="searchPlaceholder()"
-                          [(ngModel)]="localSearchQuery"
-                          (keyup.enter)="onSearchSubmit()"
-                          name="search">
+                  <div class="search-input-container">
+                      <input
+                              type="text"
+                              class="search-input"
+                              [placeholder]="searchPlaceholder()"
+                              [(ngModel)]="localSearchQuery"
+                              (keyup.enter)="onSearchSubmit()"
+                              name="search">
+                      @if (localSearchQuery) {
+                      <button class="clear-btn" (click)="clearSearch()">
+                        ✕
+                      </button>
+                      }
+                  </div>
                   <button class="search-btn" (click)="onSearchSubmit()">
                       <span>🔍</span>
                   </button>
@@ -65,6 +72,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
           font-size: 1rem;
           outline: none;
           transition: border-color 0.3s ease;
+          width: 100%;
 
           &:focus {
               border-color: #667eea;
@@ -134,6 +142,34 @@ import {VenueStateService} from "@core/services/venue-state.service";
               padding: 0.5rem 1rem;
           }
       }
+
+      .search-input-container {
+          position: relative;
+          flex: 1;
+      }
+
+      .clear-btn {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: #999;
+          cursor: pointer;
+          font-size: 1.2rem;
+          padding: 0;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+              color: #666;
+          }
+      }
+      
   `]
 })
 export class VenueFiltersComponent {
@@ -156,4 +192,10 @@ export class VenueFiltersComponent {
   onSearchSubmit() {
     this.venueState.setSearchQuery(this.localSearchQuery);
   }
+
+  clearSearch() {
+    this.localSearchQuery = '';
+    this.venueState.setSearchQuery('');
+  }
+
 }
