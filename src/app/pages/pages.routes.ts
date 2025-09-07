@@ -30,12 +30,6 @@ export const routes: Routes = [
         loadChildren: () => import('./admin/admin.routes').then(m => m.routes)
     },
     {
-        path: 'venues',
-        component: DirectoryLayoutComponent,
-        canMatch: [],
-        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes)
-    },
-    {
         path: 'venues2',
         component: DirectoryLayout2Component,
         canMatch: [],
@@ -48,16 +42,16 @@ export const routes: Routes = [
         loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes)
     },
     {
-        path: 'venues/:city',
-        component: DirectoryLayoutComponent,
-        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes),
-        data: { title: 'Venues' }
-    },
-    {
         path: 'venues',
         component: DirectoryLayoutComponent,
         loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes),
         data: { title: 'All Venues' }
+    },
+    {
+        path: 'venues/:city',
+        component: DirectoryLayoutComponent,
+        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes),
+        data: { title: 'Venues' }
     },
     {
         path: 'venue/:city/:venueId',

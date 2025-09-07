@@ -6,15 +6,7 @@
 <!--        [venueLabel]="'Venues'">-->
 <!--</app-city-title-bar>-->
 
-<app-venue-filters
-        [searchPlaceholder]="'Search venues in ' + cityName + '...'"
-        [filterOptions]="filterOptions"
-        [selectedFilter]="selectedFilter"
-        [initialSearchQuery]="searchQuery"
-        (searchChange)="onSearchChange($event)"
-        (searchSubmit)="onSearchSubmit($event)"
-        (filterChange)="onFilterChange($event)">
-</app-venue-filters>
+<app-venue-filters></app-venue-filters>
 
 <app-venue-list [$venues]="$venues()"></app-venue-list>
 

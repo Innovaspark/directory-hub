@@ -5,17 +5,18 @@ import {CommonModule} from "@angular/common";
 import {VenueListComponent} from "@components/venue-list/venue-list.component";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {Venue} from "@core/models/venue.model";
-import {FilterOption, VenueFilters} from "@components/venue-filters/venue-filters";
 import {ActivatedRoute, Router} from "@angular/router";
 import {CityService} from "@core/services/city.service";
 import {TenantService} from "@core/services/tenant.service";
 import {CityTitleBar} from "@components/city-title-bar/city-title-bar";
 import {ScrollToTop} from "@components/scroll-to-top/scroll-to-top";
 import {VenuesDumpComponent} from "@components/venues-dump/venues-dump";
+import {FilterOption, VenueStateService} from "@core/services/venue-state.service";
+import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
 
 @Component({
   selector: 'app-venue-hub',
-  imports: [CommonModule, VenueListComponent, CityTitleBar, VenueFilters, ScrollToTop, VenuesDumpComponent],
+  imports: [CommonModule, VenueListComponent, CityTitleBar, VenueFiltersComponent, ScrollToTop, VenuesDumpComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -23,16 +24,18 @@ export class DashboardComponent implements OnInit {
   error: string | null = null;
 
   venuesService = inject(VenueService);
+  venueStateService = inject(VenueStateService);
 
   venuesResponse$ = this.venuesService.getVenues().pipe(
     shareReplay(1)
   );
 
   // Create signals from the shared observable
-  $venues = toSignal(
-    this.venuesResponse$.pipe(map(response => response.venues)),
-    { initialValue: [] as Venue[] }
-  );
+  // $venues = toSignal(
+  //   this.venuesResponse$.pipe(map(response => response.venues)),
+  //   { initialValue: [] as Venue[] }
+  // );
+  $venues = this.venueStateService.venues;
 
   // constructor() {}
 

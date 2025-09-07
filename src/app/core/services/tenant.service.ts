@@ -8,6 +8,18 @@ import { VenueType } from '../models/venue-type.model';
 export class TenantService {
   private venueTypes: VenueType[] = [];
 
+// tenant.service.ts
+  constructor() {
+    this.venueTypes = [
+      { slug: 'music_venue', label: 'Music Venues', icon: '🎵' },
+      { slug: 'theater', label: 'Theaters', icon: '🎭' },
+      { slug: 'jazz_club', label: 'Jazz Clubs', icon: '🎷' },
+      { slug: 'club', label: 'Nightclubs', icon: '🕺' },
+      { slug: 'bar', label: 'Bars', icon: '🍻' },
+      { slug: 'food', label: 'Food', icon: '🍔' },
+    ];
+  }
+
   getVenueTypes(): Observable<VenueType[]> {
     // Replace with actual API call to get tenant-specific venue types
     return of(this.venueTypes);
