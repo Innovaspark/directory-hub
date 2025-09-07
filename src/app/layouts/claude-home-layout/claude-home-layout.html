@@ -1,0 +1,180 @@
+<div class="homepage">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>{{ config.heroTitle }}</h1>
+            @if (!isMultiCity && primaryCity) {
+            <p>{{ config.heroDescription }} in {{ primaryCity.name }}.</p>
+            }
+            @if (isMultiCity) {
+            <p>{{ config.heroDescription }}. Search by location and type.</p>
+            }
+
+            <!-- Search Container -->
+            <div class="search-container">
+                <form class="search-form" (ngSubmit)="onSearch()">
+                    @if (isMultiCity) {
+                    <div class="search-group">
+                      <label for="city">City</label>
+                      <select id="city" class="search-input" [(ngModel)]="searchForm.city" name="city">
+                        <option value="">All Cities</option>
+                        @for (city of cities; track city.slug) {
+                    <option [value]="city.slug">{{ city.name }}</option>
+                    }
+                    </select>
+                  </div>
+                    }
+                    <div class="search-group">
+                        <label for="venue">{{ config.singleVenueLabel }} Name</label>
+                        <input
+                                type="text"
+                                id="venue"
+                                class="search-input"
+                                [placeholder]="config.searchPlaceholder"
+                                [(ngModel)]="searchForm.venue"
+                                name="venue">
+                    </div>
+                    <button type="submit" class="search-btn">Search</button>
+                </form>
+
+                <!-- Venue Type Filters -->
+                <div class="venue-filters">
+                    @for (type of venueTypes; track type.slug) {
+                    <button
+                      class="filter-btn"
+                      [class.active]="selectedVenueType === type.slug"
+                      (click)="onVenueTypeClick(type.slug)">
+                      <span class="filter-icon">{{ type.icon }}</span>
+                    {{ type.label }}
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="stats-bar">
+            <div class="stats-grid">
+                <div class="stat">
+                    <span class="stat-number">{{ totalVenues }}</span>
+                    <span class="stat-label">{{ config.venuesLabel }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">{{ cities.length }}</span>
+                    <span class="stat-label">{{ cities.length === 1 ? 'City' : 'Cities' }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">{{ venueTypes.length }}</span>
+                    <span class="stat-label">{{ config.venueTypesLabel }}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Updated Daily</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multi-City: Browse by City -->
+        @if (isMultiCity) {
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Browse by City</h2>
+            <a [routerLink]="['/cities']" class="section-link">All Cities →</a>
+          </div>
+          <div class="city-grid">
+            @for (city of cities; track city.slug) {
+        <a [routerLink]="['/venues', city.slug]" class="city-card">
+            <span class="city-emoji">{{ city.emoji }}</span>
+            <div class="city-name">{{ city.name }}</div>
+            <div class="city-count">{{ city.venueCount }} {{ config.venuesLabel.toLowerCase() }}</div>
+        </a>
+        }
+        </div>
+      </section>
+        }
+
+        <!-- Single City: Show City Selector for Navigation -->
+        @if (!isMultiCity && primaryCity) {
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Explore {{ primaryCity.name }}</h2>
+          <a [routerLink]="['/venues', primaryCity.slug]" class="section-link">View All {{ config.venuesLabel }} →</a>
+        </div>
+        <div class="city-grid">
+          <a [routerLink]="['/venues', primaryCity.slug]" class="city-card">
+            <span class="city-emoji">{{ primaryCity.emoji }}</span>
+            <div class="city-name">{{ primaryCity.name }}</div>
+            <div class="city-count">{{ primaryCity.venueCount }} {{ config.venuesLabel.toLowerCase() }}</div>
+          </a>
+        </div>
+      </section>
+        }
+
+        <!-- Single City: Show Venues Directly -->
+        @if (!isMultiCity && primaryCity) {
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Featured {{ config.venuesLabel }}</h2>
+          <a [routerLink]="['/venues', primaryCity.slug]" class="section-link">Browse All →</a>
+        </div>
+        <div class="cards-grid">
+          @for (venue of featuredVenues; track venue.id) {
+        <a [routerLink]="['/venue', venue.city, venue.id]" class="card">
+            <div class="card-image">
+                <span class="venue-type-badge">{{ getVenueTypeLabel(venue.primary_type) }}</span>
+                {{ venue.name }}
+            </div>
+            <div class="card-content">
+                <h3 class="card-title">{{ venue.name }}</h3>
+                <p class="card-meta">
+                    📍 {{ getDisplayAddress(venue) }} •
+                    @if (venue.keywords) {
+                    <span>🏷️ {{ getDisplayKeywords(venue.keywords) }}</span>
+                    }
+                    @if (venue.rating) {
+                    <span> • ⭐ {{ venue.rating }}</span>
+                    }
+                </p>
+                <p class="card-description">{{ venue.review_summary || 'No description available.' }}</p>
+            </div>
+        </a>
+        }
+        </div>
+      </section>
+        }
+
+        <!-- Multi-City: Featured Venues from All Cities -->
+        @if (isMultiCity) {
+        <section class="section">
+          <div class="section-header">
+            <h2 class="section-title">Featured {{ config.venuesLabel }}</h2>
+          <a [routerLink]="['/venues']" class="section-link">Browse All →</a>
+        </div>
+        <div class="cards-grid">
+          @for (venue of featuredVenues; track venue.id) {
+        <a [routerLink]="['/venue', venue.city, venue.id]" class="card">
+            <div class="card-image">
+                <span class="venue-type-badge">{{ getVenueTypeLabel(venue.primary_type) }}</span>
+                {{ venue.name }}
+            </div>
+            <div class="card-content">
+                <h3 class="card-title">{{ venue.name }}</h3>
+                <p class="card-meta">
+                    📍 {{ getCityName(venue.city!) }} •
+                    @if (venue.keywords) {
+                    <span>🏷️ {{ getDisplayKeywords(venue.keywords) }}</span>
+                    }
+                    @if (venue.rating) {
+                    <span> • ⭐ {{ venue.rating }}</span>
+                    }
+                </p>
+                <p class="card-description">{{ venue.review_summary || 'No description available.' }}</p>
+            </div>
+        </a>
+        }
+        </div>
+      </section>
+        }
+    </div>
+</div>

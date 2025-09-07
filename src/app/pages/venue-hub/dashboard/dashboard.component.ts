@@ -1,14 +1,21 @@
-import {Component, inject, OnInit, signal, Signal} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, signal, Signal} from '@angular/core';
 import {map, shareReplay} from "rxjs";
 import {VenuesResponse, VenueService} from "@services/venue.service";
 import {CommonModule} from "@angular/common";
 import {VenueListComponent} from "@components/venue-list/venue-list.component";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {Venue} from "@core/models/venue.model";
+import {FilterOption, VenueFilters} from "@components/venue-filters/venue-filters";
+import {ActivatedRoute, Router} from "@angular/router";
+import {CityService} from "@core/services/city.service";
+import {TenantService} from "@core/services/tenant.service";
+import {CityTitleBar} from "@components/city-title-bar/city-title-bar";
+import {ScrollToTop} from "@components/scroll-to-top/scroll-to-top";
+import {VenuesDumpComponent} from "@components/venues-dump/venues-dump";
 
 @Component({
   selector: 'app-venue-hub',
-  imports: [CommonModule, VenueListComponent],
+  imports: [CommonModule, VenueListComponent, CityTitleBar, VenueFilters, ScrollToTop, VenuesDumpComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -27,10 +34,19 @@ export class DashboardComponent implements OnInit {
     { initialValue: [] as Venue[] }
   );
 
-  constructor() {}
+  // constructor() {}
 
   ngOnInit() {
     this.loadVenues();
+    // TODO: Move to venue state service
+    this.cityName = 'Chicago';
+    this.cityEmoji = '🏙️';
+    this.venueCount = 145;
+    this.filterOptions = [
+      { slug: 'music_venue', label: 'Music Venues', icon: '🎵' },
+      { slug: 'theater', label: 'Theaters', icon: '🎭' },
+      { slug: 'jazz_club', label: 'Jazz Clubs', icon: '🎷' }
+    ];
   }
 
   loadVenues() {
@@ -52,4 +68,36 @@ export class DashboardComponent implements OnInit {
     //   }
     // });
   }
+
+  private destroyRef = inject(DestroyRef);
+
+  // UI state variables
+  cityName: string = '';
+  cityEmoji: string = '🏙️';
+  venueCount: number = 0;
+  selectedFilter: string | null = null;
+  searchQuery: string = '';
+  filterOptions: FilterOption[] = [];
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private cityService: CityService,
+    private venueService: VenueService,
+    private tenantService: TenantService
+  ) {}
+
+  // Event handlers - placeholders for next step
+  onSearchChange(query: string): void {
+    // TODO: Handle in venue state service
+  }
+
+  onSearchSubmit(query: string): void {
+    // TODO: Handle in venue state service
+  }
+
+  onFilterChange(filter: string | null): void {
+    // TODO: Handle in venue state service
+  }
+
 }

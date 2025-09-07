@@ -6,7 +6,8 @@ import { AuthLayoutComponent } from '@layouts/auth-layout/auth-layout.component'
 import { MainLayoutComponent } from '@layouts/main-layout/main-layout.component';
 import {DirectoryLayoutComponent} from "@layouts/directory-layout/directory-layout.component";
 import {DirectoryLayout2Component} from "@layouts/directory-layout2/directory-layout2.component";
-import {ClaudeHomeLayout} from "@layouts/claude-home-layout";
+import {ClaudeHomeLayout} from "@layouts/claude-home-layout/claude-home-layout";
+
 
 export const routes: Routes = [
     {
@@ -44,6 +45,22 @@ export const routes: Routes = [
         path: 'venues3',
         component: ClaudeHomeLayout,
         canMatch: [],
+        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes)
+    },
+    {
+        path: 'venues/:city',
+        component: DirectoryLayoutComponent,
+        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes),
+        data: { title: 'Venues' }
+    },
+    {
+        path: 'venues',
+        component: DirectoryLayoutComponent,
+        loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes),
+        data: { title: 'All Venues' }
+    },
+    {
+        path: 'venue/:city/:venueId',
         loadChildren: () => import('./venue-hub/venue-hub.routes').then(m => m.routes)
     },
     {

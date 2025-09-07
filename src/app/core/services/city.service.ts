@@ -21,6 +21,16 @@ export class CityService {
       venueCount: 145,
       isActive: true,
       launchDate: '2025-01-15'
+    },
+    {
+      slug: 'amersfoort',
+      name: 'Amersfoort',
+      state: 'Utrecht',
+      emoji: '🏙️',
+      timezone: 'America/Chicago',
+      venueCount: 145,
+      isActive: true,
+      launchDate: '2025-01-15'
     }
     // Add more cities here as you expand
   ];

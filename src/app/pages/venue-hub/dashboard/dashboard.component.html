@@ -1,2 +1,24 @@
 
+<!--<app-city-title-bar-->
+<!--        [cityName]="cityName"-->
+<!--        [cityEmoji]="cityEmoji"-->
+<!--        [venueCount]="$venues().length"-->
+<!--        [venueLabel]="'Venues'">-->
+<!--</app-city-title-bar>-->
+
+<app-venue-filters
+        [searchPlaceholder]="'Search venues in ' + cityName + '...'"
+        [filterOptions]="filterOptions"
+        [selectedFilter]="selectedFilter"
+        [initialSearchQuery]="searchQuery"
+        (searchChange)="onSearchChange($event)"
+        (searchSubmit)="onSearchSubmit($event)"
+        (filterChange)="onFilterChange($event)">
+</app-venue-filters>
+
 <app-venue-list [$venues]="$venues()"></app-venue-list>
+
+<app-venues-dump></app-venues-dump>
+
+<app-scroll-to-top></app-scroll-to-top>
+
