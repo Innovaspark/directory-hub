@@ -1,34 +1,6 @@
-<div class="">
+<div class="py-10">
 
-    <section x-data="{ mobileNavOpen: false }" class="bg-white shadow-lg"><div class="flex items-center justify-between px-8 py-5">
-        <div class="w-auto"><div class="flex flex-wrap items-center"><div class="w-auto mr-14"><a href="#"><img src="images/logos/logo-ee3de08a645b024505dcc37089a5d94e.png" alt="LiveVenue Hub"></a></div></div></div>
-        <div class="w-auto"><div class="flex flex-wrap items-center">
-            <div class="w-auto hidden lg:block"><ul class="flex items-center mr-10">
-                <li class="font-heading mr-9 text-gray-900 hover:text-gray-700 text-lg"><a href="#">Venues</a></li>
-                <li class="font-heading mr-9 text-gray-900 hover:text-gray-700 text-lg"><a href="#">Events</a></li>
-                <li class="font-heading mr-9 text-gray-900 hover:text-gray-700 text-lg"><a href="#">Reviews</a></li>
-                <li class="font-heading text-gray-900 hover:text-gray-700 text-lg"><a href="#">About</a></li>
-            </ul></div>
-            <div class="w-auto hidden lg:block"><button class="group relative font-heading block py-2 px-5 text-lg text-white bg-gradient-to-r from-purple-600 to-blue-600 overflow-hidden rounded-10"><div class="absolute top-0 left-0 transform -translate-y-full group-hover:-translate-y-0 h-full w-full bg-gradient-to-r from-purple-700 to-blue-700 transition ease-in-out duration-500"></div>
-                <p class="relative z-10">Add Venue</p></button></div>
-            <div class="w-auto lg:hidden"><button x-on:click="mobileNavOpen = !mobileNavOpen"><svg class="text-gray-800" width="51" height="51" viewbox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="56" height="56" rx="28" fill="currentColor"></rect><path d="M37 32H19M37 24H19" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
-        </div></div>
-        <div :class="{'block': mobileNavOpen, 'hidden': !mobileNavOpen}" class="hidden fixed top-0 left-0 bottom-0 w-4/6 sm:max-w-xs z-50">
-            <div x-on:click="mobileNavOpen = !mobileNavOpen" class="fixed inset-0 bg-gray-800 opacity-80"></div>
-            <nav class="relative z-10 px-9 py-8 bg-white h-full"><div class="flex flex-wrap justify-between h-full">
-                <div class="w-full"><div class="flex items-center justify-between -m-2">
-                    <div class="w-auto p-2"><a class="inline-block" href="#"><img src="images/logos/logo-ee3de08a645b024505dcc37089a5d94e.png" alt="LiveVenue Hub"></a></div>
-                    <div class="w-auto p-2"><button x-on:click="mobileNavOpen = !mobileNavOpen"><svg width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6M6 6L18 18" stroke="#111827" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
-                </div></div>
-                <div class="flex flex-col justify-center py-8 w-full"><ul>
-                    <li class="mb-12"><a class="font-heading font-medium text-lg text-gray-900 hover:text-gray-700" href="#">Venues</a></li>
-                    <li class="mb-12"><a class="font-heading font-medium text-lg text-gray-900 hover:text-gray-700" href="#">Events</a></li>
-                    <li class="mb-12"><a class="font-heading font-medium text-lg text-gray-900 hover:text-gray-700" href="#">Reviews</a></li>
-                    <li><a class="font-heading font-medium text-lg text-gray-900 hover:text-gray-700" href="#">About</a></li>
-                </ul></div>
-            </div></nav>
-        </div>
-    </div></section>
+    <app-expand-header></app-expand-header>
 
     <router-outlet></router-outlet>
 

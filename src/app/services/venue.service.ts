@@ -1,38 +1,11 @@
-// services/venues.service.ts
+// services/venue.service.ts
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { gql } from '@apollo/client/core';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import {Venue} from "@core/models/venue.model";
 
-export interface Venue {
-  id: string;
-  name: string;
-  keywords?: string;
-  province?: string;
-  city?: string;
-  full_address?: string;
-  street?: string;
-  postal_code?: string;
-  state?: string;
-  country?: string;
-  phone?: string;
-  site?: string;
-  review_count?: number;
-  review_summary?: string;
-  rating?: number;
-  latitude?: number;
-  longitude?: number;
-  photo?: string;
-  street_view?: string;
-  primary_type: string;
-  venue_types: string;
-  working_hours?: string;
-  business_status?: string;
-  location_link?: string;
-  created_at?: string;
-  updated_at?: string;
-}
 
 export interface VenuesResponse {
   venues: Venue[];
@@ -111,7 +84,7 @@ const GET_VENUE_BY_ID = gql`
 @Injectable({
   providedIn: 'root'
 })
-export class VenuesService {
+export class VenueService {
   constructor(private apollo: Apollo) {}
 
   getVenues(limit: number = 20, offset: number = 0): Observable<VenuesResponse> {
@@ -144,4 +117,69 @@ export class VenuesService {
       catchError(() => of(null))
     );
   }
+
+// Add this method to your existing VenueService
+  getFeaturedVenues(citySlug?: string, limit: number = 3): Observable<Venue[]> {
+    // Hard-coded featured venues for now
+    const featuredVenues: Venue[] = [
+      {
+        id: 'metro-chicago-001',
+        name: 'Metro Chicago',
+        city: 'chicago',
+        state: 'IL',
+        full_address: '3730 N Clark St, Chicago, IL 60613',
+        street: '3730 N Clark St',
+        rating: 4.2,
+        review_count: 1250,
+        review_summary: 'Historic music venue in Wrigleyville hosting indie, alternative, and electronic acts.',
+        primary_type: 'music_venue',
+        venue_types: 'club,music_venue,nightlife',
+        keywords: 'indie rock,alternative,electronic,live music',
+        business_status: 'OPERATIONAL'
+      },
+      {
+        id: 'chicago-theatre-001',
+        name: 'Chicago Theatre',
+        city: 'chicago',
+        state: 'IL',
+        full_address: '175 N State St, Chicago, IL 60601',
+        street: '175 N State St',
+        rating: 4.5,
+        review_count: 2847,
+        review_summary: 'Iconic downtown theater hosting major touring acts and comedy shows.',
+        primary_type: 'theater',
+        venue_types: 'theater,performing_arts,entertainment',
+        keywords: 'theater,comedy,concerts,live shows',
+        business_status: 'OPERATIONAL'
+      },
+      {
+        id: 'green-mill-001',
+        name: 'Green Mill Cocktail Lounge',
+        city: 'chicago',
+        state: 'IL',
+        full_address: '4802 N Broadway, Chicago, IL 60640',
+        street: '4802 N Broadway',
+        rating: 4.3,
+        review_count: 892,
+        review_summary: 'Historic jazz club operating since 1907, featuring live jazz every night.',
+        primary_type: 'jazz_club',
+        venue_types: 'jazz_club,bar,nightlife',
+        keywords: 'jazz,blues,cocktails,historic',
+        business_status: 'OPERATIONAL'
+      }
+    ];
+
+    let venues = featuredVenues;
+
+    // Filter by city if provided
+    if (citySlug) {
+      venues = venues.filter(v => v.city === citySlug);
+    }
+
+    // Apply limit
+    venues = venues.slice(0, limit);
+
+    return of(venues);
+  }
+
 }

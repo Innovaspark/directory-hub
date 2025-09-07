@@ -1,6 +1,6 @@
 import {Component, input} from '@angular/core';
-import {Venue} from "@services/venues.service";
 import {CommonModule} from "@angular/common";
+import {Venue} from "@core/models/venue.model";
 
 @Component({
   selector: 'app-venue-list',

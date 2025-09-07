@@ -1,28 +1,2 @@
-div class="venues-container">
-<h1>Venues</h1>
-
-<div *ngIf="loading">Loading venues...</div>
-
-<div *ngIf="error" class="error">
-    Error: {{ error }}
-</div>
 
 <app-venue-list [$venues]="$venues()"></app-venue-list>
-
-<div *ngIf="venuesResponse$ | async as venuesData" class="venues-data">
-    <h2>Total Venues: {{ venuesData.totalCount }}</h2>
-
-    <h3>Raw JSON Data:</h3>
-    <pre>{{ venuesData | json }}</pre>
-
-    <h3>Venues List:</h3>
-    <div *ngFor="let venue of venuesData.venues" class="venue-item">
-        <h4>{{ venue.name }}</h4>
-        <p><strong>City:</strong> {{ venue.city }}</p>
-        <p><strong>Address:</strong> {{ venue.full_address }}</p>
-        <p><strong>Keywords:</strong> {{ venue.keywords }}</p>
-        <p><strong>Phone:</strong> {{ venue.phone }}</p>
-        <hr>
-    </div>
-</div>
-
