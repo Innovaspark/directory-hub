@@ -1,38 +1,47 @@
+// services/tenant.service.ts
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { VenueType } from '../models/venue-type.model';
+import { Apollo } from 'apollo-angular';
+import { gql } from '@apollo/client/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import {Tenant, VenueType} from "@core/models/tenant.model";
+
+const GET_TENANT_BY_DOMAIN = gql`
+  query GetTenantByDomain($domain: String!) {
+    tenants(where: { domain_names: { _contains: [$domain] } }) {
+      id
+      name
+      slug
+      description
+      domain_names
+      search_terms
+      keywords
+      venue_types
+      settings
+    }
+  }
+`;
 
 @Injectable({
   providedIn: 'root'
 })
 export class TenantService {
-  private venueTypes: VenueType[] = [];
+  constructor(private apollo: Apollo) {}
 
-// tenant.service.ts
-  constructor() {
-    this.venueTypes = [
-      { slug: 'music_venue', label: 'Music Venues', icon: '🎵' },
-      { slug: 'theater', label: 'Theaters', icon: '🎭' },
-      { slug: 'jazz_club', label: 'Jazz Clubs', icon: '🎷' },
-      { slug: 'club', label: 'Nightclubs', icon: '🕺' },
-      { slug: 'bar', label: 'Bars', icon: '🍻' },
-      { slug: 'food', label: 'Food', icon: '🍔' },
-    ];
+  getTenantByDomain(domain: string): Observable<Tenant | null> {
+    return this.apollo.query<{tenants: Tenant[]}>({
+      query: GET_TENANT_BY_DOMAIN,
+      variables: { domain }
+    }).pipe(
+      map(result => result.data?.tenants?.[0] || null)
+    );
   }
 
   getVenueTypes(): Observable<VenueType[]> {
-    // Replace with actual API call to get tenant-specific venue types
-    return of(this.venueTypes);
-  }
-
-  setVenueTypes(venueTypes: VenueType[]): void {
-    this.venueTypes = venueTypes;
-  }
-
-  // Method to load venue types from API
-  loadVenueTypesFromApi(): Observable<VenueType[]> {
-    // Replace with actual HTTP call
-    // return this.http.get<VenueType[]>('/api/tenant/venue-types');
-    return of([]);
+    // This will eventually get from current tenant
+    // For now, return hardcoded data
+    return this.getTenantByDomain(window.location.hostname).pipe(
+      map(tenant => tenant?.venue_types || [])
+    );
   }
 }
