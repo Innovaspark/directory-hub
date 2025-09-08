@@ -15,24 +15,24 @@ import {RouterStateService} from "@core/services/router-state.service";
 
         <div class="debug-info">
 
-            <p><strong>Current URL:</strong> {{ routerState.url() }}</p>
-            <p><strong>City Slug:</strong> {{ routerState.citySlug() }}</p>
-            <p><strong>Query Params:</strong> {{ routerState.queryParams() | json }}</p>
-
-            <p><strong>City:</strong> {{ venueState.cityName() }} {{ venueState.cityEmoji() }}</p>
-          <p><strong>Search Query:</strong> "{{ venueState.searchQuery() }}"</p>
-          <p><strong>Selected Filter:</strong> {{ venueState.selectedFilter() || 'None' }}</p>
-          <p><strong>Loading:</strong> {{ venueState.isLoading() }}</p>
-          <p><strong>Filtered Venues Count:</strong> {{ venueState.venueCount() }}</p>
-          <p><strong>Total Venues Count:</strong> {{ venueState.totalVenueCount() }}</p>
+            <p><strong>Current URL:</strong> {{ routerState.$url() }}</p>
+            <p><strong>City Slug:</strong> {{ routerState.$citySlug() }}</p>
+            <p><strong>Query Params:</strong> {{ routerState.$queryParams() | json }}</p>
+            
+            <p><strong>City:</strong> {{ venueState.$cityName() }} {{ venueState.$cityEmoji() }}</p>
+          <p><strong>Search Query:</strong> "{{ venueState.$searchQuery() }}"</p>
+          <p><strong>Selected Filter:</strong> {{ venueState.$selectedFilter() || 'None' }}</p>
+          <p><strong>Loading:</strong> {{ venueState.$isLoading() }}</p>
+          <p><strong>Filtered Venues Count:</strong> {{ venueState.$venueCount() }}</p>
+          <p><strong>Total Venues Count:</strong> {{ venueState.$totalVenueCount() }}</p>
         </div>
 
         <div class="venues-list">
-          <h4>Venues ({{ venueState.venues().length }})</h4>
-          @if (venueState.isLoading()) {
+          <h4>Venues ({{ venueState.$venues().length }})</h4>
+          @if (venueState.$isLoading()) {
             <p>Loading...</p>
           } @else {
-            @for (venue of venueState.venues(); track venue.id) {
+            @for (venue of venueState.$venues(); track venue.id) {
               <div class="venue-item">
                 <strong>{{ venue.name }}</strong><br>
                 <small>{{ venue.city }} • {{ venue.primary_type }}</small><br>

@@ -36,14 +36,14 @@ import {VenueStateService} from "@core/services/venue-state.service";
               <div class="filter-pills">
                   <button
                           class="filter-pill"
-                          [class.active]="venueState.selectedFilter() === null"
+                          [class.active]="venueState.$selectedFilter() === null"
                           (click)="venueState.setFilter(null)">
                       All Types
                   </button>
-                  @for (filter of venueState.filterOptions(); track filter.slug) {
+                  @for (filter of venueState.$filterOptions(); track filter.slug) {
                   <button 
                     class="filter-pill"
-                    [class.active]="venueState.selectedFilter() === filter.slug"
+                    [class.active]="venueState.$selectedFilter() === filter.slug"
                     (click)="venueState.setFilter(filter.slug)">
                   {{ filter.icon }} {{ filter.label }}
                   </button>
@@ -179,11 +179,11 @@ export class VenueFiltersComponent {
 
   ngOnInit() {
     // Initialize local search with current state
-    this.localSearchQuery = this.venueState.searchQuery();
+    this.localSearchQuery = this.venueState.$searchQuery();
   }
 
   searchPlaceholder = () => {
-    const cityName = this.venueState.cityName();
+    const cityName = this.venueState.$cityName();
     return cityName
       ? `Search venues in ${cityName}...`
       : 'Search venues...';

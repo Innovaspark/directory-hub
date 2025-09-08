@@ -14,11 +14,11 @@ import {VenueStateService} from "@core/services/venue-state.service";
       <section class="about-header">
         <div class="container">
           <nav class="breadcrumb">
-            <a [routerLink]="['..']">{{ venueState.cityName() }}</a>
+            <a [routerLink]="['..']">{{ venueState.$cityName() }}</a>
             <span>About</span>
           </nav>
-          <h1>About {{ venueState.cityName() }}</h1>
-          <p>Learn more about {{ venueState.cityName() }}'s music scene, culture, and entertainment.</p>
+          <h1>About {{ venueState.$cityName() }}</h1>
+          <p>Learn more about {{ venueState.$cityName() }}'s music scene, culture, and entertainment.</p>
         </div>
       </section>
 
@@ -27,9 +27,9 @@ import {VenueStateService} from "@core/services/venue-state.service";
         <div class="container">
           <div class="content-grid">
             <div class="main-content">
-              <h2>{{ venueState.cityName() }} Music Scene</h2>
+              <h2>{{ venueState.$cityName() }} Music Scene</h2>
               <p>
-                {{ venueState.cityName() }} has a rich musical heritage spanning decades. The city's diverse 
+                {{ venueState.$cityName() }} has a rich musical heritage spanning decades. The city's diverse 
                 neighborhoods each contribute their own flavor to the local music scene, from jazz and blues 
                 to rock, electronic, and everything in between.
               </p>
@@ -59,7 +59,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
               <div class="info-box">
                 <h4>Quick Facts</h4>
                 <ul>
-                  <li><strong>Live Venues:</strong> {{ venueState.totalVenueCount() }}</li>
+                  <li><strong>Live Venues:</strong> {{ venueState.$totalVenueCount() }}</li>
                   <li><strong>Music Genres:</strong> All types</li>
                   <li><strong>Best Time to Visit:</strong> Year-round</li>
                   <li><strong>Average Ticket Price:</strong> Varies</li>
@@ -68,7 +68,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
 
               <div class="cta-box">
                 <h4>Ready to Explore?</h4>
-                <p>Browse all live music venues in {{ venueState.cityName() }}</p>
+                <p>Browse all live music venues in {{ venueState.$cityName() }}</p>
                 <a [routerLink]="['..', 'venues']" class="btn-primary">
                   View All Venues
                 </a>

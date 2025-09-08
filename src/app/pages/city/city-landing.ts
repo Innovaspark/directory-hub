@@ -13,22 +13,22 @@ import {VenueStateService} from "@core/services/venue-state.service";
       <!-- Hero Section -->
       <section class="hero">
         <div class="container">
-          <h1>Live Music in {{ venueState.cityName() }} - Best Venues & Events</h1>
+          <h1>Live Music in {{ venueState.$cityName() }} - Best Venues & Events</h1>
           <p class="hero-subtitle">
-            Discover {{ venueState.totalVenueCount() }} live music venues in {{ venueState.cityName() }}. 
+            Discover {{ venueState.$totalVenueCount() }} live music venues in {{ venueState.$cityName() }}. 
             From intimate jazz clubs to major concert halls, find concerts, gigs, and live events tonight.
           </p>
           <div class="hero-stats">
-            <span>{{ venueState.totalVenueCount() }} Venues</span>
+            <span>{{ venueState.$totalVenueCount() }} Venues</span>
             <span>All Music Genres</span>
             <span>Updated Daily</span>
           </div>
           <div class="hero-cta">
             <a [routerLink]="['venues']" class="btn-primary">
-              Browse All {{ venueState.cityName() }} Venues
+              Browse All {{ venueState.$cityName() }} Venues
             </a>
             <a [routerLink]="['about']" class="btn-secondary">
-              About {{ venueState.cityName() }}
+              About {{ venueState.$cityName() }}
             </a>
           </div>
         </div>
@@ -37,9 +37,9 @@ import {VenueStateService} from "@core/services/venue-state.service";
       <!-- Quick Venue Types -->
       <section class="venue-types">
         <div class="container">
-          <h2>Find {{ venueState.cityName() }} Venues By Type</h2>
+          <h2>Find {{ venueState.$cityName() }} Venues By Type</h2>
           <div class="types-grid">
-            @for (type of venueState.filterOptions(); track type.slug) {
+            @for (type of venueState.$filterOptions(); track type.slug) {
               <a [routerLink]="['venues']" [queryParams]="{type: type.slug}" class="type-card">
                 <span class="type-icon">{{ type.icon }}</span>
                 <span class="type-label">{{ type.label }}</span>
@@ -52,16 +52,16 @@ import {VenueStateService} from "@core/services/venue-state.service";
       <!-- SEO Content -->
       <section class="seo-content">
         <div class="container">
-          <h2>{{ venueState.cityName() }} Live Music Scene</h2>
+          <h2>{{ venueState.$cityName() }} Live Music Scene</h2>
           <p>
-            {{ venueState.cityName() }} offers an incredible variety of live music venues, from world-class concert halls 
+            {{ venueState.$cityName() }} offers an incredible variety of live music venues, from world-class concert halls 
             to intimate neighborhood bars. Whether you're looking for rock concerts, jazz performances, electronic music, 
-            or acoustic sets, {{ venueState.cityName() }} has something for every music lover.
+            or acoustic sets, {{ venueState.$cityName() }} has something for every music lover.
           </p>
           
-          <h3>Popular Music Venues in {{ venueState.cityName() }}</h3>
+          <h3>Popular Music Venues in {{ venueState.$cityName() }}</h3>
           <p>
-            The {{ venueState.cityName() }} music scene features everything from historic theaters to cutting-edge clubs. 
+            The {{ venueState.$cityName() }} music scene features everything from historic theaters to cutting-edge clubs. 
             Live music happens every night of the week, with local bands and touring artists performing across the city.
           </p>
         </div>

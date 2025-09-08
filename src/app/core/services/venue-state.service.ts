@@ -39,15 +39,15 @@ export class VenueStateService {
   private loading = signal<boolean>(false);
 
   // Computed signals for route-derived state
-  readonly citySlug = this.routerState.citySlug;
-  readonly searchQuery = this.routerState.searchQuery;
-  readonly selectedFilter = this.routerState.filterType;
+  readonly $citySlug = this.routerState.$citySlug;
+  readonly $searchQuery = this.routerState.$searchQuery;
+  readonly $selectedFilter = this.routerState.$filterType;
 
   // Computed signals for derived state
-  readonly venues = computed(() => {
+  readonly $venues = computed(() => {
     const venues = this.allVenues();
-    const search = this.searchQuery().toLowerCase().trim();
-    const filter = this.selectedFilter();
+    const search = this.$searchQuery().toLowerCase().trim();
+    const filter = this.$selectedFilter();
 
     let filtered = [...venues];
 
@@ -71,7 +71,12 @@ export class VenueStateService {
     return filtered;
   });
 
-  readonly filterOptions = computed<FilterOption[]>(() =>
+  readonly $featuredVenues = computed(() => {
+    const venues = this.allVenues();
+    return venues.slice(0, 3);
+  });
+
+  readonly $filterOptions = computed<FilterOption[]>(() =>
     this.venueTypes().map(type => ({
       slug: type.slug,
       label: type.label,
@@ -79,13 +84,13 @@ export class VenueStateService {
     }))
   );
 
-  readonly cityName = computed(() => this.currentCity()?.name ?? '');
-  readonly cityEmoji = computed(() => this.currentCity()?.emoji ?? '🏙️');
-  readonly venueCount = computed(() => this.venues().length);
-  readonly totalVenueCount = computed(() => this.totalCount());
+  readonly $cityName = computed(() => this.currentCity()?.name ?? '');
+  readonly $cityEmoji = computed(() => this.currentCity()?.emoji ?? '🏙️');
+  readonly $venueCount = computed(() => this.$venues().length);
+  readonly $totalVenueCount = computed(() => this.totalCount());
 
   // Expose read-only state
-  readonly isLoading = this.loading.asReadonly();
+  readonly $isLoading = this.loading.asReadonly();
 
   constructor(
     private venueService: VenueService,
@@ -107,7 +112,7 @@ export class VenueStateService {
   private initializeRouteEffects(): void {
     // React to city changes
     effect(() => {
-      const citySlug = this.citySlug();
+      const citySlug = this.$citySlug();
       if (citySlug) {
         this.loadCityData(citySlug);
       } else {
@@ -118,9 +123,9 @@ export class VenueStateService {
     // React to any route changes that should trigger venue reload
     effect(() => {
       // These dependencies will trigger the effect
-      const citySlug = this.citySlug();
-      const searchQuery = this.searchQuery();
-      const selectedFilter = this.selectedFilter();
+      const citySlug = this.$citySlug();
+      const searchQuery = this.$searchQuery();
+      const selectedFilter = this.$selectedFilter();
 
       // Reset pagination and load venues
       this.currentPage.set(0);
@@ -166,28 +171,20 @@ export class VenueStateService {
 
     const offset = this.currentPage() * this.pageSize();
     const limit = this.pageSize();
+    const citySlug = this.$citySlug(); // Get current city from router
 
-    this.venueService.getVenues(limit, offset)
+    // Handle the special "all" case for country-wide venues
+    const city = citySlug === 'all' ? undefined : citySlug;
+
+    this.venueService.getVenues(limit, offset, city) // Pass the city parameter
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response: VenuesResponse) => {
-          if (replace) {
-            this.allVenues.set(response.venues);
-          } else {
-            // Append for pagination
-            this.allVenues.update(current => [...current, ...response.venues]);
-          }
-          this.totalCount.set(response.totalCount);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.loading.set(false);
-        }
+        // ... rest of your existing logic
       });
   }
 
   private updateUrl(updates: Record<string, string | null>): void {
-    const currentParams = this.routerState.queryParams();
+    const currentParams = this.routerState.$queryParams();
     const queryParams: any = { ...currentParams };
 
     // Apply updates
@@ -199,12 +196,23 @@ export class VenueStateService {
       }
     });
 
-    const city = this.citySlug();
-    const url = city ? [city, 'venues'] : ['/venues'];
+    // Build the correct URL based on current context
+    const countryCode = this.routerState.$countryCode();
+    const citySlug = this.$citySlug();
+
+    let url: string[];
+    if (countryCode && citySlug) {
+      url = [countryCode, citySlug, 'venues'];  // /nl/utrecht/venues
+    } else if (countryCode) {
+      url = [countryCode, 'venues'];            // /nl/venues (if you have this route)
+    } else {
+      url = ['/venues'];                        // /venues
+    }
 
     this.router.navigate(url, {
       queryParams,
       replaceUrl: true
     });
   }
+
 }

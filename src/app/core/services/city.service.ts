@@ -87,4 +87,10 @@ export class CityService {
   setCities(cities: City[]): void {
     this.citiesSubject.next(cities);
   }
+
+  validateCountryCity(country: any, city: any) {
+    return country === 'nl' && ['amersfoort', 'utrecht'].includes(city.toLowerCase());
+  }
+
+
 }

@@ -6,7 +6,6 @@ import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import {Venue} from "@core/models/venue.model";
 
-
 export interface VenuesResponse {
   venues: Venue[];
   totalCount: number;
@@ -43,6 +42,44 @@ const GET_VENUES = gql`
      updated_at
    }
    venues_aggregate {
+     aggregate {
+       count
+     }
+   }
+ }
+`;
+
+const GET_VENUES_BY_CITY = gql`
+ query GetVenuesByCity($limit: Int, $offset: Int, $city: String!) {
+   venues(limit: $limit, offset: $offset, where: { city: { _eq: $city } }, order_by: {name: asc}) {
+     id
+     name
+     keywords
+     province
+     city
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     primary_type
+     venue_types
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+   venues_aggregate(where: { city: { _eq: $city } }) {
      aggregate {
        count
      }
@@ -87,13 +124,17 @@ const GET_VENUE_BY_ID = gql`
 export class VenueService {
   constructor(private apollo: Apollo) {}
 
-  getVenues(limit: number = 20, offset: number = 0): Observable<VenuesResponse> {
+  getVenues(limit: number = 20, offset: number = 0, city?: string): Observable<VenuesResponse> {
+    debugger;
+    const query = city ? GET_VENUES_BY_CITY : GET_VENUES;
+    const variables = city ? { limit, offset, city } : { limit, offset };
+
     return this.apollo.query<{
       venues: Venue[];
       venues_aggregate: { aggregate: { count: number } };
     }>({
-      query: GET_VENUES,
-      variables: { limit, offset },
+      query,
+      variables,
       errorPolicy: 'ignore',
       fetchPolicy: 'no-cache',
       notifyOnNetworkStatusChange: false
@@ -118,7 +159,6 @@ export class VenueService {
     );
   }
 
-// Add this method to your existing VenueService
   getFeaturedVenues(citySlug?: string, limit: number = 3): Observable<Venue[]> {
     // Hard-coded featured venues for now
     const featuredVenues: Venue[] = [
@@ -171,15 +211,12 @@ export class VenueService {
 
     let venues = featuredVenues;
 
-    // Filter by city if provided
     if (citySlug) {
       venues = venues.filter(v => v.city === citySlug);
     }
 
-    // Apply limit
     venues = venues.slice(0, limit);
 
     return of(venues);
   }
-
 }

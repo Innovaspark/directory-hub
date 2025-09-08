@@ -1,7 +1,8 @@
+@use "tailwindcss";
+
 @use 'styles/buttons';
 @use 'styles/cards';
-
-@import "tailwindcss";
+@use 'styles/layouts';
 
 
 @theme {
