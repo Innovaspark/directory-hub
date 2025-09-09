@@ -9,7 +9,7 @@ import { TenantService } from './tenant.service';
 import { Venue } from '../models/venue.model';
 import { City } from '../models/city.model';
 import { VenueType } from '../models/venue-type.model';
-import {VenueService, VenuesResponse} from "@core/services/venue.service";
+import { VenueService, VenuesResponse } from "@core/services/venue.service";
 
 export interface FilterOption {
   slug: string;
@@ -40,6 +40,7 @@ export class VenueStateService {
 
   // Computed signals for route-derived state
   readonly $citySlug = this.routerState.$citySlug;
+  readonly $countryCode = this.routerState.$countryCode;
   readonly $searchQuery = this.routerState.$searchQuery;
   readonly $selectedFilter = this.routerState.$filterType;
 
@@ -51,12 +52,13 @@ export class VenueStateService {
 
     let filtered = [...venues];
 
-    // Apply search filter
+    // Apply search filter - Updated to handle cityByCityId structure
     if (search) {
       filtered = filtered.filter(venue =>
         venue.name?.toLowerCase().includes(search) ||
         venue.keywords?.toLowerCase().includes(search) ||
-        venue.full_address?.toLowerCase().includes(search)
+        venue.full_address?.toLowerCase().includes(search) ||
+        venue.cityByCityId?.name?.toLowerCase().includes(search)
       );
     }
 
@@ -73,7 +75,21 @@ export class VenueStateService {
 
   readonly $featuredVenues = computed(() => {
     const venues = this.allVenues();
-    return venues.slice(0, 3);
+    const countryCode = this.$countryCode();
+    const citySlug = this.$citySlug();
+
+    let filtered = venues;
+
+    // Filter by city if we're on a city page
+    if (citySlug && citySlug !== 'all') {
+      filtered = filtered.filter(v => v.cityByCityId?.slug === citySlug);
+    }
+    // Otherwise filter by country - FIXED: Now properly accesses country.code
+    else if (countryCode) {
+      filtered = filtered.filter(v => v.cityByCityId?.country?.code === countryCode);
+    }
+
+    return filtered.slice(0, 3);
   });
 
   readonly $filterOptions = computed<FilterOption[]>(() =>
@@ -99,6 +115,7 @@ export class VenueStateService {
   ) {
     this.initializeVenueTypes();
     this.initializeRouteEffects();
+    this.loadInitialVenues();
   }
 
   private initializeVenueTypes(): void {
@@ -157,6 +174,12 @@ export class VenueStateService {
     this.loadVenues(true); // true = replace existing venues
   }
 
+  loadInitialVenues(): void {
+    if (this.allVenues().length === 0) {
+      this.loadVenues(true);
+    }
+  }
+
   // Private methods
   private loadCityData(citySlug: string): void {
     this.cityService.getCityBySlug(citySlug)
@@ -171,15 +194,29 @@ export class VenueStateService {
 
     const offset = this.currentPage() * this.pageSize();
     const limit = this.pageSize();
-    const citySlug = this.$citySlug(); // Get current city from router
+    const citySlug = this.$citySlug();
+    const countryCode = this.$countryCode();
 
-    // Handle the special "all" case for country-wide venues
-    const city = citySlug === 'all' ? undefined : citySlug;
+    // FIXED: Handle the 'all' case properly for country-wide venues
+    const actualCitySlug = citySlug === 'all' ? undefined : citySlug;
 
-    this.venueService.getVenues(limit, offset, city) // Pass the city parameter
+    this.venueService.getVenues(limit, offset, actualCitySlug, countryCode)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        // ... rest of your existing logic
+        next: (response: VenuesResponse) => {
+          if (replace) {
+            this.allVenues.set(response.venues);
+          } else {
+            // Append for pagination
+            this.allVenues.update(current => [...current, ...response.venues]);
+          }
+          this.totalCount.set(response.totalCount);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading venues:', error);
+          this.loading.set(false);
+        }
       });
   }
 
@@ -197,22 +234,58 @@ export class VenueStateService {
     });
 
     // Build the correct URL based on current context
-    const countryCode = this.routerState.$countryCode();
+    const countryCode = this.$countryCode();
     const citySlug = this.$citySlug();
 
     let url: string[];
     if (countryCode && citySlug) {
       url = [countryCode, citySlug, 'venues'];  // /nl/utrecht/venues
     } else if (countryCode) {
-      url = [countryCode, 'venues'];            // /nl/venues (if you have this route)
+      url = [countryCode, 'all', 'venues'];     // /nl/all/venues
     } else {
-      url = ['/venues'];                        // /venues
+      // No global venues anymore - redirect to home
+      url = ['/'];
     }
 
     this.router.navigate(url, {
       queryParams,
       replaceUrl: true
     });
+  }
+
+// Add these signals to your existing service
+  private citySearchTerm = signal<string>('');
+  private citySuggestions = signal<City[]>([]);
+
+// Add these computed signals
+  readonly $citySearchTerm = this.citySearchTerm.asReadonly();
+  readonly $citySuggestions = this.citySuggestions.asReadonly();
+
+// Add city search methods
+  setCitySearchTerm(term: string): void {
+    this.citySearchTerm.set(term);
+
+    if (term.length >= 2) {
+      const countryCode = this.$countryCode();
+
+      this.cityService.searchCities(term, countryCode, 10)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(cities => {
+          this.citySuggestions.set(cities);
+        });
+    } else {
+      this.citySuggestions.set([]);
+    }
+  }
+
+  selectCity(city: City): void {
+    this.router.navigate([city.country?.code, city.slug, 'venues']);
+    this.clearCitySearch();
+  }
+
+  clearCitySearch(): void {
+    this.citySearchTerm.set('');
+    this.citySuggestions.set([]);
   }
 
 }

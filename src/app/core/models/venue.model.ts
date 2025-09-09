@@ -1,9 +1,12 @@
+import {City} from "@core/models/city.model";
+
 export interface Venue {
   id: string;
   name: string;
   keywords?: string;
   province?: string;
   city?: string;
+  cityByCityId?: City; // Add the relationship
   full_address?: string;
   street?: string;
   postal_code?: string;
@@ -26,3 +29,4 @@ export interface Venue {
   created_at?: string;
   updated_at?: string;
 }
+

@@ -18,7 +18,16 @@ const GET_VENUES = gql`
      name
      keywords
      province
-     city
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
      full_address
      street
      postal_code
@@ -50,13 +59,27 @@ const GET_VENUES = gql`
 `;
 
 const GET_VENUES_BY_CITY = gql`
- query GetVenuesByCity($limit: Int, $offset: Int, $city: String!) {
-   venues(limit: $limit, offset: $offset, where: { city: { _eq: $city } }, order_by: {name: asc}) {
+ query GetVenuesByCity($limit: Int, $offset: Int, $citySlug: String!) {
+   venues(
+     limit: $limit, 
+     offset: $offset, 
+     where: { cityByCityId: { slug: { _eq: $citySlug } } },
+     order_by: {name: asc}
+   ) {
      id
      name
      keywords
      province
-     city
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
      full_address
      street
      postal_code
@@ -79,7 +102,59 @@ const GET_VENUES_BY_CITY = gql`
      created_at
      updated_at
    }
-   venues_aggregate(where: { city: { _eq: $city } }) {
+   venues_aggregate(where: { cityByCityId: { slug: { _eq: $citySlug } } }) {
+     aggregate {
+       count
+     }
+   }
+ }
+`;
+
+const GET_VENUES_BY_COUNTRY = gql`
+ query GetVenuesByCountry($limit: Int, $offset: Int, $countryCode: String!) {
+   venues(
+     limit: $limit, 
+     offset: $offset, 
+     where: { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+     order_by: {name: asc}
+   ) {
+     id
+     name
+     keywords
+     province
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     primary_type
+     venue_types
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+   venues_aggregate(where: { cityByCityId: { country: { code: { _eq: $countryCode } } } }) {
      aggregate {
        count
      }
@@ -94,7 +169,16 @@ const GET_VENUE_BY_ID = gql`
      name
      keywords
      province
-     city
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
      full_address
      street
      postal_code
@@ -124,10 +208,17 @@ const GET_VENUE_BY_ID = gql`
 export class VenueService {
   constructor(private apollo: Apollo) {}
 
-  getVenues(limit: number = 20, offset: number = 0, city?: string): Observable<VenuesResponse> {
-    debugger;
-    const query = city ? GET_VENUES_BY_CITY : GET_VENUES;
-    const variables = city ? { limit, offset, city } : { limit, offset };
+  getVenues(limit: number = 20, offset: number = 0, citySlug?: string, countryCode?: string): Observable<VenuesResponse> {
+    let query = GET_VENUES;
+    let variables: any = { limit, offset };
+
+    if (citySlug && citySlug !== 'all') {
+      query = GET_VENUES_BY_CITY;
+      variables.citySlug = citySlug;
+    } else if (countryCode) {
+      query = GET_VENUES_BY_COUNTRY;
+      variables.countryCode = countryCode;
+    }
 
     return this.apollo.query<{
       venues: Venue[];
@@ -160,63 +251,9 @@ export class VenueService {
   }
 
   getFeaturedVenues(citySlug?: string, limit: number = 3): Observable<Venue[]> {
-    // Hard-coded featured venues for now
-    const featuredVenues: Venue[] = [
-      {
-        id: 'metro-chicago-001',
-        name: 'Metro Chicago',
-        city: 'chicago',
-        state: 'IL',
-        full_address: '3730 N Clark St, Chicago, IL 60613',
-        street: '3730 N Clark St',
-        rating: 4.2,
-        review_count: 1250,
-        review_summary: 'Historic music venue in Wrigleyville hosting indie, alternative, and electronic acts.',
-        primary_type: 'music_venue',
-        venue_types: 'club,music_venue,nightlife',
-        keywords: 'indie rock,alternative,electronic,live music',
-        business_status: 'OPERATIONAL'
-      },
-      {
-        id: 'chicago-theatre-001',
-        name: 'Chicago Theatre',
-        city: 'chicago',
-        state: 'IL',
-        full_address: '175 N State St, Chicago, IL 60601',
-        street: '175 N State St',
-        rating: 4.5,
-        review_count: 2847,
-        review_summary: 'Iconic downtown theater hosting major touring acts and comedy shows.',
-        primary_type: 'theater',
-        venue_types: 'theater,performing_arts,entertainment',
-        keywords: 'theater,comedy,concerts,live shows',
-        business_status: 'OPERATIONAL'
-      },
-      {
-        id: 'green-mill-001',
-        name: 'Green Mill Cocktail Lounge',
-        city: 'chicago',
-        state: 'IL',
-        full_address: '4802 N Broadway, Chicago, IL 60640',
-        street: '4802 N Broadway',
-        rating: 4.3,
-        review_count: 892,
-        review_summary: 'Historic jazz club operating since 1907, featuring live jazz every night.',
-        primary_type: 'jazz_club',
-        venue_types: 'jazz_club,bar,nightlife',
-        keywords: 'jazz,blues,cocktails,historic',
-        business_status: 'OPERATIONAL'
-      }
-    ];
-
-    let venues = featuredVenues;
-
-    if (citySlug) {
-      venues = venues.filter(v => v.city === citySlug);
-    }
-
-    venues = venues.slice(0, limit);
-
-    return of(venues);
+    // This will use the same filtering logic as getVenues
+    return this.getVenues(limit, 0, citySlug).pipe(
+      map(response => response.venues)
+    );
   }
 }

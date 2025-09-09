@@ -141,7 +141,11 @@ export class CountryCitiesComponent {
   readonly $currentCountry = this.locationService.$currentCountry;
   readonly $citiesInCountry = this.locationService.$citiesInCurrentCountry;
 
-  navigateToCity(citySlug: string): void {
+  navigateToCity(citySlug: string | undefined): void {
+    if (!citySlug) {
+      alert('no such city!');
+      return;
+    }
     const country = this.$currentCountry();
     if (country) {
       this.navigationService.navigateToCity(country.code, citySlug);
