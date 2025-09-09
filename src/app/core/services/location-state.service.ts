@@ -29,6 +29,7 @@ export class LocationStateService {
   private cities = signal<City[]>([]);
 
   readonly $currentCountryCode = this.routerState.$countryCode;
+  readonly $allCountries = computed(() => this.countries());
 
   readonly $currentCountry = computed(() => {
     const countryCode = this.$currentCountryCode();
