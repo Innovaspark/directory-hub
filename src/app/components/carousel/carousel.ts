@@ -147,39 +147,24 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
     setTimeout(() => {
       // Approach 1: ViewChild
       if (this.scrollContainer?.nativeElement) {
-        console.log('ViewChild approach worked');
         this.checkScrollability(this.scrollContainer.nativeElement);
       } else {
         // Approach 2: Direct query
         const element = document.querySelector('.carousel-track') as HTMLElement;
         if (element) {
-          console.log('querySelector approach worked');
           this.checkScrollability(element);
         } else {
-          console.error('Could not find carousel track element');
         }
       }
     }, 200);
   }
 
   private checkScrollability(element: HTMLElement) {
-    console.log('Element:', element);
-    console.log('Element style:', element.style);
-    console.log('Element computed style width:', getComputedStyle(element).width);
-    console.log('Element offsetWidth:', element.offsetWidth);
-    console.log('Element scrollWidth:', element.scrollWidth);
-    console.log('Element clientWidth:', element.clientWidth);
-    console.log('Children count:', element.children.length);
-    console.log('First child:', element.children[0]);
 
     // Try getting the scrollable content
     const content = element.querySelector('.carousel-content') as HTMLElement;
     if (content) {
-      console.log('Content element found');
-      console.log('Content offsetWidth:', content.offsetWidth);
-      console.log('Content scrollWidth:', content.scrollWidth);
     } else {
-      console.log('Content element NOT found');
     }
 
     this.updateScrollButtons();
