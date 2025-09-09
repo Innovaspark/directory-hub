@@ -7,7 +7,7 @@ import {PopularCountriesComponent} from "@components/popular-countries/popular-c
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FeaturedVenuesComponent, HeroSectionComponent, PopularCountriesComponent],
+  imports: [HeroSectionComponent, PopularCountriesComponent],
   template: `
       <div class="home">
           <app-hero-section></app-hero-section>

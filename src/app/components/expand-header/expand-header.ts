@@ -1,11 +1,14 @@
 // expand-header.ts
-import { Component, OnInit, OnDestroy, HostListener, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
+import {Component, OnInit, OnDestroy, HostListener, ElementRef, Inject, PLATFORM_ID, inject} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {RouterLink} from "@angular/router";
+import {NavigationService} from "@core/services/navigation.service";
+import {RouterStateService} from "@core/services/router-state.service";
 
 @Component({
   selector: 'app-expand-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <header 
       class="header" 
@@ -13,23 +16,26 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
       [class.scrolled]="isScrolled">
       <div class="header-content">
           <div class="logo">
+              <a [routerLink]="'/'">
               <img src="/images/logos/main-logo.svg"
                    alt="GigaWhat.live"
                    class="logo-img"
                    [class.logo-small]="isContracted">
+              </a>
           </div>
         <nav class="nav">
-          <ul class="nav-list">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
+<!--          <ul class="nav-list">-->
+<!--            <li><a [routerLink]="'/'">Home</a></li>-->
+<!--          </ul>-->
         </nav>
         <div class="header-actions">
-          <button class="btn-primary" [class.btn-small]="isContracted">
+            @if($isOnHomePage()) {
+          <button class="btn-primary" [class.btn-small]="isContracted"
+                  (click)="getStarted()"
+          >
             Get Started
           </button>
+          }
         </div>
       </div>
     </header>
@@ -188,10 +194,13 @@ export class ExpandHeader implements OnInit, OnDestroy {
 
   private scrollThreshold = 50;
   private contractThreshold = 100;
+  private routerStateService = inject(RouterStateService);
+  $isOnHomePage = this.routerStateService.$isHomePage;
 
   constructor(
     private elementRef: ElementRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private navigationService: NavigationService,
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -230,29 +239,8 @@ export class ExpandHeader implements OnInit, OnDestroy {
     // Contract header when scrolled past threshold
     this.isContracted = scrollY > this.contractThreshold;
   }
+
+  getStarted() {
+    this.navigationService.navigateToCountry('nl');
+  }
 }
-
-// Usage in your main component template:
-// First import the component:
-// import { ExpandHeader } from './expand-header';
-//
-// Then add it to your standalone component's imports array:
-// @Component({
-//   selector: 'app-root',
-//   standalone: true,
-//   imports: [ExpandHeader],
-//   template: `
-//     <app-expand-header></app-expand-header>
-//     <main style="margin-top: 80px;">
-//       <!-- Your content -->
-//     </main>
-//   `
-// })
-// export class AppComponent { }
-
-// Or use directly:
-// <app-expand-header></app-expand-header>
-// <main style="margin-top: 80px;">
-//   <!-- Your page content here -->
-//   <!-- Add enough content to test scrolling -->
-// </main>

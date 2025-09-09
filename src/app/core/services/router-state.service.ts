@@ -34,6 +34,7 @@ export class RouterStateService {
   readonly $citySlug = computed(() => this.$params()['city'] || null);
   readonly $searchQuery = computed(() => this.$queryParams()['q'] || '');
   readonly $filterType = computed(() => this.$queryParams()['type'] || null);
+  readonly $isHomePage = computed(() => this.$url() === '/' || this.$url() === '');
 
   constructor() {
     this.initializeRouteListening();
