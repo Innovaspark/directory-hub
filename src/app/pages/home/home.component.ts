@@ -13,7 +13,6 @@ import {SearchBarComponent} from "@components/search-bar/search-bar";
   template: `
       <div class="home">
           <app-search-bar></app-search-bar>
-          <app-search></app-search>
           <app-hero-section></app-hero-section>
           <app-popular-countries></app-popular-countries>
       </div>

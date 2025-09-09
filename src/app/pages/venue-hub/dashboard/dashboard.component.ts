@@ -5,10 +5,11 @@ import {ScrollToTop} from "@components/scroll-to-top/scroll-to-top";
 import {VenuesDumpComponent} from "@components/venues-dump/venues-dump";
 import {FilterOption, VenueStateService} from "@core/services/venue-state.service";
 import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
+import {SearchBarComponent} from "@components/search-bar/search-bar";
 
 @Component({
   selector: 'app-venue-hub',
-  imports: [CommonModule, VenueListComponent, VenueFiltersComponent, ScrollToTop, VenuesDumpComponent],
+  imports: [CommonModule, VenueListComponent, VenueFiltersComponent, ScrollToTop, VenuesDumpComponent, SearchBarComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {

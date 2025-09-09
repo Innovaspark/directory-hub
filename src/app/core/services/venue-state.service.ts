@@ -27,9 +27,13 @@ export class VenueStateService {
 
   // Raw data signals
   private allVenues = signal<Venue[]>([]);
+  private searchResults = signal<Venue[]>([]);
   private totalCount = signal<number>(0);
   private currentCity = signal<City | null>(null);
   private venueTypes = signal<VenueType[]>([]);
+
+  // Search state
+  private searchTerm = signal<string>('');
 
   // Pagination state
   private currentPage = signal<number>(0);
@@ -44,33 +48,27 @@ export class VenueStateService {
   readonly $searchQuery = this.routerState.$searchQuery;
   readonly $selectedFilter = this.routerState.$filterType;
 
-  // Computed signals for derived state
+  // Search state accessors
+  readonly $searchTerm = this.searchTerm.asReadonly();
+  readonly $isSearchActive = computed(() => this.searchTerm().trim().length > 0);
+
+  // Main venues computed signal - handles both browse and search
   readonly $venues = computed(() => {
-    const venues = this.allVenues();
-    const search = this.$searchQuery().toLowerCase().trim();
+    const search = this.searchTerm().trim();
     const filter = this.$selectedFilter();
 
-    let filtered = [...venues];
-
-    // Apply search filter - Updated to handle cityByCityId structure
-    if (search) {
-      filtered = filtered.filter(venue =>
-        venue.name?.toLowerCase().includes(search) ||
-        venue.keywords?.toLowerCase().includes(search) ||
-        venue.full_address?.toLowerCase().includes(search) ||
-        venue.cityByCityId?.name?.toLowerCase().includes(search)
-      );
-    }
+    // Choose data source based on search state
+    let venues = search ? this.searchResults() : this.allVenues();
 
     // Apply type filter
     if (filter) {
-      filtered = filtered.filter(venue =>
+      venues = venues.filter(venue =>
         venue.primary_type === filter ||
         venue.venue_types?.includes(filter)
       );
     }
 
-    return filtered;
+    return venues;
   });
 
   readonly $featuredVenues = computed(() => {
@@ -84,7 +82,7 @@ export class VenueStateService {
     if (citySlug && citySlug !== 'all') {
       filtered = filtered.filter(v => v.cityByCityId?.slug === citySlug);
     }
-    // Otherwise filter by country - FIXED: Now properly accesses country.code
+    // Otherwise filter by country
     else if (countryCode) {
       filtered = filtered.filter(v => v.cityByCityId?.country?.code === countryCode);
     }
@@ -107,6 +105,13 @@ export class VenueStateService {
 
   // Expose read-only state
   readonly $isLoading = this.loading.asReadonly();
+
+  // City search state
+  private citySearchTerm = signal<string>('');
+  private citySuggestions = signal<City[]>([]);
+
+  readonly $citySearchTerm = this.citySearchTerm.asReadonly();
+  readonly $citySuggestions = this.citySuggestions.asReadonly();
 
   constructor(
     private venueService: VenueService,
@@ -137,24 +142,43 @@ export class VenueStateService {
       }
     });
 
-    // React to any route changes that should trigger venue reload
+    // React to route search query changes
     effect(() => {
-      // These dependencies will trigger the effect
+      const routeSearchQuery = this.$searchQuery();
+      this.searchTerm.set(routeSearchQuery);
+    });
+
+    // React to search term and route changes
+    effect(() => {
       const citySlug = this.$citySlug();
-      const searchQuery = this.$searchQuery();
+      const searchTerm = this.searchTerm();
       const selectedFilter = this.$selectedFilter();
 
-      // Reset pagination and load venues
+      // Reset pagination
       this.currentPage.set(0);
-      this.loadVenues();
+
+      // Load appropriate data
+      if (searchTerm.trim()) {
+        this.performSearch(searchTerm, citySlug);
+      } else {
+        this.loadVenues();
+      }
     });
   }
 
-  // Public actions
-  setSearchQuery(query: string): void {
-    this.updateUrl({ q: query });
+  // Public search actions
+  setSearchTerm(term: string): void {
+    this.searchTerm.set(term);
+    this.updateUrl({ q: term || null });
   }
 
+  clearSearch(): void {
+    this.searchTerm.set('');
+    this.searchResults.set([]);
+    this.updateUrl({ q: null });
+  }
+
+  // Public filter actions
   setFilter(filter: string | null): void {
     this.updateUrl({ type: filter });
   }
@@ -163,15 +187,27 @@ export class VenueStateService {
     this.updateUrl({ q: null, type: null });
   }
 
+  // Public venue actions
   loadMoreVenues(): void {
     const nextPage = this.currentPage() + 1;
     this.currentPage.set(nextPage);
-    this.loadVenues(false); // false = append to existing venues
+
+    const searchTerm = this.searchTerm().trim();
+    if (searchTerm) {
+      this.performSearch(searchTerm, this.$citySlug(), false);
+    } else {
+      this.loadVenues(false);
+    }
   }
 
   refreshVenues(): void {
     this.currentPage.set(0);
-    this.loadVenues(true); // true = replace existing venues
+    const searchTerm = this.searchTerm().trim();
+    if (searchTerm) {
+      this.performSearch(searchTerm, this.$citySlug(), true);
+    } else {
+      this.loadVenues(true);
+    }
   }
 
   loadInitialVenues(): void {
@@ -180,88 +216,7 @@ export class VenueStateService {
     }
   }
 
-  // Private methods
-  private loadCityData(citySlug: string): void {
-    this.cityService.getCityBySlug(citySlug)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(city => {
-        this.currentCity.set(city);
-      });
-  }
-
-  private loadVenues(replace: boolean = true): void {
-    this.loading.set(true);
-
-    const offset = this.currentPage() * this.pageSize();
-    const limit = this.pageSize();
-    const citySlug = this.$citySlug();
-    const countryCode = this.$countryCode();
-
-    // FIXED: Handle the 'all' case properly for country-wide venues
-    const actualCitySlug = citySlug === 'all' ? undefined : citySlug;
-
-    this.venueService.getVenues(limit, offset, actualCitySlug, countryCode)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (response: VenuesResponse) => {
-          if (replace) {
-            this.allVenues.set(response.venues);
-          } else {
-            // Append for pagination
-            this.allVenues.update(current => [...current, ...response.venues]);
-          }
-          this.totalCount.set(response.totalCount);
-          this.loading.set(false);
-        },
-        error: (error) => {
-          console.error('Error loading venues:', error);
-          this.loading.set(false);
-        }
-      });
-  }
-
-  private updateUrl(updates: Record<string, string | null>): void {
-    const currentParams = this.routerState.$queryParams();
-    const queryParams: any = { ...currentParams };
-
-    // Apply updates
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === '') {
-        delete queryParams[key];
-      } else {
-        queryParams[key] = value;
-      }
-    });
-
-    // Build the correct URL based on current context
-    const countryCode = this.$countryCode();
-    const citySlug = this.$citySlug();
-
-    let url: string[];
-    if (countryCode && citySlug) {
-      url = [countryCode, citySlug, 'venues'];  // /nl/utrecht/venues
-    } else if (countryCode) {
-      url = [countryCode, 'all', 'venues'];     // /nl/all/venues
-    } else {
-      // No global venues anymore - redirect to home
-      url = ['/'];
-    }
-
-    this.router.navigate(url, {
-      queryParams,
-      replaceUrl: true
-    });
-  }
-
-// Add these signals to your existing service
-  private citySearchTerm = signal<string>('');
-  private citySuggestions = signal<City[]>([]);
-
-// Add these computed signals
-  readonly $citySearchTerm = this.citySearchTerm.asReadonly();
-  readonly $citySuggestions = this.citySuggestions.asReadonly();
-
-// Add city search methods
+  // City search methods
   setCitySearchTerm(term: string): void {
     this.citySearchTerm.set(term);
 
@@ -288,4 +243,130 @@ export class VenueStateService {
     this.citySuggestions.set([]);
   }
 
+  // Private methods
+  private loadCityData(citySlug: string): void {
+    this.cityService.getCityBySlug(citySlug)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(city => {
+        this.currentCity.set(city);
+      });
+  }
+
+  private loadVenues(replace: boolean = true): void {
+    this.loading.set(true);
+
+    const offset = this.currentPage() * this.pageSize();
+    const limit = this.pageSize();
+    const citySlug = this.$citySlug();
+    const countryCode = this.$countryCode();
+
+    const actualCitySlug = citySlug === 'all' ? undefined : citySlug;
+
+    this.venueService.getVenues(limit, offset, actualCitySlug, countryCode)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: VenuesResponse) => {
+          if (replace) {
+            this.allVenues.set(response.venues);
+          } else {
+            this.allVenues.update(current => [...current, ...response.venues]);
+          }
+          this.totalCount.set(response.totalCount);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading venues:', error);
+          this.loading.set(false);
+        }
+      });
+  }
+
+  private performSearch(searchTerm: string, citySlug: string | null, replace: boolean = true): void {
+    this.loading.set(true);
+
+    const offset = this.currentPage() * this.pageSize();
+    const limit = this.pageSize();
+
+    // If citySlug is 'all' or null, search across all venues for the country
+    if (!citySlug || citySlug === 'all') {
+      const countryCode = this.$countryCode();
+
+      if (!countryCode) {
+        console.warn('Cannot search without country context');
+        this.loading.set(false);
+        return;
+      }
+
+      // Use server-side country-wide search
+      this.venueService.searchVenuesByCountryAndKeywords(countryCode, searchTerm, limit, offset)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (response: VenuesResponse) => {
+            if (replace) {
+              this.searchResults.set(response.venues);
+            } else {
+              this.searchResults.update(current => [...current, ...response.venues]);
+            }
+            this.totalCount.set(response.totalCount);
+            this.loading.set(false);
+          },
+          error: (error) => {
+            console.error('Error searching venues by country:', error);
+            this.loading.set(false);
+          }
+        });
+      return;
+    }
+
+    // City-specific search using the existing API method
+    this.venueService.searchVenuesByCityNameAndKeywords(citySlug, searchTerm, limit, offset)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: VenuesResponse) => {
+          if (replace) {
+            this.searchResults.set(response.venues);
+          } else {
+            this.searchResults.update(current => [...current, ...response.venues]);
+          }
+          this.totalCount.set(response.totalCount);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error searching venues by city:', error);
+          this.loading.set(false);
+        }
+      });
+  }
+
+  private updateUrl(updates: Record<string, string | null>): void {
+    const currentParams = this.routerState.$queryParams();
+    const queryParams: any = { ...currentParams };
+
+    // Apply updates
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === '') {
+        delete queryParams[key];
+      } else {
+        queryParams[key] = value;
+      }
+    });
+
+    // Build the correct URL based on current context
+    const countryCode = this.$countryCode();
+    const citySlug = this.$citySlug();
+
+    let url: string[];
+    if (countryCode && citySlug) {
+      url = [countryCode, citySlug, 'venues'];
+    } else if (countryCode) {
+      url = [countryCode, 'all', 'venues'];
+    } else {
+      url = ['/'];
+    }
+
+    this.router.navigate(url, {
+      queryParams,
+      replaceUrl: true
+    });
+  }
 }

@@ -190,12 +190,12 @@ export class VenueFiltersComponent {
   };
 
   onSearchSubmit() {
-    this.venueState.setSearchQuery(this.localSearchQuery);
+    this.venueState.setSearchTerm(this.localSearchQuery);
   }
 
   clearSearch() {
     this.localSearchQuery = '';
-    this.venueState.setSearchQuery('');
+    this.venueState.setSearchTerm('');
   }
 
 }

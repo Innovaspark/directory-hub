@@ -1,124 +1,152 @@
-// invalid-city.component.ts
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-invalid-city',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="invalid-city">
-      <div class="container">
-        <div class="content">
-          <h1>{{ cityName }} Not Available Yet</h1>
-          <p>We don't have venue listings for {{ cityName }} in {{ countryName }} yet, but we're expanding!</p>
-          
-          <div class="suggestions">
-            <h3>Try these nearby cities instead:</h3>
-            <div class="city-links">
-              <a [routerLink]="['/nl', 'amsterdam']" class="city-link">🏙️ Amsterdam</a>
-              <a [routerLink]="['/nl', 'utrecht']" class="city-link">🌿 Utrecht</a>
-              <a [routerLink]="['/nl', 'amersfoort']" class="city-link">⭐ Amersfoort</a>
-            </div>
-          </div>
+      <div class="invalid-city">
+          <div class="container">
+              <div class="header">
+                  <h1>This city isn't available yet</h1>
+                  <p class="subtitle">We're working on expanding to more cities in {{ countryName }}</p>
+              </div>
 
-          <div class="actions">
-            <a [routerLink]="['/']" class="btn-primary">Browse All Cities</a>
-            <a [routerLink]="['/venues']" class="btn-secondary">View All Venues</a>
-          </div>
+              <div class="suggestions-section">
+                  <h2>Available cities nearby</h2>
+                  <div class="city-grid">
+                      <a [routerLink]="['/nl', 'amsterdam']" class="city-card">
+                          <span class="city-emoji">🏙️</span>
+                          <span class="city-name">Amsterdam</span>
+                          <span class="venue-count">89 venues</span>
+                      </a>
+                      <a [routerLink]="['/nl', 'utrecht']" class="city-card">
+                          <span class="city-emoji">🌿</span>
+                          <span class="city-name">Utrecht</span>
+                          <span class="venue-count">34 venues</span>
+                      </a>
+                      <a [routerLink]="['/nl', 'rotterdam']" class="city-card">
+                          <span class="city-emoji">🚢</span>
+                          <span class="city-name">Rotterdam</span>
+                          <span class="venue-count">23 venues</span>
+                      </a>
+                      <a [routerLink]="['/nl', 'the-hague']" class="city-card">
+                          <span class="city-emoji">🏛️</span>
+                          <span class="city-name">The Hague</span>
+                          <span class="venue-count">18 venues</span>
+                      </a>
+                  </div>
+              </div>
 
-          <div class="request-city">
-            <p>Want us to add {{ cityName }}? <a href="mailto:hello@gigawhat.live?subject=Add {{ cityName }}">Let us know!</a></p>
+              <div class="actions-section">
+                  <a [routerLink]="['/']" class="btn-primary">Browse all locations</a>
+                  <a [href]="'mailto:hello@gigawhat.live?subject=Add ' + cityName" class="btn-secondary">Request {{ cityName }}</a>
+              </div>
           </div>
-        </div>
       </div>
-    </div>
   `,
   styles: [`
     .invalid-city {
-      min-height: 80vh;
-      display: flex;
-      align-items: center;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      min-height: 100vh;
+      background: #f8fafc;
+      padding: 4rem 0;
     }
 
     .container {
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 0 2rem;
     }
 
-    .content {
+    .header {
       text-align: center;
-      background: white;
-      padding: 3rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      margin-bottom: 4rem;
     }
 
     h1 {
-      font-size: 2.5rem;
-      color: #333;
+      font-size: 3rem;
+      color: #1e293b;
       margin-bottom: 1rem;
+      font-weight: 800;
     }
 
-    p {
-      color: #666;
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-      line-height: 1.6;
-    }
-
-    .suggestions {
-      margin: 2rem 0;
-      padding: 1.5rem;
-      background: #f8f9fa;
-      border-radius: 12px;
-    }
-
-    .suggestions h3 {
-      color: #333;
-      margin-bottom: 1rem;
+    .subtitle {
       font-size: 1.2rem;
+      color: #64748b;
+      margin: 0;
     }
 
-    .city-links {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
+    .suggestions-section {
+      margin-bottom: 4rem;
     }
 
-    .city-link {
+    h2 {
+      font-size: 1.5rem;
+      color: #334155;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .city-card {
       background: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
       text-decoration: none;
-      color: #333;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .city-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      border-color: #667eea;
+    }
+
+    .city-emoji {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .city-name {
+      display: block;
+      font-size: 1.1rem;
       font-weight: 600;
-      transition: transform 0.2s ease;
-      border: 1px solid #e5e7eb;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
     }
 
-    .city-link:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    .venue-count {
+      font-size: 0.9rem;
+      color: #64748b;
     }
 
-    .actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin: 2rem 0;
-      flex-wrap: wrap;
+    .actions-section {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid #e2e8f0;
     }
 
     .btn-primary, .btn-secondary {
+      display: inline-block;
       padding: 1rem 2rem;
-      border-radius: 8px;
+      margin: 0 0.5rem;
+      border-radius: 12px;
       text-decoration: none;
       font-weight: 600;
+      font-size: 1rem;
       transition: all 0.2s ease;
     }
 
@@ -144,47 +172,49 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
       transform: translateY(-1px);
     }
 
-    .request-city {
-      margin-top: 2rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    .request-city a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .request-city a:hover {
-      text-decoration: underline;
-    }
-
     @media (max-width: 640px) {
+      .invalid-city {
+        padding: 2rem 0;
+      }
+
       h1 {
         font-size: 2rem;
       }
 
-      .city-links {
-        flex-direction: column;
+      .city-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
       }
 
-      .actions {
-        flex-direction: column;
+      .btn-primary, .btn-secondary {
+        display: block;
+        margin: 0.5rem 0;
       }
     }
   `]
 })
-export class InvalidCity {
-  private route = inject(ActivatedRoute);
+export class InvalidCity implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private subscription = new Subscription();
 
   cityName = '';
   countryName = '';
 
   ngOnInit() {
-    const params = this.route.snapshot.params;
-    this.cityName = this.formatCityName(params['city'] || 'this city');
-    this.countryName = this.getCountryName(params['country'] || '');
+    // Parse initial URL
+    this.parseCurrentUrl();
+
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  private parseCurrentUrl() {
+    const urlParts = this.router.url.split('/');
+    const countryCode = urlParts[1] || '';
+
+    this.countryName = this.getCountryName(countryCode);
   }
 
   private formatCityName(city: string): string {
@@ -193,7 +223,7 @@ export class InvalidCity {
 
   private getCountryName(countryCode: string): string {
     const countries: Record<string, string> = {
-      'nl': 'Netherlands',
+      'nl': 'The Netherlands',
       'be': 'Belgium',
       'de': 'Germany'
     };

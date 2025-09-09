@@ -202,6 +202,213 @@ const GET_VENUE_BY_ID = gql`
  }
 `;
 
+// New search queries
+const SEARCH_VENUES_BY_CITY_AND_NAME = gql`
+ query SearchVenuesByCityAndName($citySlug: String!, $venueName: String!, $limit: Int, $offset: Int) {
+   venues(
+     limit: $limit,
+     offset: $offset,
+     where: { 
+       _and: [
+         { cityByCityId: { slug: { _eq: $citySlug } } },
+         { name: { _ilike: $venueName } }
+       ]
+     },
+     order_by: {name: asc}
+   ) {
+     id
+     name
+     keywords
+     province
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     primary_type
+     venue_types
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+   venues_aggregate(where: { 
+     _and: [
+       { cityByCityId: { slug: { _eq: $citySlug } } },
+       { name: { _ilike: $venueName } }
+     ]
+   }) {
+     aggregate {
+       count
+     }
+   }
+ }
+`;
+
+const SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS = gql`
+ query SearchVenuesByCityNameAndKeywords($citySlug: String!, $venueName: String, $keywords: String, $limit: Int, $offset: Int) {
+   venues(
+     limit: $limit,
+     offset: $offset,
+     where: { 
+       _and: [
+         { cityByCityId: { slug: { _eq: $citySlug } } },
+         {
+           _or: [
+             { name: { _ilike: $venueName } },
+             { keywords: { _ilike: $keywords } }
+           ]
+         }
+       ]
+     },
+     order_by: {name: asc}
+   ) {
+     id
+     name
+     keywords
+     province
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     primary_type
+     venue_types
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+   venues_aggregate(where: { 
+     _and: [
+       { cityByCityId: { slug: { _eq: $citySlug } } },
+       {
+         _or: [
+           { name: { _ilike: $venueName } },
+           { keywords: { _ilike: $keywords } }
+         ]
+       }
+     ]
+   }) {
+     aggregate {
+       count
+     }
+   }
+ }
+`;
+
+const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS = gql`
+ query SearchVenuesByCountryAndKeywords($countryCode: String!, $searchTerm: String!, $limit: Int, $offset: Int) {
+   venues(
+     limit: $limit,
+     offset: $offset,
+     where: { 
+       _and: [
+         { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+         {
+           _or: [
+             { name: { _ilike: $searchTerm } },
+             { keywords: { _ilike: $searchTerm } }
+           ]
+         }
+       ]
+     },
+     order_by: {name: asc}
+   ) {
+     id
+     name
+     keywords
+     province
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     primary_type
+     venue_types
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+   venues_aggregate(where: { 
+     _and: [
+       { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+       {
+         _or: [
+           { name: { _ilike: $searchTerm } },
+           { keywords: { _ilike: $searchTerm } }
+         ]
+       }
+     ]
+   }) {
+     aggregate {
+       count
+     }
+   }
+ }
+`;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -251,9 +458,129 @@ export class VenueService {
   }
 
   getFeaturedVenues(citySlug?: string, limit: number = 3): Observable<Venue[]> {
-    // This will use the same filtering logic as getVenues
     return this.getVenues(limit, 0, citySlug).pipe(
       map(response => response.venues)
+    );
+  }
+
+  /**
+   * Get all venues for a specific city
+   */
+  getVenuesByCity(citySlug: string, limit: number = 20, offset: number = 0): Observable<VenuesResponse> {
+    return this.apollo.query<{
+      venues: Venue[];
+      venues_aggregate: { aggregate: { count: number } };
+    }>({
+      query: GET_VENUES_BY_CITY,
+      variables: { citySlug, limit, offset },
+      errorPolicy: 'ignore',
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => ({
+        venues: result.data?.venues || [],
+        totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
+      })),
+      catchError(() => of({ venues: [], totalCount: 0 }))
+    );
+  }
+
+  /**
+   * Search venues by city and partial venue name
+   */
+  searchVenuesByCityAndName(
+    citySlug: string,
+    venueName: string,
+    limit: number = 20,
+    offset: number = 0
+  ): Observable<VenuesResponse> {
+    const searchPattern = `%${venueName}%`;
+
+    return this.apollo.query<{
+      venues: Venue[];
+      venues_aggregate: { aggregate: { count: number } };
+    }>({
+      query: SEARCH_VENUES_BY_CITY_AND_NAME,
+      variables: {
+        citySlug,
+        venueName: searchPattern,
+        limit,
+        offset
+      },
+      errorPolicy: 'ignore',
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => ({
+        venues: result.data?.venues || [],
+        totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
+      })),
+      catchError(() => of({ venues: [], totalCount: 0 }))
+    );
+  }
+
+  /**
+   * Search venues by city, partial venue name and/or keywords
+   */
+  searchVenuesByCityNameAndKeywords(
+    citySlug: string,
+    searchTerm: string,
+    limit: number = 20,
+    offset: number = 0
+  ): Observable<VenuesResponse> {
+    const searchPattern = `%${searchTerm}%`;
+
+    return this.apollo.query<{
+      venues: Venue[];
+      venues_aggregate: { aggregate: { count: number } };
+    }>({
+      query: SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS,
+      variables: {
+        citySlug,
+        venueName: searchPattern,
+        keywords: searchPattern,
+        limit,
+        offset
+      },
+      errorPolicy: 'ignore',
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => ({
+        venues: result.data?.venues || [],
+        totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
+      })),
+      catchError(() => of({ venues: [], totalCount: 0 }))
+    );
+  }
+
+  /**
+   * Search venues by country and keywords (for 'all' cities in a country)
+   */
+  searchVenuesByCountryAndKeywords(
+    countryCode: string,
+    searchTerm: string,
+    limit: number = 20,
+    offset: number = 0
+  ): Observable<VenuesResponse> {
+    const searchPattern = `%${searchTerm}%`;
+
+    return this.apollo.query<{
+      venues: Venue[];
+      venues_aggregate: { aggregate: { count: number } };
+    }>({
+      query: SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS,
+      variables: {
+        countryCode,
+        searchTerm: searchPattern,
+        limit,
+        offset
+      },
+      errorPolicy: 'ignore',
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => ({
+        venues: result.data?.venues || [],
+        totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
+      })),
+      catchError(() => of({ venues: [], totalCount: 0 }))
     );
   }
 }

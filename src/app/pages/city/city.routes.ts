@@ -2,10 +2,13 @@
 import {Routes} from "@angular/router";
 import {CityLandingComponent} from "@pages/city/city-landing";
 import {CityAboutComponent} from "@pages/city/city-about";
+import {InvalidCity} from "@pages/city/invalid-city";
+import {cityGuard} from "@core/guards/city.guard";
 
 export const routes: Routes = [
   {
     path: '',
+    canMatch: [cityGuard],
     component: CityLandingComponent
   },
   {
@@ -19,5 +22,9 @@ export const routes: Routes = [
   {
     path: 'about',
     component: CityAboutComponent
-  }
+  },
+  // {
+  //   path: '**',
+  //   component: InvalidCity // Catches any unmatched paths under valid cities
+  // }
 ];

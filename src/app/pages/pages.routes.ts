@@ -50,8 +50,12 @@ export const routes: Routes = [
         data: { title: 'City' }
     },
     {
-        path: ':country/:city',
-        component: InvalidCity // Catches invalid cities
+        path: ':country/:city',  // Single wildcard for one additional segment
+        component: InvalidCity
+    },
+    {
+        path: ':country/:city/venues',  // Single wildcard for one additional segment
+        component: InvalidCity
     },
     {
         path: '**',
