@@ -4,7 +4,6 @@ import { gql } from '@apollo/client/core';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { City } from '../models/city.model';
-import { Country } from '../models/country.model';
 
 export interface CitiesResponse {
   cities: City[];
