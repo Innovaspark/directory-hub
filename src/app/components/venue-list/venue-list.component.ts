@@ -11,48 +11,58 @@ import {
 import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/services/venue-state.service";
 import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
+import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule, ViewModeButtons],
+  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective],
   template: `
+      
       <section>
           <div class="container mx-auto px-4">
 
               <app-view-mode-buttons></app-view-mode-buttons>
+              
+              <div [class]="$viewMode() === 'split' ? 'split-layout' : 'full-layout'">
+                  <div class="venues-grid"
+                       infiniteScroll
+                       [scrollWindow]="true"
+                       (scrolled)="onScrollDown()">
 
-
-              <div class="venues-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-
-                  @for (venue of $venues(); track venue.id; let i = $index) {
-                  <div class="venue-card" [style.--item-index]="i">
-                    <div class="relative">
-                      <img class="w-full h-48 object-cover"
-                           [src]="venue.photo || defaultVenueImage"
-                           (error)="onImageError($event)"
-                           [alt]="venue.name">
-                      <div [ngClass]="['button-venue-type', \`button-venue-type-\${venue.primary_type}\`]">
-                  {{venue.primary_type}}
-                  </div>
-                </div>
-                <div class="p-6">
-                  <h3 class="font-heading text-xl font-bold text-gray-900 mb-2">{{venue.name}}</h3>
-                      <p class="text-gray-600 mb-4">{{venue.review_summary}}</p>
-                      <div class="flex items-center mb-4">
-                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewbox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                        </svg>
-                        <span class="text-gray-700 text-sm">{{venue.rating}} ({{venue.review_count}} reviews)</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-purple-600 font-medium">Wed: Open Mic</span>
-                        <button class="text-purple-600 hover:text-purple-800 font-medium">View Details</button>
+                      @for (venue of $venues(); track venue.id; let i = $index) {
+                      <div class="venue-card" [style.--item-index]="i">
+                        <div class="relative">
+                          <img class="w-full h-48 object-cover"
+                               [src]="venue.photo || defaultVenueImage"
+                               (error)="onImageError($event)"
+                               [alt]="venue.name">
+                          <div [ngClass]="['button-venue-type', 'button-venue-type-' + venue.primary_type]">
+                      {{venue.primary_type}}
                       </div>
                     </div>
-                  </div>
-                  }
+                    <div class="p-6">
+                      <h3 class="font-heading text-xl font-bold text-gray-900 mb-2">{{venue.name}}</h3>
+                          <p class="text-gray-600 mb-4">{{venue.review_summary}}</p>
+                          <div class="flex items-center mb-4">
+                            <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewbox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                            <span class="text-gray-700 text-sm">{{venue.rating}} ({{venue.review_count}} reviews)</span>
+                          </div>
+                          <div class="flex justify-between items-center">
+                            <span class="text-purple-600 font-medium">Wed: Open Mic</span>
+                            <button class="text-purple-600 hover:text-purple-800 font-medium">View Details</button>
+                          </div>
+                        </div>
+                      </div>
+                      }
 
+                  </div>
+
+                  <div class="sidebar" [class.hidden]="$viewMode() !== 'split'">
+                      <div class="map-placeholder">Map View</div>
+                  </div>
               </div>
 
               <!-- Trigger element for intersection observer -->
@@ -88,7 +98,39 @@ import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
       </div>
       </div>
       }
-  `
+  `, styles: [`
+        .full-layout {
+            display: block;
+        }
+
+        .split-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .sidebar.hidden {
+            display: none;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 20px;
+            height: 600px;
+        }
+
+        .map-placeholder {
+            background: #f5f5f5;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.2rem;
+        }
+  `]
 })
 export class VenueListComponent implements AfterViewInit, OnDestroy {
   @ViewChild('loadTrigger') loadTrigger!: ElementRef;
@@ -96,10 +138,9 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   private venueState = inject(VenueStateService);
   private platformId = inject(PLATFORM_ID);
   private observer?: IntersectionObserver;
-  viewMode: 'cards' | 'split' = 'cards';
+  $viewMode = this.venueState.$viewMode;
   cardViewIcon = 'th-large';
-  splitViewIcon = 'columns';
-
+  splitViewIcon = 'map';
 
   // Get data from venue state service - all loading states managed there now
   $venues = this.venueState.$filteredVenues;
@@ -117,18 +158,11 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     const moreLoading = this.$isLoadingMore();
     const hasVenues = this.$venues().length > 0;
 
-    // Only show spinner in browser
-    if (!isPlatformBrowser(this.platformId)) {
-      return false;
-    }
-
     return (apiLoading || moreLoading) && hasVenues;
   });
 
   ngAfterViewInit() {
-    this.setupIntersectionObserver();
     if (isPlatformBrowser(this.platformId)) {
-      // Scroll to top on page refresh or first load
       window.scrollTo({ top: 0, behavior: 'auto' });
     }
   }
@@ -139,37 +173,15 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private setupIntersectionObserver() {
-    if (!isPlatformBrowser(this.platformId) || typeof IntersectionObserver === 'undefined') {
-      return;
-    }
-
-    const options = {
-      root: null,
-      rootMargin: '200px',
-      threshold: 0.1
-    };
-
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // All loading and pagination logic now handled in the service
-          this.venueState.loadMoreVenues();
-        }
-      });
-    }, options);
-
-    if (this.loadTrigger) {
-      this.observer.observe(this.loadTrigger.nativeElement);
-    }
-  }
-
   onImageError(event: any) {
     event.target.src = this.defaultVenueImage;
   }
 
-
   setViewMode(mode: 'cards' | 'split') {
-    this.viewMode = mode;
+    this.venueState.setViewMode(mode);
+  }
+
+  onScrollDown() {
+    this.venueState.loadMoreVenues();
   }
 }

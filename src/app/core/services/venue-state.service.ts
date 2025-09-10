@@ -317,8 +317,10 @@ export class VenueStateService {
           }
           this.totalCount.set(response.totalCount);
           this.loading.set(false);
-          this.isLoadingMore.set(false);
-        },
+          setTimeout(() => {
+            this.isLoadingMore.set(false);
+          }, 1500);
+          },
         error: (error) => {
           console.error('Error loading venues:', error);
           this.loading.set(false);
