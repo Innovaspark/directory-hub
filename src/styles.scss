@@ -4,6 +4,8 @@
 @use 'styles/cards';
 @use 'styles/layouts';
 
+@import '@fortawesome/fontawesome-free/css/all.css';
+
 
 @theme {
   --radius: 0.65rem;

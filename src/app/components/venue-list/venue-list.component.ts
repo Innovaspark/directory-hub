@@ -6,12 +6,10 @@ import {
   OnDestroy,
   ViewChild,
   PLATFORM_ID,
-  computed,
-  signal
+  computed
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/services/venue-state.service";
-import {AppStateService} from "@core/services/application-state.service";
 
 @Component({
   selector: 'app-venue-list',
@@ -20,8 +18,9 @@ import {AppStateService} from "@core/services/application-state.service";
   template: `
       <section>
           <div class="container mx-auto px-4">
-              <h3>Venue types: {{$venueTypes() | json}}</h3>
-              {{appState.$tenant()}}
+
+
+
               <div class="venues-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
                   @for (venue of $venues(); track venue.id; let i = $index) {
@@ -76,7 +75,7 @@ import {AppStateService} from "@core/services/application-state.service";
 
       </section>
 
-      <!-- Keep spinner OUTSIDE section so it’s not affected by parent scroll -->
+      <!-- Keep spinner OUTSIDE section so it's not affected by parent scroll -->
       @if ($showLoadingSpinner()) {
       <div class="fixed inset-0 flex justify-center items-end z-[9999] bg-black/20 pointer-events-none">
       <div class="flex flex-col items-center mb-20 pointer-events-auto" style="background-color: rgba(255,255,255,0.85); padding: 1rem 1.5rem; border-radius: 0.5rem;">
@@ -87,32 +86,33 @@ import {AppStateService} from "@core/services/application-state.service";
       </div>
       </div>
       }
-
-
   `
 })
 export class VenueListComponent implements AfterViewInit, OnDestroy {
   @ViewChild('loadTrigger') loadTrigger!: ElementRef;
 
   private venueState = inject(VenueStateService);
-  appState = inject(AppStateService);
   private platformId = inject(PLATFORM_ID);
   private observer?: IntersectionObserver;
+  viewMode: 'cards' | 'split' = 'cards';
+  cardViewIcon = 'th-large';
+  splitViewIcon = 'columns';
 
-  // Get data from venue state service
-  $venues = this.venueState.$venues;
+
+  // Get data from venue state service - all loading states managed there now
+  $venues = this.venueState.$filteredVenues;
   $isLoading = this.venueState.$isLoading;
+  $isLoadingMore = this.venueState.$isLoadingMore;
   $totalVenueCount = this.venueState.$totalVenueCount;
-  $venueTypes = computed(() => this.venueState.$filterOptions())
+  $venueTypes = computed(() => this.venueState.$filterOptions());
 
   defaultVenueImage =
     'https://images.unsplash.com/photo-1543261876-1a37d08f7b33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzIzMzB8MHwxfHNlYXJjaHwxfHx8MTc1NjkxODM2N3ww&ixlib=rb-4.1.0&q=80&w=1080&w=450';
 
-  private $isLoadingMore = signal(false);
-
+  // Simplified loading spinner logic - all managed by service
   $showLoadingSpinner = computed(() => {
     const apiLoading = this.$isLoading();
-    const localLoading = this.$isLoadingMore();
+    const moreLoading = this.$isLoadingMore();
     const hasVenues = this.$venues().length > 0;
 
     // Only show spinner in browser
@@ -120,7 +120,7 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
       return false;
     }
 
-    return (apiLoading || localLoading) && hasVenues;
+    return (apiLoading || moreLoading) && hasVenues;
   });
 
   ngAfterViewInit() {
@@ -151,11 +151,8 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          if (!this.$isLoadingMore() &&
-            !this.$isLoading() &&
-            this.$venues().length < this.$totalVenueCount()) {
-            this.loadMoreVenues();
-          }
+          // All loading and pagination logic now handled in the service
+          this.venueState.loadMoreVenues();
         }
       });
     }, options);
@@ -169,12 +166,8 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     event.target.src = this.defaultVenueImage;
   }
 
-  private loadMoreVenues() {
-    this.$isLoadingMore.set(true);
-    this.venueState.loadMoreVenues();
 
-    setTimeout(() => {
-      this.$isLoadingMore.set(false);
-    }, 2000);
+  setViewMode(mode: 'cards' | 'split') {
+    this.viewMode = mode;
   }
 }

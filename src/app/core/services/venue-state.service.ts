@@ -10,7 +10,7 @@ import { Venue } from '../models/venue.model';
 import { City } from '../models/city.model';
 import { VenueType } from '../models/venue-type.model';
 import { VenueService, VenuesResponse } from "@core/services/venue.service";
-import {AppStateService} from "@core/services/application-state.service";
+import { AppStateService } from "@core/services/application-state.service";
 
 export interface FilterOption {
   slug: string;
@@ -44,6 +44,11 @@ export class VenueStateService {
 
   // Loading state
   private loading = signal<boolean>(false);
+  private isLoadingMore = signal<boolean>(false);
+
+  // Client-side venue type filter
+  private _selectedVenueType = signal<string | null>(null);
+  readonly $selectedVenueType = this._selectedVenueType.asReadonly();
 
   // Computed signals for route-derived state
   readonly $citySlug = this.routerState.$citySlug;
@@ -58,24 +63,29 @@ export class VenueStateService {
     this.searchTerm().trim().length > 0 || this.keywords().trim().length > 0
   );
 
-  // Main venues computed signal - handles both browse and search
+  // Main venues computed signal - handles both browse and search (no server-side type filtering)
   readonly $venues = computed(() => {
     const search = this.searchTerm().trim();
     const keywordsSearch = this.keywords().trim();
-    const filter = this.$selectedFilter();
 
-    // Choose data source based on search state
-    let venues = (search || keywordsSearch) ? this.searchResults() : this.allVenues();
+    // Choose data source based on search state only
+    return (search || keywordsSearch) ? this.searchResults() : this.allVenues();
+  });
 
-    // Apply type filter
-    if (filter) {
-      venues = venues.filter(venue =>
-        venue.primary_type === filter ||
-        venue.venue_types?.includes(filter)
-      );
+  // New filtered venues signal for client-side filtering
+  readonly $filteredVenues = computed(() => {
+    const venues = this.$venues();
+    const selectedType = this.$selectedVenueType();
+
+    if (!selectedType) {
+      return venues; // Show all venues when no filter selected
     }
 
-    return venues;
+    // Filter venues by venue type
+    return venues.filter(venue =>
+      venue.venue_types?.includes(selectedType) ||
+      venue.primary_type === selectedType
+    );
   });
 
   readonly $featuredVenues = computed(() => {
@@ -97,21 +107,15 @@ export class VenueStateService {
     return filtered.slice(0, 3);
   });
 
-  // readonly $filterOptions = computed<FilterOption[]>(() =>
-  //   this.venueTypes().map(type => ({
-  //     slug: type.slug,
-  //     label: type.label,
-  //     icon: type.icon
-  //   }))
-  // );
   readonly $filterOptions = computed(() => this.appState.$tenant()?.venue_types);
   readonly $cityName = computed(() => this.currentCity()?.name ?? '');
   readonly $cityEmoji = computed(() => this.currentCity()?.emoji ?? '🏙️');
-  readonly $venueCount = computed(() => this.$venues().length);
+  readonly $venueCount = computed(() => this.$filteredVenues().length);
   readonly $totalVenueCount = computed(() => this.totalCount());
 
   // Expose read-only state
   readonly $isLoading = this.loading.asReadonly();
+  readonly $isLoadingMore = this.isLoadingMore.asReadonly();
 
   // City search state
   private citySearchTerm = signal<string>('');
@@ -169,16 +173,12 @@ export class VenueStateService {
       this.currentPage.set(pageNumber);
     });
 
-    // React to search term, keywords, and route changes
+    // React to search term, keywords, and route changes (removed filter dependency)
     effect(() => {
       const citySlug = this.$citySlug();
       const searchTerm = this.searchTerm();
       const keywords = this.keywords();
-      const selectedFilter = this.$selectedFilter();
       const currentPage = this.currentPage();
-
-      // Only reset pagination when search/filter changes (not when page changes)
-      const isNewSearch = searchTerm !== this.searchTerm() || keywords !== this.keywords() || selectedFilter !== this.$selectedFilter();
 
       // Load appropriate data
       if (searchTerm.trim() || keywords.trim()) {
@@ -216,12 +216,27 @@ export class VenueStateService {
     this.updateUrl({ type: filter });
   }
 
+  // New client-side venue type filter method
+  setVenueTypeFilter(venueType: string | null): void {
+    this._selectedVenueType.set(venueType);
+  }
+
   clearFilters(): void {
     this.updateUrl({ q: null, keywords: null, type: null });
+    this._selectedVenueType.set(null);
   }
 
   // Public venue actions
   loadMoreVenues(): void {
+    // Don't load more if we already have all the data
+    if (this.totalCount() < this.pageSize() ||
+      this.$venues().length >= this.totalCount() ||
+      this.loading() ||
+      this.isLoadingMore()) {
+      return;
+    }
+
+    this.isLoadingMore.set(true);
     const nextPage = this.currentPage() + 1;
     this.updateUrl({ page: nextPage.toString() });
   }
@@ -300,10 +315,12 @@ export class VenueStateService {
           }
           this.totalCount.set(response.totalCount);
           this.loading.set(false);
+          this.isLoadingMore.set(false);
         },
         error: (error) => {
           console.error('Error loading venues:', error);
           this.loading.set(false);
+          this.isLoadingMore.set(false);
         }
       });
   }
@@ -336,10 +353,12 @@ export class VenueStateService {
             }
             this.totalCount.set(response.totalCount);
             this.loading.set(false);
+            this.isLoadingMore.set(false);
           },
           error: (error) => {
             console.error('Error searching venues by country:', error);
             this.loading.set(false);
+            this.isLoadingMore.set(false);
           }
         });
       return;
@@ -357,10 +376,12 @@ export class VenueStateService {
           }
           this.totalCount.set(response.totalCount);
           this.loading.set(false);
+          this.isLoadingMore.set(false);
         },
         error: (error) => {
           console.error('Error searching venues by city:', error);
           this.loading.set(false);
+          this.isLoadingMore.set(false);
         }
       });
   }
@@ -396,5 +417,4 @@ export class VenueStateService {
       replaceUrl: true
     });
   }
-
 }

@@ -12,7 +12,6 @@ import { VenueStateService } from "@core/services/venue-state.service";
   template: `
       <div class="search-panel">
           <div class="search-container">
-              Filter state:  {{ venueState.$filterOptions() | json }}
               <div class="search-form">
                   <!-- City Dropdown -->
                   <div class="form-group">
