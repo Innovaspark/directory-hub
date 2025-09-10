@@ -202,7 +202,7 @@ const GET_VENUE_BY_ID = gql`
  }
 `;
 
-// New search queries
+// Search queries
 const SEARCH_VENUES_BY_CITY_AND_NAME = gql`
  query SearchVenuesByCityAndName($citySlug: String!, $venueName: String!, $limit: Int, $offset: Int) {
    venues(
@@ -409,6 +409,135 @@ const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS = gql`
  }
 `;
 
+// NEW: Queries for when both search term AND keywords are provided
+const SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS = gql`
+ query SearchVenuesByCityWithBothParams($citySlug: String!, $venueName: String!, $keywords: String!, $limit: Int, $offset: Int) {
+   venues(
+     limit: $limit,
+     offset: $offset,
+     where: { 
+       _and: [
+         { cityByCityId: { slug: { _eq: $citySlug } } },
+         { name: { _ilike: $venueName } },
+         { keywords: { _ilike: $keywords } }
+       ]
+     },
+     order_by: {name: asc}
+   ) {
+     id
+     name
+     keywords
+     province
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     primary_type
+     venue_types
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+   venues_aggregate(where: { 
+     _and: [
+       { cityByCityId: { slug: { _eq: $citySlug } } },
+       { name: { _ilike: $venueName } },
+       { keywords: { _ilike: $keywords } }
+     ]
+   }) {
+     aggregate {
+       count
+     }
+   }
+ }
+`;
+
+const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS = gql`
+ query SearchVenuesByCountryWithBothParams($countryCode: String!, $searchTerm: String!, $keywords: String!, $limit: Int, $offset: Int) {
+   venues(
+     limit: $limit,
+     offset: $offset,
+     where: { 
+       _and: [
+         { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+         { name: { _ilike: $searchTerm } },
+         { keywords: { _ilike: $keywords } }
+       ]
+     },
+     order_by: {name: asc}
+   ) {
+     id
+     name
+     keywords
+     province
+     cityByCityId {
+       id
+       name
+       slug
+       is_live
+       country {
+         code
+         name
+       }
+     }
+     full_address
+     street
+     postal_code
+     state
+     country
+     phone
+     site
+     review_count
+     review_summary
+     rating
+     latitude
+     longitude
+     photo
+     street_view
+     primary_type
+     venue_types
+     working_hours
+     business_status
+     location_link
+     created_at
+     updated_at
+   }
+   venues_aggregate(where: { 
+     _and: [
+       { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+       { name: { _ilike: $searchTerm } },
+       { keywords: { _ilike: $keywords } }
+     ]
+   }) {
+     aggregate {
+       count
+     }
+   }
+ }
+`;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -518,15 +647,23 @@ export class VenueService {
   }
 
   /**
-   * Search venues by city, partial venue name and/or keywords
+   * Search venues by city, partial venue name and/or keywords (UPDATED)
    */
   searchVenuesByCityNameAndKeywords(
     citySlug: string,
     searchTerm: string,
+    keywords: string = '',
     limit: number = 20,
     offset: number = 0
   ): Observable<VenuesResponse> {
-    const searchPattern = `%${searchTerm}%`;
+    // If both are provided, we need a more complex query
+    if (searchTerm.trim() && keywords.trim()) {
+      return this.searchVenuesByCityWithBothParams(citySlug, searchTerm, keywords, limit, offset);
+    }
+
+    // If only one is provided, use the existing logic
+    const combinedSearch = searchTerm.trim() || keywords.trim();
+    const searchPattern = `%${combinedSearch}%`;
 
     return this.apollo.query<{
       venues: Venue[];
@@ -552,15 +689,23 @@ export class VenueService {
   }
 
   /**
-   * Search venues by country and keywords (for 'all' cities in a country)
+   * Search venues by country and keywords (UPDATED)
    */
   searchVenuesByCountryAndKeywords(
     countryCode: string,
     searchTerm: string,
+    keywords: string = '',
     limit: number = 20,
     offset: number = 0
   ): Observable<VenuesResponse> {
-    const searchPattern = `%${searchTerm}%`;
+    // If both are provided, we need a more complex query
+    if (searchTerm.trim() && keywords.trim()) {
+      return this.searchVenuesByCountryWithBothParams(countryCode, searchTerm, keywords, limit, offset);
+    }
+
+    // If only one is provided, use the existing logic
+    const combinedSearch = searchTerm.trim() || keywords.trim();
+    const searchPattern = `%${combinedSearch}%`;
 
     return this.apollo.query<{
       venues: Venue[];
@@ -570,6 +715,78 @@ export class VenueService {
       variables: {
         countryCode,
         searchTerm: searchPattern,
+        limit,
+        offset
+      },
+      errorPolicy: 'ignore',
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => ({
+        venues: result.data?.venues || [],
+        totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
+      })),
+      catchError(() => of({ venues: [], totalCount: 0 }))
+    );
+  }
+
+  /**
+   * NEW: Search venues by city with both name AND keywords (both must match)
+   */
+  private searchVenuesByCityWithBothParams(
+    citySlug: string,
+    searchTerm: string,
+    keywords: string,
+    limit: number,
+    offset: number
+  ): Observable<VenuesResponse> {
+    const venueNamePattern = `%${searchTerm}%`;
+    const keywordsPattern = `%${keywords}%`;
+
+    return this.apollo.query<{
+      venues: Venue[];
+      venues_aggregate: { aggregate: { count: number } };
+    }>({
+      query: SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS,
+      variables: {
+        citySlug,
+        venueName: venueNamePattern,
+        keywords: keywordsPattern,
+        limit,
+        offset
+      },
+      errorPolicy: 'ignore',
+      fetchPolicy: 'no-cache'
+    }).pipe(
+      map(result => ({
+        venues: result.data?.venues || [],
+        totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
+      })),
+      catchError(() => of({ venues: [], totalCount: 0 }))
+    );
+  }
+
+  /**
+   * NEW: Search venues by country with both name AND keywords (both must match)
+   */
+  private searchVenuesByCountryWithBothParams(
+    countryCode: string,
+    searchTerm: string,
+    keywords: string,
+    limit: number,
+    offset: number
+  ): Observable<VenuesResponse> {
+    const searchTermPattern = `%${searchTerm}%`;
+    const keywordsPattern = `%${keywords}%`;
+
+    return this.apollo.query<{
+      venues: Venue[];
+      venues_aggregate: { aggregate: { count: number } };
+    }>({
+      query: SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS,
+      variables: {
+        countryCode,
+        searchTerm: searchTermPattern,
+        keywords: keywordsPattern,
         limit,
         offset
       },

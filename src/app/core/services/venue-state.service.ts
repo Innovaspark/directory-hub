@@ -34,6 +34,7 @@ export class VenueStateService {
 
   // Search state
   private searchTerm = signal<string>('');
+  private keywords = signal<string>('');
 
   // Pagination state
   private currentPage = signal<number>(0);
@@ -50,15 +51,19 @@ export class VenueStateService {
 
   // Search state accessors
   readonly $searchTerm = this.searchTerm.asReadonly();
-  readonly $isSearchActive = computed(() => this.searchTerm().trim().length > 0);
+  readonly $keywords = this.keywords.asReadonly();
+  readonly $isSearchActive = computed(() =>
+    this.searchTerm().trim().length > 0 || this.keywords().trim().length > 0
+  );
 
   // Main venues computed signal - handles both browse and search
   readonly $venues = computed(() => {
     const search = this.searchTerm().trim();
+    const keywordsSearch = this.keywords().trim();
     const filter = this.$selectedFilter();
 
     // Choose data source based on search state
-    let venues = search ? this.searchResults() : this.allVenues();
+    let venues = (search || keywordsSearch) ? this.searchResults() : this.allVenues();
 
     // Apply type filter
     if (filter) {
@@ -148,18 +153,25 @@ export class VenueStateService {
       this.searchTerm.set(routeSearchQuery);
     });
 
-    // React to search term and route changes
+    // React to route keywords changes
+    effect(() => {
+      const routeKeywords = this.routerState.$queryParams()?.['keywords'] || '';
+      this.keywords.set(routeKeywords);
+    });
+
+    // React to search term, keywords, and route changes
     effect(() => {
       const citySlug = this.$citySlug();
       const searchTerm = this.searchTerm();
+      const keywords = this.keywords();
       const selectedFilter = this.$selectedFilter();
 
       // Reset pagination
       this.currentPage.set(0);
 
       // Load appropriate data
-      if (searchTerm.trim()) {
-        this.performSearch(searchTerm, citySlug);
+      if (searchTerm.trim() || keywords.trim()) {
+        this.performSearch(searchTerm, keywords, citySlug);
       } else {
         this.loadVenues();
       }
@@ -172,10 +184,20 @@ export class VenueStateService {
     this.updateUrl({ q: term || null });
   }
 
+  setKeywords(keywords: string): void {
+    this.keywords.set(keywords);
+    this.updateUrl({ keywords: keywords || null });
+  }
+
   clearSearch(): void {
     this.searchTerm.set('');
     this.searchResults.set([]);
     this.updateUrl({ q: null });
+  }
+
+  clearKeywords(): void {
+    this.keywords.set('');
+    this.updateUrl({ keywords: null });
   }
 
   // Public filter actions
@@ -184,7 +206,7 @@ export class VenueStateService {
   }
 
   clearFilters(): void {
-    this.updateUrl({ q: null, type: null });
+    this.updateUrl({ q: null, keywords: null, type: null });
   }
 
   // Public venue actions
@@ -193,8 +215,9 @@ export class VenueStateService {
     this.currentPage.set(nextPage);
 
     const searchTerm = this.searchTerm().trim();
-    if (searchTerm) {
-      this.performSearch(searchTerm, this.$citySlug(), false);
+    const keywords = this.keywords().trim();
+    if (searchTerm || keywords) {
+      this.performSearch(searchTerm, keywords, this.$citySlug(), false);
     } else {
       this.loadVenues(false);
     }
@@ -203,8 +226,9 @@ export class VenueStateService {
   refreshVenues(): void {
     this.currentPage.set(0);
     const searchTerm = this.searchTerm().trim();
-    if (searchTerm) {
-      this.performSearch(searchTerm, this.$citySlug(), true);
+    const keywords = this.keywords().trim();
+    if (searchTerm || keywords) {
+      this.performSearch(searchTerm, keywords, this.$citySlug(), true);
     } else {
       this.loadVenues(true);
     }
@@ -281,7 +305,7 @@ export class VenueStateService {
       });
   }
 
-  private performSearch(searchTerm: string, citySlug: string | null, replace: boolean = true): void {
+  private performSearch(searchTerm: string, keywords: string, citySlug: string | null, replace: boolean = true): void {
     this.loading.set(true);
 
     const offset = this.currentPage() * this.pageSize();
@@ -297,8 +321,8 @@ export class VenueStateService {
         return;
       }
 
-      // Use server-side country-wide search
-      this.venueService.searchVenuesByCountryAndKeywords(countryCode, searchTerm, limit, offset)
+      // Use server-side country-wide search with separate params
+      this.venueService.searchVenuesByCountryAndKeywords(countryCode, searchTerm, keywords, limit, offset)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (response: VenuesResponse) => {
@@ -318,8 +342,8 @@ export class VenueStateService {
       return;
     }
 
-    // City-specific search using the existing API method
-    this.venueService.searchVenuesByCityNameAndKeywords(citySlug, searchTerm, limit, offset)
+    // City-specific search using the existing API method with separate params
+    this.venueService.searchVenuesByCityNameAndKeywords(citySlug, searchTerm, keywords, limit, offset)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response: VenuesResponse) => {

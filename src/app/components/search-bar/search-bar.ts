@@ -12,6 +12,7 @@ import { VenueStateService } from "@core/services/venue-state.service";
   template: `
       <div class="search-panel">
           <div class="search-container">
+              Filter state:  {{ venueState.$filterOptions() | json }}
               <div class="search-form">
                   <!-- City Dropdown -->
                   <div class="form-group">
@@ -40,6 +41,21 @@ import { VenueStateService } from "@core/services/venue-state.service";
                               (keyup.enter)="onSearch()"
                       />
                       <button class="clear-btn" (click)="clearSearch()" *ngIf="searchTerm.trim()">
+                          ✕
+                      </button>
+                  </div>
+
+                  <!-- Keywords Input -->
+                  <div class="form-group keywords-input-group">
+                      <input
+                              id="keywordsInput"
+                              type="text"
+                              [(ngModel)]="keywordsTerm"
+                              placeholder="Keywords (jazz, rock, etc.)"
+                              class="search-input"
+                              (keyup.enter)="onSearch()"
+                      />
+                      <button class="clear-btn" (click)="clearKeywords()" *ngIf="keywordsTerm.trim()">
                           ✕
                       </button>
                   </div>
@@ -89,7 +105,13 @@ import { VenueStateService } from "@core/services/venue-state.service";
 
       .form-group.search-input-group {
           flex: 1;
-          min-width: 300px;
+          min-width: 250px;
+          position: relative;
+      }
+
+      .form-group.keywords-input-group {
+          flex: 1;
+          min-width: 250px;
           position: relative;
       }
 
@@ -182,7 +204,7 @@ import { VenueStateService } from "@core/services/venue-state.service";
           min-width: 120px;
           justify-content: center;
       }
-      
+
       .search-icon {
           width: 20px;
           height: 20px;
@@ -195,7 +217,8 @@ import { VenueStateService } from "@core/services/venue-state.service";
               align-items: stretch;
           }
 
-          .form-group.search-input-group {
+          .form-group.search-input-group,
+          .form-group.keywords-input-group {
               min-width: 0;
           }
 
@@ -223,10 +246,11 @@ import { VenueStateService } from "@core/services/venue-state.service";
 export class SearchBarComponent {
   private navigationService = inject(NavigationService);
   private routerState = inject(RouterStateService);
-  private venueState = inject(VenueStateService);
+  venueState = inject(VenueStateService);
 
   selectedCitySlug = '';
   searchTerm = '';
+  keywordsTerm = '';
 
   // Local hardcoded cities - replace with data service later
   cities = [
@@ -241,6 +265,7 @@ export class SearchBarComponent {
 
   ngOnInit(): void {
     this.searchTerm = this.routerState.$searchQuery();
+    this.keywordsTerm = this.routerState.$queryParams()?.['keywords'] || '';
     const citySlug = this.routerState.$citySlug();
     if (citySlug && citySlug !== 'all') {
       this.selectedCitySlug = citySlug;
@@ -251,12 +276,30 @@ export class SearchBarComponent {
     this.navigationService.navigateToSearch(
       this.searchTerm, // Can be empty string
       'nl',
-      this.selectedCitySlug || undefined
+      this.selectedCitySlug || undefined,
+      this.keywordsTerm // Pass keywords to navigation
     );
   }
 
   clearSearch(): void {
     this.searchTerm = '';
-    this.venueState.setSearchTerm('');
+    // Immediately update URL with empty search but keep keywords
+    this.navigationService.navigateToSearch(
+      '', // Empty search term
+      'nl',
+      this.selectedCitySlug || undefined,
+      this.keywordsTerm // Keep existing keywords
+    );
+  }
+
+  clearKeywords(): void {
+    this.keywordsTerm = '';
+    // Immediately update URL with empty keywords but keep search term
+    this.navigationService.navigateToSearch(
+      this.searchTerm, // Keep existing search term
+      'nl',
+      this.selectedCitySlug || undefined,
+      '' // Empty keywords
+    );
   }
 }
