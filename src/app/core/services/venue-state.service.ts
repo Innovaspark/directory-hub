@@ -10,6 +10,7 @@ import { Venue } from '../models/venue.model';
 import { City } from '../models/city.model';
 import { VenueType } from '../models/venue-type.model';
 import { VenueService, VenuesResponse } from "@core/services/venue.service";
+import {AppStateService} from "@core/services/application-state.service";
 
 export interface FilterOption {
   slug: string;
@@ -24,6 +25,7 @@ export class VenueStateService {
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private routerState = inject(RouterStateService);
+  private appState = inject(AppStateService);
 
   // Raw data signals
   private allVenues = signal<Venue[]>([]);
@@ -95,14 +97,14 @@ export class VenueStateService {
     return filtered.slice(0, 3);
   });
 
-  readonly $filterOptions = computed<FilterOption[]>(() =>
-    this.venueTypes().map(type => ({
-      slug: type.slug,
-      label: type.label,
-      icon: type.icon
-    }))
-  );
-
+  // readonly $filterOptions = computed<FilterOption[]>(() =>
+  //   this.venueTypes().map(type => ({
+  //     slug: type.slug,
+  //     label: type.label,
+  //     icon: type.icon
+  //   }))
+  // );
+  readonly $filterOptions = computed(() => this.appState.$tenant()?.venue_types);
   readonly $cityName = computed(() => this.currentCity()?.name ?? '');
   readonly $cityEmoji = computed(() => this.currentCity()?.emoji ?? '🏙️');
   readonly $venueCount = computed(() => this.$venues().length);
@@ -129,11 +131,12 @@ export class VenueStateService {
   }
 
   private initializeVenueTypes(): void {
-    this.tenantService.getVenueTypes()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(types => {
-        this.venueTypes.set(types);
-      });
+    // this.tenantService.getVenueTypes()
+    //   .pipe(takeUntilDestroyed(this.destroyRef))
+    //   .subscribe(types => {
+    //     this.venueTypes.set(types);
+    //   });
+    // alert('have to fix init venue types');
   }
 
   private initializeRouteEffects(): void {

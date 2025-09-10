@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/services/venue-state.service";
+import {AppStateService} from "@core/services/application-state.service";
 
 @Component({
   selector: 'app-venue-list',
@@ -19,6 +20,8 @@ import { VenueStateService } from "@core/services/venue-state.service";
   template: `
       <section>
           <div class="container mx-auto px-4">
+              <h3>Venue types: {{$venueTypes() | json}}</h3>
+              {{appState.$tenant()}}
               <div class="venues-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
                   @for (venue of $venues(); track venue.id; let i = $index) {
@@ -92,6 +95,7 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   @ViewChild('loadTrigger') loadTrigger!: ElementRef;
 
   private venueState = inject(VenueStateService);
+  appState = inject(AppStateService);
   private platformId = inject(PLATFORM_ID);
   private observer?: IntersectionObserver;
 
@@ -99,6 +103,7 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   $venues = this.venueState.$venues;
   $isLoading = this.venueState.$isLoading;
   $totalVenueCount = this.venueState.$totalVenueCount;
+  $venueTypes = computed(() => this.venueState.$filterOptions())
 
   defaultVenueImage =
     'https://images.unsplash.com/photo-1543261876-1a37d08f7b33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzIzMzB8MHwxfHNlYXJjaHwxfHx8MTc1NjkxODM2N3ww&ixlib=rb-4.1.0&q=80&w=1080&w=450';
@@ -120,6 +125,10 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.setupIntersectionObserver();
+    if (isPlatformBrowser(this.platformId)) {
+      // Scroll to top on page refresh or first load
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
   }
 
   ngOnDestroy() {

@@ -5,7 +5,7 @@ import { Apollo } from 'apollo-angular';
 import { gql } from '@apollo/client/core';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import {Tenant, VenueType} from "@core/models/tenant.model";
+import { Tenant } from "@core/models/tenant.model";
 
 const GET_TENANT_BY_DOMAIN = gql`
   query GetTenantByDomain($domain: String!) {
@@ -53,43 +53,5 @@ export class TenantService {
   getCurrentTenant(): Observable<Tenant | null> {
     const hostname = this.getHostname();
     return this.getTenantByDomain(hostname);
-  }
-
-  getVenueTypes(): Observable<VenueType[]> {
-    const hostname = this.getHostname();
-    return this.getTenantByDomain(hostname).pipe(
-      map(tenant => tenant?.venue_types || []),
-      catchError(() => of([]))
-    );
-  }
-
-  getSearchTerms(): Observable<string[]> {
-    const hostname = this.getHostname();
-    return this.getTenantByDomain(hostname).pipe(
-      map(tenant => tenant?.search_terms || []),
-      catchError(() => of([]))
-    );
-  }
-
-  getKeywords(): Observable<string[]> {
-    const hostname = this.getHostname();
-    return this.getTenantByDomain(hostname).pipe(
-      map(tenant => tenant?.keywords || []),
-      catchError(() => of([]))
-    );
-  }
-
-  getTenantSettings(): Observable<Record<string, any>> {
-    const hostname = this.getHostname();
-    return this.getTenantByDomain(hostname).pipe(
-      map(tenant => tenant?.settings || {}),
-      catchError(() => of({}))
-    );
-  }
-
-  getCountryDescription(countryCode: string): Observable<string | null> {
-    return this.getTenantSettings().pipe(
-      map(settings => settings?.['country_descriptions']?.[countryCode] || null)
-    );
   }
 }
