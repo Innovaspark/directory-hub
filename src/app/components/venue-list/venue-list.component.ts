@@ -10,15 +10,17 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/services/venue-state.service";
+import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ViewModeButtons],
   template: `
       <section>
           <div class="container mx-auto px-4">
 
+              <app-view-mode-buttons></app-view-mode-buttons>
 
 
               <div class="venues-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

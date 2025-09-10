@@ -124,6 +124,8 @@ export class VenueStateService {
   readonly $citySearchTerm = this.citySearchTerm.asReadonly();
   readonly $citySuggestions = this.citySuggestions.asReadonly();
 
+  $viewMode = signal<'cards' | 'split'>('cards');
+
   constructor(
     private venueService: VenueService,
     private cityService: CityService,
@@ -416,5 +418,9 @@ export class VenueStateService {
       queryParams,
       replaceUrl: true
     });
+  }
+
+  setViewMode(mode: "cards" | "split") {
+    this.$viewMode.set(mode);
   }
 }
