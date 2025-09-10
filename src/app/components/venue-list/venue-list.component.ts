@@ -12,18 +12,19 @@ import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/services/venue-state.service";
 import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
+import {VenuesMap} from "@components/venues-map/venues-map";
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective],
+  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMap],
   template: `
-      
+
       <section>
           <div class="container mx-auto px-4">
 
               <app-view-mode-buttons></app-view-mode-buttons>
-              
+
               <div [class]="$viewMode() === 'split' ? 'split-layout' : 'full-layout'">
                   <div class="venues-grid"
                        infiniteScroll
@@ -60,9 +61,16 @@ import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 
                   </div>
 
-                  <div class="sidebar" [class.hidden]="$viewMode() !== 'split'">
-                      <div class="map-placeholder">Map View</div>
+                  @if ($viewMode() === 'split') {
+                  <div class="sidebar">
+                      @defer {
+                  <app-venues-map></app-venues-map>
+                  } @placeholder {
+                  <div class="map-placeholder">Loading map...</div>
+                  }
                   </div>
+                  }
+                  
               </div>
 
               <!-- Trigger element for intersection observer -->
@@ -105,12 +113,8 @@ import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 
         .split-layout {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 1fr;
             gap: 2rem;
-        }
-
-        .sidebar.hidden {
-            display: none;
         }
 
         .sidebar {
@@ -139,8 +143,10 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private observer?: IntersectionObserver;
   $viewMode = this.venueState.$viewMode;
+  isBrowser = isPlatformBrowser(this.platformId);
   cardViewIcon = 'th-large';
   splitViewIcon = 'map';
+
 
   // Get data from venue state service - all loading states managed there now
   $venues = this.venueState.$filteredVenues;
@@ -184,4 +190,5 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   onScrollDown() {
     this.venueState.loadMoreVenues();
   }
+
 }

@@ -20,7 +20,7 @@ export class AppStateService {
   initializeTenant(): void {
     this.tenantService.getCurrentTenant().subscribe({
       next: (tenant) => {
-        console.log('tehant: ', tenant);
+        // console.log('tenant: ', tenant);
         this.setTenant(tenant)
       },
       error: (error) => {
