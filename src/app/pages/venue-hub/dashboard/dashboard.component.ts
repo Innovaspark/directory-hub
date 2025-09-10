@@ -1,48 +1,35 @@
-import {Component, DestroyRef, inject, OnInit, signal, Signal} from '@angular/core';
-import {CommonModule} from "@angular/common";
-import {VenueListComponent} from "@components/venue-list/venue-list.component";
-import {ScrollToTop} from "@components/scroll-to-top/scroll-to-top";
-import {VenuesDumpComponent} from "@components/venues-dump/venues-dump";
-import {FilterOption, VenueStateService} from "@core/services/venue-state.service";
+import { Component } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import { VenueListComponent } from "@components/venue-list/venue-list.component";
+import { ScrollToTop } from "@components/scroll-to-top/scroll-to-top";
+import { VenuesDumpComponent } from "@components/venues-dump/venues-dump";
+import { SearchBarComponent } from "@components/search-bar/search-bar";
 import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
-import {SearchBarComponent} from "@components/search-bar/search-bar";
 
 @Component({
   selector: 'app-venue-hub',
-  imports: [CommonModule, VenueListComponent, VenueFiltersComponent, ScrollToTop, VenuesDumpComponent, SearchBarComponent],
-  templateUrl: './dashboard.component.html',
+  standalone: true,
+  imports: [
+    CommonModule,
+    VenueListComponent,
+    ScrollToTop,
+    VenuesDumpComponent,
+    SearchBarComponent,
+    VenueFiltersComponent
+  ],
+  template: `
+    <app-search-bar></app-search-bar>
+
+    <div class="mt-5">
+        <app-venue-filters></app-venue-filters>
+      <app-venue-list></app-venue-list>
+    </div>
+
+    <app-venues-dump></app-venues-dump>
+
+    <app-scroll-to-top></app-scroll-to-top>
+  `
 })
-export class DashboardComponent implements OnInit {
-  loading = false;
-  error: string | null = null;
-
-  venueStateService = inject(VenueStateService);
-
-  $venues = this.venueStateService.$venues;
-
-  ngOnInit() {
-    this.loadVenues();
-    // TODO: Move to venue state service
-    this.cityName = 'Chicago';
-    this.cityEmoji = '🏙️';
-    this.venueCount = 145;
-    this.filterOptions = [
-      { slug: 'music_venue', label: 'Music Venues', icon: '🎵' },
-      { slug: 'theater', label: 'Theaters', icon: '🎭' },
-      { slug: 'jazz_club', label: 'Jazz Clubs', icon: '🎷' }
-    ];
-  }
-
-  loadVenues() {
-    this.loading = true;
-    this.error = null;
-  }
-
-  // UI state variables
-  cityName: string = '';
-  cityEmoji: string = '🏙️';
-  venueCount: number = 0;
-  filterOptions: FilterOption[] = [];
-
-
+export class DashboardComponent {
+  // Pure layout container - no logic needed
 }

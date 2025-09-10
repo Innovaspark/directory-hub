@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { gql } from '@apollo/client/core';
-import { Observable, of } from 'rxjs';
+import {delay, Observable, of} from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import {Venue} from "@core/models/venue.model";
 
@@ -566,6 +566,7 @@ export class VenueService {
       fetchPolicy: 'no-cache',
       notifyOnNetworkStatusChange: false
     }).pipe(
+      // delay(2000),
       map(result => ({
         venues: result.data?.venues || [],
         totalCount: result.data?.venues_aggregate?.aggregate?.count || 0

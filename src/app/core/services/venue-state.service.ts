@@ -159,21 +159,29 @@ export class VenueStateService {
       this.keywords.set(routeKeywords);
     });
 
+    // React to route page changes
+    effect(() => {
+      const routePage = this.routerState.$queryParams()?.['page'] || '0';
+      const pageNumber = parseInt(routePage, 10);
+      this.currentPage.set(pageNumber);
+    });
+
     // React to search term, keywords, and route changes
     effect(() => {
       const citySlug = this.$citySlug();
       const searchTerm = this.searchTerm();
       const keywords = this.keywords();
       const selectedFilter = this.$selectedFilter();
+      const currentPage = this.currentPage();
 
-      // Reset pagination
-      this.currentPage.set(0);
+      // Only reset pagination when search/filter changes (not when page changes)
+      const isNewSearch = searchTerm !== this.searchTerm() || keywords !== this.keywords() || selectedFilter !== this.$selectedFilter();
 
       // Load appropriate data
       if (searchTerm.trim() || keywords.trim()) {
-        this.performSearch(searchTerm, keywords, citySlug);
+        this.performSearch(searchTerm, keywords, citySlug, currentPage === 0);
       } else {
-        this.loadVenues();
+        this.loadVenues(currentPage === 0);
       }
     });
   }
@@ -212,15 +220,7 @@ export class VenueStateService {
   // Public venue actions
   loadMoreVenues(): void {
     const nextPage = this.currentPage() + 1;
-    this.currentPage.set(nextPage);
-
-    const searchTerm = this.searchTerm().trim();
-    const keywords = this.keywords().trim();
-    if (searchTerm || keywords) {
-      this.performSearch(searchTerm, keywords, this.$citySlug(), false);
-    } else {
-      this.loadVenues(false);
-    }
+    this.updateUrl({ page: nextPage.toString() });
   }
 
   refreshVenues(): void {
@@ -393,4 +393,5 @@ export class VenueStateService {
       replaceUrl: true
     });
   }
+
 }
