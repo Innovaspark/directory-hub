@@ -1,5 +1,15 @@
-import {AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, ViewChild, PLATFORM_ID, computed, signal} from '@angular/core';
-import {CommonModule, isPlatformBrowser} from "@angular/common";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  ViewChild,
+  PLATFORM_ID,
+  computed,
+  signal
+} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/services/venue-state.service";
 
 @Component({
@@ -24,27 +34,17 @@ import { VenueStateService } from "@core/services/venue-state.service";
                 </div>
                 <div class="p-6">
                   <h3 class="font-heading text-xl font-bold text-gray-900 mb-2">{{venue.name}}</h3>
-              <p class="text-gray-600 mb-4">{{venue.review_summary}}</p>
-              <div class="flex items-center mb-4">
-                <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewbox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <span class="text-gray-700 text-sm">{{venue.rating}} ({{venue.review_count}} reviews)</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-purple-600 font-medium">Wed: Open Mic</span>
-                <button class="text-purple-600 hover:text-purple-800 font-medium">View Details</button>
-              </div>
-            </div>
-          </div>
-                  }
-
-                  <!-- Loading spinner as a grid item -->
-                  @if ($showLoadingSpinner()) {
-                  <div class="venue-card flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300">
-                    <div class="text-center py-12">
-                      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-3"></div>
-                      <span class="text-gray-600">Loading more venues...</span>
+                      <p class="text-gray-600 mb-4">{{venue.review_summary}}</p>
+                      <div class="flex items-center mb-4">
+                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewbox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <span class="text-gray-700 text-sm">{{venue.rating}} ({{venue.review_count}} reviews)</span>
+                      </div>
+                      <div class="flex justify-between items-center">
+                        <span class="text-purple-600 font-medium">Wed: Open Mic</span>
+                        <button class="text-purple-600 hover:text-purple-800 font-medium">View Details</button>
+                      </div>
                     </div>
                   </div>
                   }
@@ -59,7 +59,7 @@ import { VenueStateService } from "@core/services/venue-state.service";
               <div class="text-center py-8">
                 <p class="text-gray-500">You've reached the end of the results</p>
                 <p class="text-sm text-gray-400">Showing {{$venues().length}} of {{$totalVenueCount()}} venues</p>
-        </div>
+                </div>
               }
 
               <!-- No results message -->
@@ -70,7 +70,22 @@ import { VenueStateService } from "@core/services/venue-state.service";
               </div>
               }
           </div>
+
       </section>
+
+      <!-- Keep spinner OUTSIDE section so it’s not affected by parent scroll -->
+      @if ($showLoadingSpinner()) {
+      <div class="fixed inset-0 flex justify-center items-end z-[9999] bg-black/20 pointer-events-none">
+      <div class="flex flex-col items-center mb-20 pointer-events-auto" style="background-color: rgba(255,255,255,0.85); padding: 1rem 1.5rem; border-radius: 0.5rem;">
+      <!-- Spinner -->
+      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mb-4"></div>
+      <!-- Custom green text -->
+      <span style="color: #10b981; font-weight: 600; font-size: 1.125rem;">Loading more venues...</span>
+      </div>
+      </div>
+      }
+
+
   `
 })
 export class VenueListComponent implements AfterViewInit, OnDestroy {
@@ -85,25 +100,22 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   $isLoading = this.venueState.$isLoading;
   $totalVenueCount = this.venueState.$totalVenueCount;
 
-  // Default image for venues
-  defaultVenueImage = 'https://images.unsplash.com/photo-1543261876-1a37d08f7b33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzIzMzB8MHwxfHNlYXJjaHwxfHx8MTc1NjkxODM2N3ww&ixlib=rb-4.1.0&q=80&w=1080&w=450';
+  defaultVenueImage =
+    'https://images.unsplash.com/photo-1543261876-1a37d08f7b33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzIzMzB8MHwxfHNlYXJjaHwxfHx8MTc1NjkxODM2N3ww&ixlib=rb-4.1.0&q=80&w=1080&w=450';
 
-  // Local loading state signal
   private $isLoadingMore = signal(false);
 
-  // Computed signal for showing loading spinner
   $showLoadingSpinner = computed(() => {
-    // const apiLoading = this.$isLoading();
-    // const localLoading = this.$isLoadingMore();
-    // const hasVenues = this.$venues().length > 0;
-    //
-    // // Only show spinner in browser
-    // if (!isPlatformBrowser(this.platformId)) {
-    //   return false;
-    // }
-    //
-    // return (apiLoading || localLoading) && hasVenues;
-    return true;
+    const apiLoading = this.$isLoading();
+    const localLoading = this.$isLoadingMore();
+    const hasVenues = this.$venues().length > 0;
+
+    // Only show spinner in browser
+    if (!isPlatformBrowser(this.platformId)) {
+      return false;
+    }
+
+    return (apiLoading || localLoading) && hasVenues;
   });
 
   ngAfterViewInit() {
@@ -117,14 +129,13 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   }
 
   private setupIntersectionObserver() {
-    // Only set up observer in browser environment
     if (!isPlatformBrowser(this.platformId) || typeof IntersectionObserver === 'undefined') {
       return;
     }
 
     const options = {
-      root: null, // Use viewport as root
-      rootMargin: '200px', // Trigger 200px before element comes into view
+      root: null,
+      rootMargin: '200px',
       threshold: 0.1
     };
 
@@ -140,7 +151,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
       });
     }, options);
 
-    // Start observing the trigger element
     if (this.loadTrigger) {
       this.observer.observe(this.loadTrigger.nativeElement);
     }
@@ -154,7 +164,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     this.$isLoadingMore.set(true);
     this.venueState.loadMoreVenues();
 
-    // Reset after 2 seconds to give time for API call and DOM update
     setTimeout(() => {
       this.$isLoadingMore.set(false);
     }, 2000);
