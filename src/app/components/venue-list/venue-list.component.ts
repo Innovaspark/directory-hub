@@ -13,6 +13,7 @@ import { VenueStateService } from "@core/services/venue-state.service";
 import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 import {VenuesMapComponent} from "@components/venues-map/venues-map";
+import {Venue} from "@core/models/venue.model";
 
 @Component({
   selector: 'app-venue-list',
@@ -22,7 +23,7 @@ import {VenuesMapComponent} from "@components/venues-map/venues-map";
 
       <section>
           <div class="container mx-auto px-4">
-
+              
               <app-view-mode-buttons></app-view-mode-buttons>
 
               <div [class]="$viewMode() === 'split' ? 'split-layout' : 'full-layout'">
@@ -32,7 +33,7 @@ import {VenuesMapComponent} from "@components/venues-map/venues-map";
                        (scrolled)="onScrollDown()">
 
                       @for (venue of $venues(); track venue.id; let i = $index) {
-                      <div class="venue-card" [style.--item-index]="i">
+                      <div class="venue-card" [style.--item-index]="i" (click)=onVenueClick(venue)>
                         <div class="relative">
                           <img class="w-full h-48 object-cover"
                                [src]="venue.photo || defaultVenueImage"
@@ -149,6 +150,7 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
 
 
   // Get data from venue state service - all loading states managed there now
+  $selectedVenue = this.venueState.$selectedVenue;
   $venues = this.venueState.$filteredVenues;
   $isLoading = this.venueState.$isLoading;
   $isLoadingMore = this.venueState.$isLoadingMore;
@@ -189,6 +191,10 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
 
   onScrollDown() {
     this.venueState.loadMoreVenues();
+  }
+
+  onVenueClick(venue: Venue) {
+    this.venueState.selectVenue(venue);
   }
 
 }

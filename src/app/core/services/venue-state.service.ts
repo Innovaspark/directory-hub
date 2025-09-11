@@ -126,6 +126,8 @@ export class VenueStateService {
 
   $viewMode = signal<'cards' | 'split'>('cards');
 
+  $selectedVenue = signal<Venue | null>(null);
+
   constructor(
     private venueService: VenueService,
     private cityService: CityService,
@@ -425,4 +427,14 @@ export class VenueStateService {
   setViewMode(mode: "cards" | "split") {
     this.$viewMode.set(mode);
   }
+
+  selectVenue(venue: Venue) {
+    this.$selectedVenue.set(venue);
+  }
+
+  clearSelection() {
+    this.$selectedVenue.set(null);
+  }
+
+
 }
