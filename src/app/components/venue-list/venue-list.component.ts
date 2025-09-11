@@ -13,12 +13,12 @@ import { VenueStateService } from "@core/services/venue-state.service";
 import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 import {VenuesMapComponent} from "@components/venues-map/venues-map";
-import {Venue} from "@core/models/venue.model";
+import {VenueCardComponent} from "@components/venue-card/venue-card";
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMapComponent],
+  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMapComponent, VenueCardComponent],
   template: `
 
       <section>
@@ -33,31 +33,7 @@ import {Venue} from "@core/models/venue.model";
                        (scrolled)="onScrollDown()">
 
                       @for (venue of $venues(); track venue.id; let i = $index) {
-                      <div class="venue-card" [style.--item-index]="i" (click)=onVenueClick(venue)>
-                        <div class="relative">
-                          <img class="w-full h-48 object-cover"
-                               [src]="venue.photo || defaultVenueImage"
-                               (error)="onImageError($event)"
-                               [alt]="venue.name">
-                          <div [ngClass]="['button-venue-type', 'button-venue-type-' + venue.primary_type]">
-                      {{venue.primary_type}}
-                      </div>
-                    </div>
-                    <div class="p-6">
-                      <h3 class="font-heading text-xl font-bold text-gray-900 mb-2">{{venue.name}}</h3>
-                          <p class="text-gray-600 mb-4">{{venue.review_summary}}</p>
-                          <div class="flex items-center mb-4">
-                            <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewbox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <span class="text-gray-700 text-sm">{{venue.rating}} ({{venue.review_count}} reviews)</span>
-                          </div>
-                          <div class="flex justify-between items-center">
-                            <span class="text-purple-600 font-medium">Wed: Open Mic</span>
-                            <button class="text-purple-600 hover:text-purple-800 font-medium">View Details</button>
-                          </div>
-                        </div>
-                      </div>
+                      <app-venue-card [venue]="venue"></app-venue-card>
                       }
 
                   </div>
@@ -107,6 +83,7 @@ import {Venue} from "@core/models/venue.model";
       </div>
       </div>
       }
+      
   `, styles: [`
         .full-layout {
             display: block;
@@ -157,8 +134,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   $totalVenueCount = this.venueState.$totalVenueCount;
   $venueTypes = computed(() => this.venueState.$filterOptions());
 
-  defaultVenueImage =
-    'https://images.unsplash.com/photo-1543261876-1a37d08f7b33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzIzMzB8MHwxfHNlYXJjaHwxfHx8MTc1NjkxODM2N3ww&ixlib=rb-4.1.0&q=80&w=1080&w=450';
 
   // Simplified loading spinner logic - all managed by service
   $showLoadingSpinner = computed(() => {
@@ -181,10 +156,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  onImageError(event: any) {
-    event.target.src = this.defaultVenueImage;
-  }
-
   setViewMode(mode: 'cards' | 'split') {
     this.venueState.setViewMode(mode);
   }
@@ -193,8 +164,5 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     this.venueState.loadMoreVenues();
   }
 
-  onVenueClick(venue: Venue) {
-    this.venueState.selectVenue(venue);
-  }
 
 }

@@ -29,23 +29,15 @@ import { VenueStateService } from '@core/services/venue-state.service';
               <ng-container *ngFor="let venue of venuesWithLocation(); trackBy: trackByVenueId">
                   <mgl-marker
                           #venueMarker
-                          [lngLat]="[venue.longitude!, venue.latitude!]">
-                      <div class="marker-pin">📍</div>
-                  </mgl-marker>
-                  <mgl-popup [marker]="venueMarker"
-                             (popupOpen)="whenPopupOpens(venue)"
-                             (popupClose)="whenPopupCloses(venue)"
+                          [lngLat]="[venue.longitude!, venue.latitude!]"
                   >
-                      <div class="venue-popup">
-                          <h3>{{ venue.name }}</h3>
-                          <p *ngIf="venue.full_address">{{ venue.full_address }}</p>
-                          <div *ngIf="venue.rating" class="rating">
-                              ⭐ {{ venue.rating }}
-                              <span *ngIf="venue.review_count">({{ venue.review_count }} reviews)</span>
-                          </div>
-                          <div *ngIf="venue.phone" class="phone">📞 {{ venue.phone }}</div>
-                      </div>
-                  </mgl-popup>
+                      <div class="marker-pin" (click)="selectVenue(venue)">📍</div>
+                  </mgl-marker>
+<!--                  <mgl-popup [marker]="venueMarker"-->
+<!--                             (popupOpen)="whenPopupOpens(venue)"-->
+<!--                             (popupClose)="whenPopupCloses(venue)">-->
+<!--                      <div [innerHTML]="getPopupHTML(venue)"></div>-->
+<!--                  </mgl-popup>-->
               </ng-container>
           </mgl-map>
       </div>
@@ -216,19 +208,7 @@ export class VenuesMapComponent {
           import('mapbox-gl').then(mapboxgl => {
             const popup = new mapboxgl.default.Popup()
               .setLngLat([lng, lat])
-              .setHTML(`
-                <div class="venue-popup">
-                  <h3>${venue.name}</h3>
-                  ${venue.full_address ? `<p>${venue.full_address}</p>` : ''}
-                  ${venue.rating ? `
-                    <div class="rating">
-                      ⭐ ${venue.rating}
-                      ${venue.review_count ? `(${venue.review_count} reviews)` : ''}
-                    </div>
-                  ` : ''}
-                  ${venue.phone ? `<div class="phone">📞 ${venue.phone}</div>` : ''}
-                </div>
-              `)
+              .setHTML(this.getPopupHTML(venue))
               .on('open', () => {
                 this.whenPopupOpens(venue);
               })
@@ -248,6 +228,10 @@ export class VenuesMapComponent {
 
   whenPopupCloses(venue: Venue) {
     this.venueState.clearSelectedVenue()
+  }
+
+  selectVenue(venue: Venue) {
+    this.venueState.selectVenue(venue);
   }
 
 }
