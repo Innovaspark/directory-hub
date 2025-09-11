@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import VenueDetails from "@components/venue-details/venue-details";
+import {VenueDetails} from "@components/venue-details/venue-details";
 
 export const routes: Routes = [
     {
@@ -7,7 +7,7 @@ export const routes: Routes = [
         loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
     },
     {
-        path: '/:venueId',
+        path: ':venueId',
         component: VenueDetails
     }
     // {

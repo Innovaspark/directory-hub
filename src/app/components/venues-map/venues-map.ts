@@ -7,6 +7,7 @@ import {
 } from 'ngx-mapbox-gl';
 import { Venue } from '@core/models/venue.model';
 import { VenueStateService } from '@core/services/venue-state.service';
+import {NavigationService} from "@core/services/navigation.service";
 
 @Component({
   selector: 'app-venues-map',
@@ -115,6 +116,7 @@ import { VenueStateService } from '@core/services/venue-state.service';
 })
 export class VenuesMapComponent {
   private venueState = inject(VenueStateService);
+  private navigationService = inject(NavigationService);
 
   $venues = this.venueState.$filteredVenues;
   $selectedVenue = this.venueState.$selectedVenue;
@@ -231,6 +233,10 @@ export class VenuesMapComponent {
 
   selectVenue(venue: Venue) {
     this.venueState.selectVenue(venue);
+  }
+
+  viewDetails(venue: Venue) {
+    this.navigationService.navigateToVenue(this.venueState.$countryCode(), this.venueState.$citySlug(), venue);
   }
 
 }

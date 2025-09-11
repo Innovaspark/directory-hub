@@ -2,6 +2,7 @@ import {Component, inject, input, computed} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {Venue} from "@core/models/venue.model";
 import {VenueStateService} from "@core/services/venue-state.service";
+import {NavigationService} from "@core/services/navigation.service";
 
 @Component({
   selector: 'app-venue-card',
@@ -82,6 +83,7 @@ export class VenueCardComponent {
     'https://images.unsplash.com/photo-1543261876-1a37d08f7b33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzIzMzB8MHwxfHNlYXJjaHwxfHx8MTc1NjkxODM2N3ww&ixlib=rb-4.1.0&q=80&w=1080&w=450';
 
   venueState = inject(VenueStateService);
+  navigationService = inject(NavigationService);
   $selectedVenue = this.venueState.$selectedVenue;
   venue = input.required<Venue>();
 
@@ -99,7 +101,11 @@ export class VenueCardComponent {
   }
 
   viewDetails() {
-    alert('view details');
+    // alert('view details');
+    const selectedVenue = this.venueState.$selectedVenue();
+    if (selectedVenue) {
+      this.navigationService.navigateToVenue(this.venueState.$countryCode(), this.venueState.$citySlug(), selectedVenue);
+    }
   }
 
   closePopOver(event: Event) {

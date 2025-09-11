@@ -1,6 +1,7 @@
 // navigation.service.ts
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import {Venue} from "@core/models/venue.model";
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,11 @@ export class NavigationService {
   navigateToVenues(countryCode: string, citySlug: string): void {
     // Always require country and city context - no global venues
     this.router.navigate([countryCode, citySlug, 'venues']);
+  }
+
+  navigateToVenue(countryCode: string, citySlug: string, venue: Venue): void {
+    // Always require country and city context - no global venues
+    this.router.navigate([countryCode, citySlug, 'venues', venue.id]);
   }
 
   navigateToAbout(countryCode: string, citySlug: string): void {
