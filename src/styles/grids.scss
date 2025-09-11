@@ -2,25 +2,23 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
-  transition: all 0.3s ease;
+  animation: gridFlow 0.6s ease-out forwards !important;
 }
 
-.venue-card {
-  opacity: 0;
-  transform: translateY(20px) scale(0.95);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: fadeInUp 0.6s ease forwards;
-  animation-delay: calc(var(--item-index) * 0.1s);
+/* Force re-animation when list changes */
+.venues-grid.refreshing .venue-card {
+  animation: none !important;
+  opacity: 0 !important;
+  transform: translateY(60px) rotateX(30deg) !important;
 }
 
-@keyframes fadeInUp {
+@keyframes gridFlow {
+  from {
+    transform: perspective(1000px) rotateX(20deg);
+    opacity: 0.8;
+  }
   to {
+    transform: perspective(1000px) rotateX(0deg);
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
-
-.venue-card:hover {
-  transform: translateY(-4px);
-}
-
