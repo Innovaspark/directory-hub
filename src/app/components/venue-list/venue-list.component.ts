@@ -5,8 +5,11 @@ import {
   inject,
   OnDestroy,
   ViewChild,
+  ViewChildren,
+  QueryList,
   PLATFORM_ID,
-  computed
+  computed,
+  effect
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/services/venue-state.service";
@@ -20,10 +23,9 @@ import {VenueCardComponent} from "@components/venue-card/venue-card";
   standalone: true,
   imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMapComponent, VenueCardComponent],
   template: `
-
       <section>
           <div class="container mx-auto px-4">
-              
+
               <app-view-mode-buttons></app-view-mode-buttons>
 
               <div [class]="$viewMode() === 'split' ? 'split-layout' : 'full-layout'">
@@ -33,7 +35,7 @@ import {VenueCardComponent} from "@components/venue-card/venue-card";
                        (scrolled)="onScrollDown()">
 
                       @for (venue of $venues(); track venue.id; let i = $index) {
-                      <app-venue-card [venue]="venue"></app-venue-card>
+                      <app-venue-card [venue]="venue" #venueCard></app-venue-card>
                       }
 
                   </div>
@@ -47,7 +49,7 @@ import {VenueCardComponent} from "@components/venue-card/venue-card";
                   }
                   </div>
                   }
-                  
+
               </div>
 
               <!-- Trigger element for intersection observer -->
@@ -83,7 +85,7 @@ import {VenueCardComponent} from "@components/venue-card/venue-card";
       </div>
       </div>
       }
-      
+
   `, styles: [`
         .full-layout {
             display: block;
@@ -116,6 +118,7 @@ import {VenueCardComponent} from "@components/venue-card/venue-card";
 })
 export class VenueListComponent implements AfterViewInit, OnDestroy {
   @ViewChild('loadTrigger') loadTrigger!: ElementRef;
+  @ViewChildren('venueCard', { read: ElementRef }) venueCards!: QueryList<ElementRef>;
 
   private venueState = inject(VenueStateService);
   private platformId = inject(PLATFORM_ID);
@@ -125,7 +128,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   cardViewIcon = 'th-large';
   splitViewIcon = 'map';
 
-
   // Get data from venue state service - all loading states managed there now
   $selectedVenue = this.venueState.$selectedVenue;
   $venues = this.venueState.$filteredVenues;
@@ -133,7 +135,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   $isLoadingMore = this.venueState.$isLoadingMore;
   $totalVenueCount = this.venueState.$totalVenueCount;
   $venueTypes = computed(() => this.venueState.$filterOptions());
-
 
   // Simplified loading spinner logic - all managed by service
   $showLoadingSpinner = computed(() => {
@@ -143,6 +144,18 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
 
     return (apiLoading || moreLoading) && hasVenues;
   });
+
+  constructor() {
+    // Auto-scroll to selected venue
+    effect(() => {
+      const selectedVenue = this.$selectedVenue();
+      if (selectedVenue) {
+        setTimeout(() => {
+          this.scrollToSelectedVenue(selectedVenue.id);
+        }, 100);
+      }
+    });
+  }
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -164,5 +177,18 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     this.venueState.loadMoreVenues();
   }
 
+  scrollToSelectedVenue(venueId: string) {
+    const venues = this.$venues();
+    const selectedIndex = venues.findIndex(v => v.id === venueId);
 
+    if (selectedIndex >= 0 && this.venueCards) {
+      const cardElement = this.venueCards.toArray()[selectedIndex];
+      if (cardElement) {
+        cardElement.nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
+  }
 }

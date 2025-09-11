@@ -11,7 +11,6 @@ import {VenueStateService} from "@core/services/venue-state.service";
       <div class="venue-card"
            [ngClass]="{'venue-card-selected': isSelectedVenue()}"
            (click)="onVenueClick(venue())">
-          <b>Is Selected venue? {{isSelectedVenue()}}</b>
           <div class="relative">
               <img class="w-full h-48 object-cover"
                    [src]="venue().photo || defaultVenueImage"

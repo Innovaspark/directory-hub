@@ -19,7 +19,6 @@ import { VenueStateService } from '@core/services/venue-state.service';
   ],
   template: `
       <div class="map-container">
-          <b>Selected Venue: {{$selectedVenue()?.name}}</b>
           <mgl-map
                   [style]="'mapbox://styles/mapbox/streets-v12'"
                   [zoom]="[9]"
