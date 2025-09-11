@@ -1,8 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  MapComponent
+  MapComponent,
+  MarkerComponent,
+  PopupComponent
 } from 'ngx-mapbox-gl';
+import { Venue } from '@core/models/venue.model';
+import { VenueStateService } from '@core/services/venue-state.service';
 
 @Component({
   selector: 'app-venues-map',
@@ -10,19 +14,40 @@ import {
   imports: [
     CommonModule,
     MapComponent,
+    MarkerComponent,
+    PopupComponent,
   ],
   template: `
       <div class="map-container">
           <mgl-map
                   [style]="'mapbox://styles/mapbox/streets-v12'"
                   [zoom]="[9]"
-                  [center]="[-74.50, 40]">
+                  [center]="mapCenter">
+
+              <ng-container *ngFor="let venue of venuesWithLocation(); trackBy: trackByVenueId">
+                  <mgl-marker
+                          #venueMarker
+                          [lngLat]="[venue.longitude!, venue.latitude!]">
+                      <div class="marker-pin">📍</div>
+                  </mgl-marker>
+                  <mgl-popup [marker]="venueMarker">
+                      <div class="venue-popup">
+                          <h3>{{ venue.name }}</h3>
+                          <p *ngIf="venue.full_address">{{ venue.full_address }}</p>
+                          <div *ngIf="venue.rating" class="rating">
+                              ⭐ {{ venue.rating }}
+                              <span *ngIf="venue.review_count">({{ venue.review_count }} reviews)</span>
+                          </div>
+                          <div *ngIf="venue.phone" class="phone">📞 {{ venue.phone }}</div>
+                      </div>
+                  </mgl-popup>
+              </ng-container>
           </mgl-map>
       </div>
   `,
   styles: [`
       .map-container {
-          height: 100vh;
+          height: 400px;
           width: 100%;
       }
 
@@ -32,12 +57,69 @@ import {
           display: block !important;
       }
 
-      mgl-map .mapboxgl-canvas {
-          height: 100% !important;
-          width: 100% !important;
+      .marker-pin {
+          font-size: 20px;
+          cursor: pointer;
+      }
+
+      .venue-popup {
+          min-width: 200px;
+          padding: 8px;
+      }
+
+      .venue-popup h3 {
+          margin: 0 0 8px 0;
+          font-size: 16px;
+          font-weight: bold;
+      }
+
+      .venue-popup p {
+          margin: 0 0 8px 0;
+          font-size: 14px;
+          color: #666;
+      }
+
+      .rating {
+          font-size: 14px;
+          margin-bottom: 4px;
+      }
+
+      .phone {
+          font-size: 14px;
+          color: #27ae60;
       }
   `]
 })
 export class VenuesMapComponent {
-  map: any;
+  private venueState = inject(VenueStateService);
+
+  $venues = this.venueState.$filteredVenues;
+
+  // Filter venues that have location data - as a computed signal
+  venuesWithLocation = computed(() =>
+    this.$venues().filter(venue =>
+      venue.latitude !== null &&
+      venue.longitude !== null &&
+      venue.latitude !== undefined &&
+      venue.longitude !== undefined
+    )
+  );
+
+  trackByVenueId(index: number, venue: Venue): string {
+    return venue.id;
+  }
+
+  // Calculate center point of all venues
+  get mapCenter(): [number, number] {
+    const venues = this.venuesWithLocation();
+
+    if (venues.length === 0) {
+      return [5.1214, 52.0907]; // Netherlands center as fallback
+    }
+
+    const avgLng = venues.reduce((sum, venue) => sum + venue.longitude!, 0) / venues.length;
+    const avgLat = venues.reduce((sum, venue) => sum + venue.latitude!, 0) / venues.length;
+
+    return [avgLng, avgLat];
+  }
 }
