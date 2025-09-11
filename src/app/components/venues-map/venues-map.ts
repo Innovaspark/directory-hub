@@ -166,22 +166,22 @@ export class VenuesMapComponent {
 
       // Open a popup for the selected venue
       setTimeout(() => {
-        const popup = new mapboxgl.Popup()
-          .setLngLat([lng, lat])
-          .setHTML(`
-            <div class="venue-popup">
-              <h3>${venue.name}</h3>
-              ${venue.full_address ? `<p>${venue.full_address}</p>` : ''}
-              ${venue.rating ? `
-                <div class="rating">
-                  ⭐ ${venue.rating} 
-                  ${venue.review_count ? `(${venue.review_count} reviews)` : ''}
-                </div>
-              ` : ''}
-              ${venue.phone ? `<div class="phone">📞 ${venue.phone}</div>` : ''}
-            </div>
-          `)
-          .addTo(this.map);
+        // const popup = new mapboxgl.Popup()
+        //   .setLngLat([lng, lat])
+        //   .setHTML(`
+        //     <div class="venue-popup">
+        //       <h3>${venue.name}</h3>
+        //       ${venue.full_address ? `<p>${venue.full_address}</p>` : ''}
+        //       ${venue.rating ? `
+        //         <div class="rating">
+        //           ⭐ ${venue.rating}
+        //           ${venue.review_count ? `(${venue.review_count} reviews)` : ''}
+        //         </div>
+        //       ` : ''}
+        //       ${venue.phone ? `<div class="phone">📞 ${venue.phone}</div>` : ''}
+        //     </div>
+        //   `)
+        //   .addTo(this.map);
       }, 100);
     }
   }

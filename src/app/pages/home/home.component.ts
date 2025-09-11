@@ -9,7 +9,7 @@ import {SearchBarComponent} from "@components/search-bar/search-bar";
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HeroSectionComponent, PopularCountriesComponent, Search, SearchBarComponent],
+  imports: [HeroSectionComponent, PopularCountriesComponent, SearchBarComponent],
   template: `
       <div class="home">
           <app-search-bar></app-search-bar>
