@@ -432,7 +432,7 @@ export class VenueStateService {
     this.$selectedVenue.set(venue);
   }
 
-  clearSelection() {
+  clearSelectedVenue() {
     this.$selectedVenue.set(null);
   }
 

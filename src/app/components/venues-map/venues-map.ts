@@ -19,6 +19,7 @@ import { VenueStateService } from '@core/services/venue-state.service';
   ],
   template: `
       <div class="map-container">
+          <b>Selected Venue: {{$selectedVenue()?.name}}</b>
           <mgl-map
                   [style]="'mapbox://styles/mapbox/streets-v12'"
                   [zoom]="[9]"
@@ -31,7 +32,10 @@ import { VenueStateService } from '@core/services/venue-state.service';
                           [lngLat]="[venue.longitude!, venue.latitude!]">
                       <div class="marker-pin">📍</div>
                   </mgl-marker>
-                  <mgl-popup [marker]="venueMarker">
+                  <mgl-popup [marker]="venueMarker"
+                             (popupOpen)="whenPopupOpens(venue)"
+                             (popupClose)="whenPopupCloses(venue)"
+                  >
                       <div class="venue-popup">
                           <h3>{{ venue.name }}</h3>
                           <p *ngIf="venue.full_address">{{ venue.full_address }}</p>
@@ -90,6 +94,32 @@ import { VenueStateService } from '@core/services/venue-state.service';
           font-size: 14px;
           color: #27ae60;
       }
+
+      /* Style the Mapbox popup close button */
+      :global(.mapboxgl-popup-close-button) {
+          width: 32px !important;
+          height: 32px !important;
+          font-size: 20px !important;
+          font-weight: bold !important;
+          color: #666 !important;
+          background: rgba(255, 255, 255, 0.9) !important;
+          border-radius: 50% !important;
+          border: 2px solid #e0e0e0 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          right: 8px !important;
+          top: 8px !important;
+          cursor: pointer !important;
+          transition: all 0.2s ease !important;
+
+          &:hover {
+              background: rgba(255, 255, 255, 1) !important;
+              color: #333 !important;
+              border-color: #ccc !important;
+              transform: scale(1.1) !important;
+          }
+      }
   `]
 })
 export class VenuesMapComponent {
@@ -139,6 +169,22 @@ export class VenuesMapComponent {
     return venue.id;
   }
 
+  getPopupHTML(venue: Venue): string {
+    return `
+      <div class="venue-popup">
+        <h3>${venue.name}</h3>
+        ${venue.full_address ? `<p>${venue.full_address}</p>` : ''}
+        ${venue.rating ? `
+          <div class="rating">
+            ⭐ ${venue.rating}
+            ${venue.review_count ? `(${venue.review_count} reviews)` : ''}
+          </div>
+        ` : ''}
+        ${venue.phone ? `<div class="phone">📞 ${venue.phone}</div>` : ''}
+      </div>
+    `;
+  }
+
   onMapLoad(map: any) {
     this.map = map;
 
@@ -164,25 +210,44 @@ export class VenuesMapComponent {
       this.map.setCenter([lng, lat]);
       this.map.setZoom(18);
 
-      // Open a popup for the selected venue
+      // Open a popup for the selected venue with SSR safety
       setTimeout(() => {
-        // const popup = new mapboxgl.Popup()
-        //   .setLngLat([lng, lat])
-        //   .setHTML(`
-        //     <div class="venue-popup">
-        //       <h3>${venue.name}</h3>
-        //       ${venue.full_address ? `<p>${venue.full_address}</p>` : ''}
-        //       ${venue.rating ? `
-        //         <div class="rating">
-        //           ⭐ ${venue.rating}
-        //           ${venue.review_count ? `(${venue.review_count} reviews)` : ''}
-        //         </div>
-        //       ` : ''}
-        //       ${venue.phone ? `<div class="phone">📞 ${venue.phone}</div>` : ''}
-        //     </div>
-        //   `)
-        //   .addTo(this.map);
+        if (typeof window !== 'undefined') {
+          import('mapbox-gl').then(mapboxgl => {
+            const popup = new mapboxgl.default.Popup()
+              .setLngLat([lng, lat])
+              .setHTML(`
+                <div class="venue-popup">
+                  <h3>${venue.name}</h3>
+                  ${venue.full_address ? `<p>${venue.full_address}</p>` : ''}
+                  ${venue.rating ? `
+                    <div class="rating">
+                      ⭐ ${venue.rating}
+                      ${venue.review_count ? `(${venue.review_count} reviews)` : ''}
+                    </div>
+                  ` : ''}
+                  ${venue.phone ? `<div class="phone">📞 ${venue.phone}</div>` : ''}
+                </div>
+              `)
+              .on('open', () => {
+                this.whenPopupOpens(venue);
+              })
+              .on('close', () => {
+                this.whenPopupCloses(venue);
+              })
+              .addTo(this.map)
+          });
+        }
       }, 100);
     }
   }
+
+  whenPopupOpens(venue: Venue) {
+    this.venueState.selectVenue(venue);
+  }
+
+  whenPopupCloses(venue: Venue) {
+    this.venueState.clearSelectedVenue()
+  }
+
 }

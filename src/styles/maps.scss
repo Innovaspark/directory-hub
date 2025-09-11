@@ -1,0 +1,24 @@
+/* Style the Mapbox popup close button */
+.mapboxgl-popup-close-button {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  color: #666 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: none;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  right: 2px !important;
+  top: 2px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    color: #333 !important;
+    border-color: #ccc !important;
+    transform: scale(1.1) !important;
+  }
+}
