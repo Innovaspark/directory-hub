@@ -12,12 +12,12 @@ import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/services/venue-state.service";
 import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
-import {VenuesMap} from "@components/venues-map/venues-map";
+import {VenuesMapComponent} from "@components/venues-map/venues-map";
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMap],
+  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMapComponent],
   template: `
 
       <section>

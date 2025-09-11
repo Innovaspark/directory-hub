@@ -12,6 +12,8 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import {provideApolloConfig} from "./apollo.config";
 import {AppStateService} from "@core/services/application-state.service";
+import {environment} from "../environments/environment";
+import {provideMapboxGL} from "ngx-mapbox-gl";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,7 +26,10 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const appState = inject(AppStateService);
       return appState.initializeTenant();
-    })
+    }),
+    provideMapboxGL({
+      accessToken: environment.mapboxToken,
+    }),
   ]
 };
 
