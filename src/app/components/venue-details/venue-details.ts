@@ -1,12 +1,14 @@
-import {Component, Inject, inject, PLATFORM_ID} from "@angular/core";
+import {Component, computed, Inject, inject, PLATFORM_ID} from "@angular/core";
 import {CommonModule, isPlatformBrowser} from "@angular/common";
 import {Venue} from "@core/models/venue.model";
 import {VenueStateService} from "@core/services/venue-state.service";
+import {HoursComponent} from "@components/hours/hours";
+import {QuickActionsComponent} from "@components/quick-actions/quick-actions";
 
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HoursComponent, QuickActionsComponent],
   template: `
 
       <div class="min-h-screen bg-gray-50">
@@ -16,7 +18,8 @@ import {VenueStateService} from "@core/services/venue-state.service";
                   <div class="flex items-center gap-4">
                       <button class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
                           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7"/>
                           </svg>
                           Back to venues
                       </button>
@@ -55,10 +58,11 @@ import {VenueStateService} from "@core/services/venue-state.service";
                               <div class="flex items-center gap-4 mb-4">
                                   <div class="flex items-center">
                                       <svg class="w-5 h-5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                       </svg>
                                       <span class="font-semibold">{{ venueState.$currentVenue()?.rating }}</span>
-                                      <span class="text-gray-600 ml-1">({{ venueState.$currentVenue()?.review_count }} reviews)</span>
+                                      <span class="text-gray-600 ml-1">({{ venueState.$currentVenue()?.review_count }}
+                                          reviews)</span>
                                   </div>
                               </div>
                               <p class="text-gray-700 leading-relaxed">
@@ -72,28 +76,39 @@ import {VenueStateService} from "@core/services/venue-state.service";
                           <h2 class="text-xl font-bold text-gray-900 mb-4">Contact & Location</h2>
                           <div class="space-y-3">
                               <div class="flex items-start gap-3">
-                                  <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <svg class="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor"
+                                       viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"/>
                                   </svg>
                                   <div>
                                       <p class="text-gray-900">{{ venueState.$currentVenue()?.full_address }}</p>
-                                      <button class="text-blue-600 text-sm hover:underline" (click)="onGetDirections()">Get directions</button>
+                                      <button class="text-blue-600 text-sm hover:underline" (click)="onGetDirections()">
+                                          Get directions
+                                      </button>
                                   </div>
                               </div>
 
                               <div class="flex items-center gap-3">
-                                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                       viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                   </svg>
-                                  <a [href]="'tel:' + venueState.$currentVenue()?.phone" class="text-blue-600 hover:underline">{{ venueState.$currentVenue()?.phone }}</a>
+                                  <a [href]="'tel:' + venueState.$currentVenue()?.phone"
+                                     class="text-blue-600 hover:underline">{{ venueState.$currentVenue()?.phone }}</a>
                               </div>
 
                               <div class="flex items-center gap-3">
-                                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
+                                       viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
                                   </svg>
-                                  <a [href]="venueState.$currentVenue()?.site" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
+                                  <a [href]="venueState.$currentVenue()?.site" target="_blank" rel="noopener noreferrer"
+                                     class="text-blue-600 hover:underline">
                                       Visit website
                                   </a>
                               </div>
@@ -103,27 +118,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
                       <!-- Hours -->
                       <div class="bg-white rounded-xl shadow-lg p-6">
                           <h2 class="text-xl font-bold text-gray-900 mb-4">Hours</h2>
-                          @if (venueState.$currentVenue()?.working_hours) {
-                          <div class="text-gray-700">
-                          {{ venueState.$currentVenue()?.working_hours }}
-                          </div>
-                          } @else {
-                          <div class="text-gray-500">
-                            Hours not available
-                          </div>
-                          }
-                      </div>
-
-                      <!-- Amenities -->
-                      <div class="bg-white rounded-xl shadow-lg p-6">
-                          <h2 class="text-xl font-bold text-gray-900 mb-4">Amenities</h2>
-                          <div class="flex flex-wrap gap-2">
-                              <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">Live Music</span>
-                              <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">Full Bar</span>
-                              <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">Food Service</span>
-                              <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">Reservations</span>
-                              <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">Wheelchair Accessible</span>
-                          </div>
+                          <app-hours [hours]="$currentVenue()?.working_hours ?? ''"></app-hours>
                       </div>
                   </div>
 
@@ -134,9 +129,12 @@ import {VenueStateService} from "@core/services/venue-state.service";
                       <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                           <div class="h-80 bg-gray-200 flex items-center justify-center">
                               <div class="text-center">
-                                  <svg class="w-16 h-16 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <svg class="w-16 h-16 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                                       viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"/>
                                   </svg>
                                   <p class="text-gray-500">Map showing venue location</p>
                                   <p class="text-sm text-gray-400">{{ venueState.$currentVenue()?.full_address }}</p>
@@ -146,36 +144,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
 
                       <!-- Quick Actions -->
                       <div class="bg-white rounded-xl shadow-lg p-6">
-                          <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-                          <div class="grid grid-cols-2 gap-3">
-                              <button class="flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                  </svg>
-                                  Call Now
-                              </button>
-
-                              <button class="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                                  </svg>
-                                  Directions
-                              </button>
-
-                              <button class="flex items-center justify-center gap-2 bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors">
-                                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                  </svg>
-                                  Save
-                              </button>
-
-                              <button class="flex items-center justify-center gap-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors">
-                                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                  </svg>
-                                  Share
-                              </button>
-                          </div>
+                          <app-quick-actions [venue]="$currentVenue()"></app-quick-actions>
                       </div>
                   </div>
               </div>
@@ -187,6 +156,8 @@ import {VenueStateService} from "@core/services/venue-state.service";
 export class VenueDetails {
 
   venueState = inject(VenueStateService);
+  $currentVenue = this.venueState.$currentVenue;
+
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   scrollToTop() {
@@ -213,7 +184,6 @@ export class VenueDetails {
     if (!venue.full_address) return;
 
     const address = encodeURIComponent(venue.full_address);
-
     // Try native apps on mobile, fallback to web
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       window.location.href = `maps://maps.apple.com/?daddr=${address}`;
@@ -223,5 +193,6 @@ export class VenueDetails {
       window.open(`https://maps.google.com/maps?daddr=${address}`, '_blank');
     }
   }
+
 
 }
