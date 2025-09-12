@@ -25,8 +25,6 @@ import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
       <app-venue-list></app-venue-list>
     </div>
 
-    <app-venues-dump></app-venues-dump>
-
     <app-scroll-to-top></app-scroll-to-top>
   `
 })

@@ -1,3 +1,38 @@
+//.map-container {
+//  height: 100vh;
+//  width: 100%;
+//  position: relative;
+//}
+
+//.map-container.fullscreen-mode {
+//  position: fixed;
+//  top: 0;
+//  left: 0;
+//  right: 0;
+//  bottom: 0;
+//  z-index: 9999;
+//  background: white;
+//}
+//
+//.map-fullscreen-toggle {
+//  position: absolute;
+//  top: 10px;
+//  right: 10px;
+//  z-index: 1001;
+//  background: rgba(255, 255, 255, 0.9);
+//  border: 1px solid #e5e7eb;
+//  border-radius: 6px;
+//  padding: 6px;
+//  cursor: pointer;
+//  backdrop-filter: blur(4px);
+//  transition: all 0.2s ease;
+//
+//  &:hover {
+//    background: white;
+//    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+//  }
+//}
+
 /* Style the Mapbox popup close button */
 .mapboxgl-popup-close-button {
   width: 32px !important;

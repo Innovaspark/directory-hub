@@ -19,7 +19,9 @@ import {NavigationService} from "@core/services/navigation.service";
     PopupComponent,
   ],
   template: `
-      <div class="map-container">
+
+      <div [class]="isFullscreen ? 'map-fullscreen' : 'map-container'">
+
           <mgl-map
                   [style]="'mapbox://styles/mapbox/streets-v12'"
                   [zoom]="[9]"
@@ -33,22 +35,33 @@ import {NavigationService} from "@core/services/navigation.service";
                   >
                       <div class="marker-pin" (click)="selectVenue(venue)">📍</div>
                   </mgl-marker>
-<!--                  <mgl-popup [marker]="venueMarker"-->
-<!--                             (popupOpen)="whenPopupOpens(venue)"-->
-<!--                             (popupClose)="whenPopupCloses(venue)">-->
-<!--                      <div [innerHTML]="getPopupHTML(venue)"></div>-->
-<!--                  </mgl-popup>-->
               </ng-container>
           </mgl-map>
       </div>
+      
   `,
   styles: [`
       .map-container {
-          height: 100vh;
+          height: 100%;
           width: 100%;
           position: relative;
       }
 
+      .map-container.fullscreen-mode {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 9999;
+          background: white;
+      }
+
+         .map-container.fullscreen-mode mgl-map {
+             height: 100vh !important;
+             width: 100% !important;
+         }
+         
       mgl-map {
           height: 100% !important;
           width: 100% !important;
@@ -238,5 +251,19 @@ export class VenuesMapComponent {
   viewDetails(venue: Venue) {
     this.navigationService.navigateToVenue(this.venueState.$countryCode(), this.venueState.$citySlug(), venue);
   }
+
+  isFullscreen = false;
+
+  toggleFullscreen() {
+    this.isFullscreen = !this.isFullscreen;
+
+    // Give the DOM time to update, then resize
+    requestAnimationFrame(() => {
+      if (this.map) {
+        this.map.resize();
+      }
+    });
+  }
+
 
 }

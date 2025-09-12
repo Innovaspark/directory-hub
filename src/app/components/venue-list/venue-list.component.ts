@@ -100,7 +100,7 @@ import {VenueCardComponent} from "@components/venue-card/venue-card";
         .sidebar {
             position: sticky;
             top: 20px;
-            height: 600px;
+            height: 100vh;
         }
 
         .map-placeholder {

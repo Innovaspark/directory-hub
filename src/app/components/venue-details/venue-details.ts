@@ -1,5 +1,7 @@
-import {Component} from "@angular/core";
-import {CommonModule} from "@angular/common";
+import {Component, Inject, inject, PLATFORM_ID} from "@angular/core";
+import {CommonModule, isPlatformBrowser} from "@angular/common";
+import {Venue} from "@core/models/venue.model";
+import {VenueStateService} from "@core/services/venue-state.service";
 
 @Component({
   selector: 'app-venue-details',
@@ -69,7 +71,7 @@ import {CommonModule} from "@angular/common";
                                   </svg>
                                   <div>
                                       <p class="text-gray-900">131 W 3rd St, New York, NY 10012</p>
-                                      <button class="text-blue-600 text-sm hover:underline">Get directions</button>
+                                      <button class="text-blue-600 text-sm hover:underline" (click)="onGetDirections()">Get directions</button>
                                   </div>
                               </div>
 
@@ -225,5 +227,43 @@ import {CommonModule} from "@angular/common";
   `
 })
 export class VenueDetails {
+
+  venueState = inject(VenueStateService);
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+
+  scrollToTop() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo(0, 0);
+    }
+  }
+
+  ngOnInit() {
+    // Force scroll to top when component loads
+    this.scrollToTop();
+  }
+
+  onGetDirections() {
+    const venue = this.venueState.$selectedVenue();
+    if (venue) {
+      this.getDirections(venue);
+    } else {
+      alert('no venue!');
+    }
+  }
+
+  getDirections(venue: Venue) {
+    if (!venue.full_address) return;
+
+    const address = encodeURIComponent(venue.full_address);
+
+    // Try native apps on mobile, fallback to web
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      window.location.href = `maps://maps.apple.com/?daddr=${address}`;
+    } else if (/Android/i.test(navigator.userAgent)) {
+      window.location.href = `google.navigation:q=${address}`;
+    } else {
+      window.open(`https://maps.google.com/maps?daddr=${address}`, '_blank');
+    }
+  }
 
 }
