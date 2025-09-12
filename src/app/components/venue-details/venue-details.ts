@@ -4,11 +4,12 @@ import {Venue} from "@core/models/venue.model";
 import {VenueStateService} from "@core/services/venue-state.service";
 import {HoursComponent} from "@components/hours/hours";
 import {QuickActionsComponent} from "@components/quick-actions/quick-actions";
+import {SingleVenueMapComponent} from "@components/venue-map/venue-map";
 
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [CommonModule, HoursComponent, QuickActionsComponent],
+  imports: [CommonModule, HoursComponent, QuickActionsComponent, SingleVenueMapComponent],
   template: `
 
       <div class="min-h-screen bg-gray-50">
@@ -81,7 +82,7 @@ import {QuickActionsComponent} from "@components/quick-actions/quick-actions";
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"/>
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                   </svg>
                                   <div>
                                       <p class="text-gray-900">{{ venueState.$currentVenue()?.full_address }}</p>
@@ -114,7 +115,6 @@ import {QuickActionsComponent} from "@components/quick-actions/quick-actions";
                               </div>
                           </div>
                       </div>
-
                       <!-- Hours -->
                       <div class="bg-white rounded-xl shadow-lg p-6">
                           <h2 class="text-xl font-bold text-gray-900 mb-4">Hours</h2>
@@ -127,19 +127,20 @@ import {QuickActionsComponent} from "@components/quick-actions/quick-actions";
 
                       <!-- Map Component -->
                       <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                          <div class="h-80 bg-gray-200 flex items-center justify-center">
-                              <div class="text-center">
-                                  <svg class="w-16 h-16 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
-                                       viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"/>
-                                  </svg>
-                                  <p class="text-gray-500">Map showing venue location</p>
-                                  <p class="text-sm text-gray-400">{{ venueState.$currentVenue()?.full_address }}</p>
-                              </div>
-                          </div>
+<!--                          <div class="h-80 bg-gray-200 flex items-center justify-center">-->
+<!--                              <div class="text-center">-->
+<!--                                  <svg class="w-16 h-16 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"-->
+<!--                                       viewBox="0 0 24 24">-->
+<!--                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
+<!--                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>-->
+<!--                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
+<!--                                            d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"/>-->
+<!--                                  </svg>-->
+<!--                                  <p class="text-gray-500">Map showing venue location</p>-->
+<!--                                  <p class="text-sm text-gray-400">{{ venueState.$currentVenue()?.full_address }}</p>-->
+<!--                              </div>-->
+<!--                          </div>-->
+                          <app-venue-map [venue]="$currentVenue()"></app-venue-map>
                       </div>
 
                       <!-- Quick Actions -->

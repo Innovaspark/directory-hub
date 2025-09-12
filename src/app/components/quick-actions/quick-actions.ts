@@ -9,9 +9,9 @@ import { Venue } from '@core/models/venue.model';
   template: `
       <div class="bg-white rounded-xl shadow-lg p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="flex gap-3">
               <button
-                      class="flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors relative group"
+                      class="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors relative group"
                       [disabled]="!venue()?.phone"
                       [class.opacity-50]="!venue()?.phone"
                       [class.cursor-not-allowed]="!venue()?.phone"
@@ -21,14 +21,13 @@ import { Venue } from '@core/models/venue.model';
                             d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                   </svg>
                   Call Now
-                  <!-- Tooltip -->
                   <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                       {{ venue()?.phone || 'No phone number available' }}
                   </div>
               </button>
 
               <button
-                      class="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors relative group"
+                      class="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors relative group"
                       [disabled]="!venue()?.full_address"
                       [class.opacity-50]="!venue()?.full_address"
                       [class.cursor-not-allowed]="!venue()?.full_address"
@@ -38,36 +37,21 @@ import { Venue } from '@core/models/venue.model';
                             d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                   </svg>
                   Directions
-                  <!-- Tooltip -->
                   <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                       Get directions to venue
                   </div>
               </button>
 
-              <button class="flex items-center justify-center gap-2 bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors relative group">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                  </svg>
-                  Save
-                  <!-- Tooltip -->
-                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                      Save to favorites
-                  </div>
-              </button>
-
-              <button class="flex items-center justify-center gap-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors relative group" (click)="toggleShareMenu()">
+              <button class="flex-1 flex items-center justify-center gap-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors relative group" (click)="toggleShareMenu()">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
                   </svg>
                   Share
-                  <!-- Tooltip -->
                   <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                       Share venue details
                   </div>
 
-                  <!-- Share Menu -->
                   @if (showShareMenu) {
                   <div class="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-xl border py-2 z-10 min-w-48">
                     <button class="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3" (click)="shareWhatsApp()">
@@ -118,7 +102,6 @@ export class QuickActionsComponent {
 
     const address = encodeURIComponent(venueData.full_address);
 
-    // Try native apps on mobile, fallback to web
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       window.location.href = `maps://maps.apple.com/?daddr=${address}`;
     } else if (/Android/i.test(navigator.userAgent)) {
@@ -163,7 +146,6 @@ export class QuickActionsComponent {
   async copyLink() {
     try {
       await navigator.clipboard.writeText(this.getShareUrl());
-      // You could add a toast notification here
       console.log('Link copied to clipboard');
     } catch (err) {
       console.error('Failed to copy link:', err);
