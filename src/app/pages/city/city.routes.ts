@@ -8,15 +8,15 @@ import {cityGuard} from "@core/guards/city.guard";
 export const routes: Routes = [
   {
     path: '',
-    canMatch: [cityGuard],
+    // canMatch: [cityGuard],
     component: CityLandingComponent
   },
   {
-    path: 'venues',
+    path: 'venues/:venueId',
     loadChildren: () => import('../venue-hub/venue-hub.routes').then(m => m.routes)
   },
   {
-    path: 'venues/:venueId',
+    path: 'venues',
     loadChildren: () => import('../venue-hub/venue-hub.routes').then(m => m.routes)
   },
   {

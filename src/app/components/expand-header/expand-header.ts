@@ -75,16 +75,6 @@ import {RouterStateService} from "@core/services/router-state.service";
       transition: all 0.3s ease;
     }
 
-    .logo-img {
-        height: 56px; /* Normal size */
-        width: auto;
-        transition: height 0.3s ease;
-        display: block;
-    }
-
-    .logo-img.logo-small {
-        height: 42px; /* Contracted size */
-    }
 
     .nav-list {
       display: flex;

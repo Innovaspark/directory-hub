@@ -1,36 +1,45 @@
 import { Component, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MapComponent, MarkerComponent } from 'ngx-mapbox-gl';
-import { LngLatLike, Map as MapboxMap } from 'mapbox-gl';
 import { Venue } from '@core/models/venue.model';
 
 @Component({
-  selector: 'app-venue-map',
+  selector: 'app-single-venue-map',
   standalone: true,
   imports: [CommonModule, MapComponent, MarkerComponent],
   template: `
+      @if (hasValidCoordinates()) {
       <div class="map-container">
       <mgl-map
-              [style]="'mapbox://styles/mapbox/streets-v12'"
-              [zoom]="[9]"
-              [center]="mapCenter"
-              (mapCreate)="onMapLoad($event)">
+      [style]="'mapbox://styles/mapbox/streets-v12'"
+      [zoom]="[15]"
+      [center]="mapCenter()"
+      (mapCreate)="onMapLoad($event)">
 
-              <mgl-marker
-                      #venueMarker
-                      [lngLat]="[venue()?.longitude!, venue()?.latitude!]"
-              >
-                  <div class="marker-pin" (click)="selectVenue(venue())">📍</div>
-              </mgl-marker>
+      <mgl-marker
+      [lngLat]="[venue()!.longitude!, venue()!.latitude!]">
+      <div class="marker-pin">📍</div>
+      </mgl-marker>
       </mgl-map>
       </div>
+      } @else {
+      <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+      <div class="text-center text-gray-500">
+      <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M15 11a3 3 0 11-6 0 3 3 0 616 0z" />
+      </svg>
+      <p>Location not available</p>
+      </div>
+      </div>
+      }
   `,
   styles: [`
-
       .map-container {
           height: 100%;
           width: 100%;
-          min-height: 500px;
           position: relative;
       }
 
@@ -41,18 +50,9 @@ import { Venue } from '@core/models/venue.model';
       }
 
       .marker-pin {
-          cursor: pointer;
           font-size: 24px;
-          line-height: 1;
+          cursor: pointer;
           filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-      }
-
-      .mapboxgl-map {
-          display: block !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          height: 100% !important;
-          width: 100% !important;
       }
 
       .marker-pin:hover {
@@ -75,31 +75,19 @@ export class SingleVenueMapComponent {
   });
 
   // Center map on venue coordinates
-  // mapCenter = computed((): LngLatLike => {
-  //   const venueData = this.venue();
-  //   return [venueData?.longitude || 0, venueData?.latitude || 0];
-  // });
-  mapCenter: [number, number] = [5.1214, 52.0907]; // Default center
+  mapCenter = computed((): [number, number] => {
+    const venueData = this.venue();
+    return [venueData?.longitude || 0, venueData?.latitude || 0];
+  });
 
-  private map?: MapboxMap;
+  private map?: any;
 
-  onMapLoad(map: MapboxMap) {
+  onMapLoad(map: any) {
     this.map = map;
 
-    // Optional: Add venue name popup that shows on load
-    const venueData = this.venue();
-    if (this.hasValidCoordinates() && venueData?.name) {
-      // You could add a popup here if desired
-      // map.on('load', () => {
-      //   const popup = new mapboxgl.Popup({ offset: 25 })
-      //     .setHTML(`<div class="font-semibold">${venueData.name}</div>`)
-      //     .setLngLat([venueData.longitude!, venueData.latitude!])
-      //     .addTo(map);
-      // });
-    }
-  }
-
-  selectVenue(venue: Venue | null | undefined) {
-    alert('venue selected')
+    // Trigger resize after map loads to ensure proper sizing
+    setTimeout(() => {
+      map.resize();
+    }, 200);
   }
 }

@@ -26,6 +26,6 @@ import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
     <app-scroll-to-top></app-scroll-to-top>
   `
 })
-export class DashboardComponent {
+export class VenueDashboardComponent {
   // Pure layout container - no logic needed
 }

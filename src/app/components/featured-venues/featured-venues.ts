@@ -14,8 +14,8 @@ import {VenueStateService} from "@core/services/venue-state.service";
         <h2>Featured Venues</h2>
         <p class="featured-venues-subtitle">Discover some of our most popular live music spots</p>
         <div class="featured-venues-grid">
-          @for (venue of venueStateService.$featuredVenues(); track venue.id) {
-            <a [routerLink]="['/venues', venue.id]" class="featured-venue-card">
+          @for (venue of venueState.$featuredVenues(); track venue.id) {
+            <a [routerLink]="['/', $countryCode(), $citySlug(), 'venues', venue.id]" class="featured-venue-card">
               <div class="featured-venue-image">
                 <img [src]="venue.photo || defaultImage" [alt]="venue.name" />
                 <div class="featured-venue-badge">Featured</div>
@@ -161,7 +161,10 @@ import {VenueStateService} from "@core/services/venue-state.service";
   `]
 })
 export class FeaturedVenuesComponent {
-  readonly venueStateService = inject(VenueStateService);
+  readonly venueState = inject(VenueStateService);
+
+  $countryCode = this.venueState.$countryCode;
+  $citySlug = this.venueState.$citySlug;
 
   // Default image for venues without photos
   readonly defaultImage = 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop';

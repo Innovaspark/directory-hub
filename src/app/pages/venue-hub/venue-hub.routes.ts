@@ -5,7 +5,7 @@ import {venueDetailResolver} from "@core/resolvers/venue-detail.resolver";
 export const routes: Routes = [
     {
         path: '',
-        loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
+        loadComponent: () => import('./dashboard/venue-dashboard.component').then(m => m.VenueDashboardComponent)
     },
     {
         path: ':venueId',
