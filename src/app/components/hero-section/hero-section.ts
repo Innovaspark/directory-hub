@@ -1,8 +1,7 @@
-// hero-section.component.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {NavigationService} from "@core/services/navigation.service";
-import {RouterLink} from "@angular/router";
+import { NavigationService } from '@core/services/navigation.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-hero-section',
@@ -11,37 +10,45 @@ import {RouterLink} from "@angular/router";
   template: `
       <section class="hero">
           <div class="container">
+
+              <!-- Centered heading & tagline -->
+              <div class="hero-header text-center">
+                  <h1 class="hero-title">GigaWhat</h1>
+                  <p class="tagline">Your Curated Guide to Live Music in the Netherlands</p>
+              </div>
+
+              <!-- Logo & description side by side -->
               <div class="hero-content">
                   <div class="logo-section">
                       <div class="hero-logo">
-                          <!-- Replace with your actual logo -->
                           <div class="logo">
                               <a [routerLink]="'/'">
                                   <img src="/images/logos/main-logo.svg"
                                        alt="GigaWhat.live"
-                                       class="logo-img"
-                                       [class.logo-large]="true">
+                                       class="logo-img logo-large">
                               </a>
                           </div>
-
                       </div>
                   </div>
 
                   <div class="text-section">
-                      <h1 class="hero-title">GigaWhat</h1>
-                      <p class="tagline">The Netherlands' Complete Live Music Directory</p>
-                      <p class="description">From intimate jazz clubs to legendary concert halls – discover every venue where music comes alive across the Netherlands. Find your next musical adventure.</p>
-
-                      <div class="cta-section">
-                          <button class="cta-btn" (click)="navigateToNetherlands()">
-                              <span class="btn-icon">🎵</span>
-                              <span class="btn-text">Explore Live Music Venues</span>
-                              <span class="btn-arrow">→</span>
-                          </button>
-                          <p class="subtitle">Discover venues in Amsterdam, Rotterdam, The Hague & beyond</p>
-                      </div>
+                      <p class="description">
+                          From intimate jazz clubs to legendary concert halls – discover every venue where music comes
+                          alive across the Netherlands. Find your next musical gig adventure.
+                      </p>
                   </div>
               </div>
+
+              <!-- Centered CTA -->
+              <div class="cta-section text-center">
+                  <button class="cta-btn" (click)="navigateToExplore()">
+                      <span class="btn-icon">🎵</span>
+                      <span class="btn-text">Explore Live Music Venues</span>
+                      <span class="btn-arrow">→</span>
+                  </button>
+                  <p class="subtitle">Discover gigs, open mics, jam session, bands and concerts</p>
+              </div>
+
           </div>
       </section>
   `,
@@ -76,11 +83,16 @@ import {RouterLink} from "@angular/router";
           z-index: 2;
       }
 
+      .hero-header {
+          margin-bottom: 3rem;
+      }
+
       .hero-content {
           display: flex;
           align-items: center;
           gap: 3rem;
           flex-wrap: wrap;
+          justify-content: center;
       }
 
       .logo-section {
@@ -119,14 +131,14 @@ import {RouterLink} from "@angular/router";
       .description {
           font-size: 1.1rem;
           opacity: 0.9;
-          margin-bottom: 2.5rem;
           font-weight: 400;
           line-height: 1.6;
           color: rgba(255, 255, 255, 0.9);
       }
 
       .cta-section {
-          text-align: left;
+          margin-top: 2.5rem;
+          text-align: center;
       }
 
       .cta-btn {
@@ -152,19 +164,12 @@ import {RouterLink} from "@angular/router";
           background: linear-gradient(45deg, #ff5252, #d32f2f);
       }
 
-      .btn-icon {
-          font-size: 1.2rem;
-      }
-
-      .btn-text {
-          font-weight: 600;
-      }
-
+      .btn-icon { font-size: 1.2rem; }
+      .btn-text { font-weight: 600; }
       .btn-arrow {
           font-size: 1.2rem;
           transition: transform 0.3s ease;
       }
-
       .cta-btn:hover .btn-arrow {
           transform: translateX(4px);
       }
@@ -197,49 +202,24 @@ import {RouterLink} from "@angular/router";
               min-width: auto;
           }
 
-          .hero-title {
-              font-size: 2.5rem;
-          }
+          .hero-title { font-size: 2.5rem; }
+          .tagline { font-size: 1.2rem; }
+          .description { font-size: 1rem; }
 
-          .tagline {
-              font-size: 1.2rem;
-          }
-
-          .description {
-              font-size: 1rem;
-              margin-bottom: 2rem;
-          }
-
-          .cta-section {
-              text-align: center;
-          }
-
-          .cta-btn {
-              padding: 0.875rem 1.75rem;
-              font-size: 1rem;
-          }
+          .cta-btn { padding: 0.875rem 1.75rem; font-size: 1rem; }
       }
 
       @media (max-width: 480px) {
-          .hero-logo svg {
-              width: 80px;
-              height: 80px;
-          }
-
-          .hero-title {
-              font-size: 2rem;
-          }
-
-          .hero-content {
-              gap: 1.5rem;
-          }
+          .hero-logo svg { width: 80px; height: 80px; }
+          .hero-title { font-size: 2rem; }
+          .hero-content { gap: 1.5rem; }
       }
   `]
 })
 export class HeroSectionComponent {
   private navigationService = inject(NavigationService);
 
-  navigateToNetherlands() {
-    this.navigationService.navigateToCountry('nl');
+  navigateToExplore() {
+    this.navigationService.navigateToVenues('nl');
   }
 }

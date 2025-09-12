@@ -21,7 +21,7 @@ export class NavigationService {
     this.router.navigate([countryCode, citySlug]);
   }
 
-  navigateToVenues(countryCode: string, citySlug: string): void {
+  navigateToVenues(countryCode: string, citySlug: string = 'all'): void {
     // Always require country and city context - no global venues
     this.router.navigate([countryCode, citySlug, 'venues']);
   }

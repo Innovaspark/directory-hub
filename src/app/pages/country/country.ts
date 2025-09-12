@@ -1,8 +1,7 @@
-// country-landing-page.component.ts
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CountryHeroComponent } from '@components/country-hero/country-hero';
-import {CountryCitiesComponent} from "@components/country-cities/country-cities";
+import {SeoService} from "@core/services/seo.service";
 
 @Component({
   selector: 'app-country-landing-page',
@@ -10,12 +9,11 @@ import {CountryCitiesComponent} from "@components/country-cities/country-cities"
   imports: [
     CommonModule,
     CountryHeroComponent,
-    CountryCitiesComponent
   ],
   template: `
     <div class="country-landing">
       <app-country-hero></app-country-hero>
-        <app-country-cities></app-country-cities>
+<!--        <app-country-cities></app-country-cities>-->
     </div>
   `,
   styles: [`
@@ -25,5 +23,25 @@ import {CountryCitiesComponent} from "@components/country-cities/country-cities"
   `]
 })
 export class CountryLandingPageComponent {
-  // This component is just a container - all logic is in child components
+
+  private seo = inject(SeoService);
+
+  constructor() {
+    this.setSeo();
+  }
+
+  private setSeo() {
+    this.seo.setMeta({
+      title: 'Live Music in the Netherlands - Venues, Gigs & Festivals',
+      description: 'Discover live music venues, concerts, festivals, open mics, jam sessions, and gigs across the Netherlands. Find the best live music events near you.',
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Netherlands Live Music",
+        "url": undefined, // SeoService will auto-fill current URL
+        "description": "Discover live music venues, concerts, festivals, open mics, jam sessions, and gigs across the Netherlands. Find the best live music events near you."
+      }
+    });
+  }
+
 }

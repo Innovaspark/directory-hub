@@ -5,11 +5,12 @@ import {VenueStateService} from "@core/services/venue-state.service";
 import {HoursComponent} from "@components/hours/hours";
 import {QuickActionsComponent} from "@components/quick-actions/quick-actions";
 import {SingleVenueMapComponent} from "@components/venue-map/venue-map";
+import {BreadcrumbComponent} from "@components/breadcrumb/breadcrumb";
 
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [CommonModule, HoursComponent, QuickActionsComponent, SingleVenueMapComponent],
+  imports: [CommonModule, HoursComponent, QuickActionsComponent, SingleVenueMapComponent, BreadcrumbComponent],
   template: `
 
       <!-- Add this at the top of your main content, before the grid -->
@@ -42,21 +43,9 @@ import {SingleVenueMapComponent} from "@components/venue-map/venue-map";
 <!--              </div>-->
 <!--          </div>-->
 
-          <div class="bg-gray-50 border-b border-gray-200">
-              <div class="max-w-7xl mx-auto px-4 py-3">
-                  <nav class="flex" aria-label="Breadcrumb">
-                      <ol class="flex items-center space-x-2">
-                          <li><a href="#" class="text-gray-500 hover:text-gray-700">Netherlands</a></li>
-                          <li><span class="text-gray-400">/</span></li>
-                          <li><a href="#" class="text-gray-500 hover:text-gray-700">Amsterdam</a></li>
-                          <li><span class="text-gray-400">/</span></li>
-                          <li><a href="#" class="text-gray-500 hover:text-gray-700">Venues</a></li>
-                          <li><span class="text-gray-400">/</span></li>
-                          <li><span class="text-gray-900 font-medium">{{ venueState.$currentVenue()?.name }}</span></li>
-                      </ol>
-                  </nav>
-              </div>
-          </div>
+
+          
+          <app-breadcrumb></app-breadcrumb>
 
           <div class="max-w-7xl mx-auto px-4 py-8">
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
