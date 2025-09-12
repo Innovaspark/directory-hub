@@ -14,5 +14,6 @@ export const cityGuard = (route: Route, segments: UrlSegment[]) => {
     return true; // Always allow "all"
   }
 
-  return cityService.validateCountryCity(country, city);
+  // return cityService.validateCountryCity(country, city);
+  return true;
 };

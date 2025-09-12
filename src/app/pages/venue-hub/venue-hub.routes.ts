@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import {VenueDetails} from "@components/venue-details/venue-details";
+import {venueDetailResolver} from "@core/resolvers/venue-detail.resolver";
 
 export const routes: Routes = [
     {
@@ -8,11 +9,9 @@ export const routes: Routes = [
     },
     {
         path: ':venueId',
-        component: VenueDetails
+        component: VenueDetails,
+        resolve: {
+            venue: venueDetailResolver
+        }
     }
-    // {
-    //     path: '',
-    //     redirectTo: 'dashboard',
-    //     pathMatch: 'full'
-    // }
 ];

@@ -11,6 +11,7 @@ import { City } from '../models/city.model';
 import { VenueType } from '../models/venue-type.model';
 import { VenueService, VenuesResponse } from "@core/services/venue.service";
 import { AppStateService } from "@core/services/application-state.service";
+import {catchError, Observable, of, tap} from "rxjs";
 
 export interface FilterOption {
   slug: string;
@@ -45,6 +46,7 @@ export class VenueStateService {
   // Loading state
   private loading = signal<boolean>(false);
   private isLoadingMore = signal<boolean>(false);
+  private lastCitySlug = null;
 
   // Client-side venue type filter
   private _selectedVenueType = signal<string | null>(null);
@@ -57,11 +59,11 @@ export class VenueStateService {
   readonly $selectedFilter = this.routerState.$filterType;
 
   // Search state accessors
-  readonly $searchTerm = this.searchTerm.asReadonly();
-  readonly $keywords = this.keywords.asReadonly();
-  readonly $isSearchActive = computed(() =>
-    this.searchTerm().trim().length > 0 || this.keywords().trim().length > 0
-  );
+  // readonly $searchTerm = this.searchTerm.asReadonly();
+  // readonly $keywords = this.keywords.asReadonly();
+  // readonly $isSearchActive = computed(() =>
+  //   this.searchTerm().trim().length > 0 || this.keywords().trim().length > 0
+  // );
 
   // Main venues computed signal - handles both browse and search (no server-side type filtering)
   readonly $venues = computed(() => {
@@ -121,8 +123,8 @@ export class VenueStateService {
   private citySearchTerm = signal<string>('');
   private citySuggestions = signal<City[]>([]);
 
-  readonly $citySearchTerm = this.citySearchTerm.asReadonly();
-  readonly $citySuggestions = this.citySuggestions.asReadonly();
+  // readonly $citySearchTerm = this.citySearchTerm.asReadonly();
+  // readonly $citySuggestions = this.citySuggestions.asReadonly();
 
   $viewMode = signal<'cards' | 'split'>('cards');
 
@@ -133,25 +135,26 @@ export class VenueStateService {
     private cityService: CityService,
     private tenantService: TenantService
   ) {
-    this.initializeVenueTypes();
+    // this.initializeVenueTypes();
     this.initializeRouteEffects();
     this.loadInitialVenues();
   }
 
-  private initializeVenueTypes(): void {
-    // this.tenantService.getVenueTypes()
-    //   .pipe(takeUntilDestroyed(this.destroyRef))
-    //   .subscribe(types => {
-    //     this.venueTypes.set(types);
-    //   });
-    // alert('have to fix init venue types');
-  }
+  // private initializeVenueTypes(): void {
+  //   // this.tenantService.getVenueTypes()
+  //   //   .pipe(takeUntilDestroyed(this.destroyRef))
+  //   //   .subscribe(types => {
+  //   //     this.venueTypes.set(types);
+  //   //   });
+  //   // alert('have to fix init venue types');
+  // }
 
   private initializeRouteEffects(): void {
     // React to city changes
     effect(() => {
       const citySlug = this.$citySlug();
-      if (citySlug) {
+      if (citySlug && (citySlug != this.lastCitySlug)) {
+        this.lastCitySlug = citySlug;
         this.loadCityData(citySlug);
       } else {
         this.currentCity.set(null);
@@ -194,41 +197,41 @@ export class VenueStateService {
   }
 
   // Public search actions
-  setSearchTerm(term: string): void {
-    this.searchTerm.set(term);
-    this.updateUrl({ q: term || null });
-  }
-
-  setKeywords(keywords: string): void {
-    this.keywords.set(keywords);
-    this.updateUrl({ keywords: keywords || null });
-  }
-
-  clearSearch(): void {
-    this.searchTerm.set('');
-    this.searchResults.set([]);
-    this.updateUrl({ q: null });
-  }
-
-  clearKeywords(): void {
-    this.keywords.set('');
-    this.updateUrl({ keywords: null });
-  }
-
-  // Public filter actions
-  setFilter(filter: string | null): void {
-    this.updateUrl({ type: filter });
-  }
+  // setSearchTerm(term: string): void {
+  //   this.searchTerm.set(term);
+  //   this.updateUrl({ q: term || null });
+  // }
+  //
+  // setKeywords(keywords: string): void {
+  //   this.keywords.set(keywords);
+  //   this.updateUrl({ keywords: keywords || null });
+  // }
+  //
+  // clearSearch(): void {
+  //   this.searchTerm.set('');
+  //   this.searchResults.set([]);
+  //   this.updateUrl({ q: null });
+  // }
+  //
+  // clearKeywords(): void {
+  //   this.keywords.set('');
+  //   this.updateUrl({ keywords: null });
+  // }
+  //
+  // // Public filter actions
+  // setFilter(filter: string | null): void {
+  //   this.updateUrl({ type: filter });
+  // }
 
   // New client-side venue type filter method
   setVenueTypeFilter(venueType: string | null): void {
     this._selectedVenueType.set(venueType);
   }
 
-  clearFilters(): void {
-    this.updateUrl({ q: null, keywords: null, type: null });
-    this._selectedVenueType.set(null);
-  }
+  // clearFilters(): void {
+  //   this.updateUrl({ q: null, keywords: null, type: null });
+  //   this._selectedVenueType.set(null);
+  // }
 
   // Public venue actions
   loadMoreVenues(): void {
@@ -245,16 +248,16 @@ export class VenueStateService {
     this.updateUrl({ page: nextPage.toString() });
   }
 
-  refreshVenues(): void {
-    this.currentPage.set(0);
-    const searchTerm = this.searchTerm().trim();
-    const keywords = this.keywords().trim();
-    if (searchTerm || keywords) {
-      this.performSearch(searchTerm, keywords, this.$citySlug(), true);
-    } else {
-      this.loadVenues(true);
-    }
-  }
+  // refreshVenues(): void {
+  //   this.currentPage.set(0);
+  //   const searchTerm = this.searchTerm().trim();
+  //   const keywords = this.keywords().trim();
+  //   if (searchTerm || keywords) {
+  //     this.performSearch(searchTerm, keywords, this.$citySlug(), true);
+  //   } else {
+  //     this.loadVenues(true);
+  //   }
+  // }
 
   loadInitialVenues(): void {
     if (this.allVenues().length === 0) {
@@ -263,26 +266,26 @@ export class VenueStateService {
   }
 
   // City search methods
-  setCitySearchTerm(term: string): void {
-    this.citySearchTerm.set(term);
-
-    if (term.length >= 2) {
-      const countryCode = this.$countryCode();
-
-      this.cityService.searchCities(term, countryCode, 10)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(cities => {
-          this.citySuggestions.set(cities);
-        });
-    } else {
-      this.citySuggestions.set([]);
-    }
-  }
-
-  selectCity(city: City): void {
-    this.router.navigate([city.country?.code, city.slug, 'venues']);
-    this.clearCitySearch();
-  }
+  // setCitySearchTerm(term: string): void {
+  //   this.citySearchTerm.set(term);
+  //
+  //   if (term.length >= 2) {
+  //     const countryCode = this.$countryCode();
+  //
+  //     this.cityService.searchCities(term, countryCode, 10)
+  //       .pipe(takeUntilDestroyed(this.destroyRef))
+  //       .subscribe(cities => {
+  //         this.citySuggestions.set(cities);
+  //       });
+  //   } else {
+  //     this.citySuggestions.set([]);
+  //   }
+  // }
+  //
+  // selectCity(city: City): void {
+  //   this.router.navigate([city.country?.code, city.slug, 'venues']);
+  //   this.clearCitySearch();
+  // }
 
   clearCitySearch(): void {
     this.citySearchTerm.set('');
@@ -434,6 +437,49 @@ export class VenueStateService {
 
   clearSelectedVenue() {
     this.$selectedVenue.set(null);
+  }
+
+  // Add these to your existing VenueStateService
+
+// Current venue signals
+  private currentVenue = signal<Venue | null>(null);
+  private currentVenueLoading = signal<boolean>(false);
+  private currentVenueError = signal<string | null>(null);
+
+// Public readonly accessors
+  readonly $currentVenue = this.currentVenue.asReadonly();
+  readonly $currentVenueLoading = this.currentVenueLoading.asReadonly();
+  readonly $currentVenueError = this.currentVenueError.asReadonly();
+
+// Load current venue method
+  loadCurrentVenue(venueId: string): Observable<Venue | null> {
+    this.currentVenueLoading.set(true);
+    this.currentVenueError.set(null);
+
+    return this.venueService.getVenueById(venueId).pipe(
+      tap(venue => {
+        this.currentVenue.set(venue);
+        this.currentVenueLoading.set(false);
+
+        // Set error if venue not found
+        if (!venue) {
+          this.currentVenueError.set('Venue not found');
+        }
+      }),
+      catchError(error => {
+        this.currentVenueLoading.set(false);
+        this.currentVenueError.set('Failed to load venue details');
+        console.error('Error loading venue:', error);
+        return of(null);
+      })
+    );
+  }
+
+// Clear current venue (useful for cleanup)
+  clearCurrentVenue(): void {
+    this.currentVenue.set(null);
+    this.currentVenueError.set(null);
+    this.currentVenueLoading.set(false);
   }
 
 

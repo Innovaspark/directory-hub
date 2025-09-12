@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import {
   MapComponent,
   MarkerComponent,
-  PopupComponent
 } from 'ngx-mapbox-gl';
 import { Venue } from '@core/models/venue.model';
 import { VenueStateService } from '@core/services/venue-state.service';
@@ -16,7 +15,6 @@ import {NavigationService} from "@core/services/navigation.service";
     CommonModule,
     MapComponent,
     MarkerComponent,
-    PopupComponent,
   ],
   template: `
 

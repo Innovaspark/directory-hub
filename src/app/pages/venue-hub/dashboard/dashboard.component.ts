@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { VenueListComponent } from "@components/venue-list/venue-list.component";
 import { ScrollToTop } from "@components/scroll-to-top/scroll-to-top";
-import { VenuesDumpComponent } from "@components/venues-dump/venues-dump";
 import { SearchBarComponent } from "@components/search-bar/search-bar";
 import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
 
@@ -13,7 +12,6 @@ import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
     CommonModule,
     VenueListComponent,
     ScrollToTop,
-    VenuesDumpComponent,
     SearchBarComponent,
     VenueFiltersComponent
   ],

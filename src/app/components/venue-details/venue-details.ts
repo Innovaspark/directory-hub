@@ -8,7 +8,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
   standalone: true,
   imports: [CommonModule],
   template: `
-      
+
       <div class="min-h-screen bg-gray-50">
           <!-- Header -->
           <div class="bg-white shadow-sm border-b">
@@ -22,7 +22,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
                       </button>
                       <div class="text-sm text-gray-500">
                         <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                            Jazz Club
+                            {{ venueState.$currentVenue()?.primary_type }}
                         </span>
                       </div>
                   </div>
@@ -37,25 +37,32 @@ import {VenueStateService} from "@core/services/venue-state.service";
 
                       <!-- Hero Image & Title -->
                       <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                          @if (venueState.$currentVenue()?.photo) {
                           <img
-                                  src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800"
-                                  alt="The Blue Note Jazz Club"
+                                  [src]="venueState.$currentVenue()?.photo"
+                                  [alt]="venueState.$currentVenue()?.name || 'Venue'"
                                   class="w-full h-64 object-cover"
                           />
+                          } @else {
+                          <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          }
                           <div class="p-6">
-                              <h1 class="text-3xl font-bold text-gray-900 mb-2">The Blue Note Jazz Club</h1>
+                              <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ venueState.$currentVenue()?.name }}</h1>
                               <div class="flex items-center gap-4 mb-4">
                                   <div class="flex items-center">
                                       <svg class="w-5 h-5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                       </svg>
-                                      <span class="font-semibold">4.6</span>
-                                      <span class="text-gray-600 ml-1">(847 reviews)</span>
+                                      <span class="font-semibold">{{ venueState.$currentVenue()?.rating }}</span>
+                                      <span class="text-gray-600 ml-1">({{ venueState.$currentVenue()?.review_count }} reviews)</span>
                                   </div>
-                                  <span class="text-green-600 font-medium">$$$$</span>
                               </div>
                               <p class="text-gray-700 leading-relaxed">
-                                  Legendary jazz club featuring world-class musicians in an intimate setting. Known for its exceptional acoustics and historic performances since 1981.
+                                  {{ venueState.$currentVenue()?.review_summary }}
                               </p>
                           </div>
                       </div>
@@ -70,7 +77,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                   </svg>
                                   <div>
-                                      <p class="text-gray-900">131 W 3rd St, New York, NY 10012</p>
+                                      <p class="text-gray-900">{{ venueState.$currentVenue()?.full_address }}</p>
                                       <button class="text-blue-600 text-sm hover:underline" (click)="onGetDirections()">Get directions</button>
                                   </div>
                               </div>
@@ -79,14 +86,14 @@ import {VenueStateService} from "@core/services/venue-state.service";
                                   <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                   </svg>
-                                  <a href="tel:(212) 475-8592" class="text-blue-600 hover:underline">(212) 475-8592</a>
+                                  <a [href]="'tel:' + venueState.$currentVenue()?.phone" class="text-blue-600 hover:underline">{{ venueState.$currentVenue()?.phone }}</a>
                               </div>
 
                               <div class="flex items-center gap-3">
                                   <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
                                   </svg>
-                                  <a href="https://bluenote.net" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
+                                  <a [href]="venueState.$currentVenue()?.site" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
                                       Visit website
                                   </a>
                               </div>
@@ -96,36 +103,15 @@ import {VenueStateService} from "@core/services/venue-state.service";
                       <!-- Hours -->
                       <div class="bg-white rounded-xl shadow-lg p-6">
                           <h2 class="text-xl font-bold text-gray-900 mb-4">Hours</h2>
-                          <div class="space-y-2">
-                              <div class="flex justify-between">
-                                  <span class="font-medium text-gray-700">Monday</span>
-                                  <span class="text-gray-600">6:00 PM - 1:00 AM</span>
-                              </div>
-                              <div class="flex justify-between">
-                                  <span class="font-medium text-gray-700">Tuesday</span>
-                                  <span class="text-gray-600">6:00 PM - 1:00 AM</span>
-                              </div>
-                              <div class="flex justify-between">
-                                  <span class="font-medium text-gray-700">Wednesday</span>
-                                  <span class="text-gray-600">6:00 PM - 1:00 AM</span>
-                              </div>
-                              <div class="flex justify-between">
-                                  <span class="font-medium text-gray-700">Thursday</span>
-                                  <span class="text-gray-600">6:00 PM - 2:00 AM</span>
-                              </div>
-                              <div class="flex justify-between">
-                                  <span class="font-medium text-gray-700">Friday</span>
-                                  <span class="text-gray-600">6:00 PM - 2:00 AM</span>
-                              </div>
-                              <div class="flex justify-between">
-                                  <span class="font-medium text-gray-700">Saturday</span>
-                                  <span class="text-gray-600">6:00 PM - 2:00 AM</span>
-                              </div>
-                              <div class="flex justify-between">
-                                  <span class="font-medium text-gray-700">Sunday</span>
-                                  <span class="text-gray-600">6:00 PM - 12:00 AM</span>
-                              </div>
+                          @if (venueState.$currentVenue()?.working_hours) {
+                          <div class="text-gray-700">
+                          {{ venueState.$currentVenue()?.working_hours }}
                           </div>
+                          } @else {
+                          <div class="text-gray-500">
+                            Hours not available
+                          </div>
+                          }
                       </div>
 
                       <!-- Amenities -->
@@ -153,35 +139,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                   </svg>
                                   <p class="text-gray-500">Map showing venue location</p>
-                                  <p class="text-sm text-gray-400">131 W 3rd St, New York, NY 10012</p>
-                              </div>
-                          </div>
-                      </div>
-
-                      <!-- Nearby Venues -->
-                      <div class="bg-white rounded-xl shadow-lg p-6">
-                          <h2 class="text-xl font-bold text-gray-900 mb-4">Nearby Venues</h2>
-                          <div class="space-y-3">
-                              <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                  <div>
-                                      <h3 class="font-medium text-gray-900">The Village Vanguard</h3>
-                                      <p class="text-sm text-gray-600">0.2 miles away</p>
-                                  </div>
-                                  <button class="text-blue-600 text-sm hover:underline">View</button>
-                              </div>
-                              <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                  <div>
-                                      <h3 class="font-medium text-gray-900">Smalls Jazz Club</h3>
-                                      <p class="text-sm text-gray-600">0.4 miles away</p>
-                                  </div>
-                                  <button class="text-blue-600 text-sm hover:underline">View</button>
-                              </div>
-                              <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                  <div>
-                                      <h3 class="font-medium text-gray-900">55 Bar</h3>
-                                      <p class="text-sm text-gray-600">0.6 miles away</p>
-                                  </div>
-                                  <button class="text-blue-600 text-sm hover:underline">View</button>
+                                  <p class="text-sm text-gray-400">{{ venueState.$currentVenue()?.full_address }}</p>
                               </div>
                           </div>
                       </div>
@@ -223,7 +181,7 @@ import {VenueStateService} from "@core/services/venue-state.service";
               </div>
           </div>
       </div>
-    
+
   `
 })
 export class VenueDetails {
@@ -243,7 +201,7 @@ export class VenueDetails {
   }
 
   onGetDirections() {
-    const venue = this.venueState.$selectedVenue();
+    const venue = this.venueState.$currentVenue();
     if (venue) {
       this.getDirections(venue);
     } else {
