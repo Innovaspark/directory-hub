@@ -16,10 +16,6 @@ import {SeoService} from "@core/services/seo.service";
 <!--          <app-popular-countries></app-popular-countries>-->
           <app-featured-venues></app-featured-venues>
       </div>
-
-      <script type="application/ld+json">
-          {{ jsonLd | json }}
-      </script>
   `,
   styles: [`
     .home {
@@ -43,7 +39,6 @@ export class HomeComponent {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "GigaWhat",
-        "url": undefined, // SeoService auto-fills current URL
         "description": "Explore live music venues, concerts, festivals, open mics, jam sessions, and gigs across the Netherlands."
       }
     });

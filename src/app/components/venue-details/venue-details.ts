@@ -14,38 +14,9 @@ import {RouterStateService} from "@core/services/router-state.service";
   standalone: true,
   imports: [CommonModule, HoursComponent, QuickActionsComponent, SingleVenueMapComponent, BreadcrumbComponent],
   template: `
-
-      <!-- Add this at the top of your main content, before the grid -->
-<!--      <div class="mb-6">-->
-<!--          <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-colors">-->
-<!--              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
-<!--                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>-->
-<!--              </svg>-->
-<!--              Back to venues-->
-<!--          </button>-->
-<!--      </div>-->
+      
 
       <div class="min-h-screen bg-gray-50">
-          <!-- Header -->
-<!--          <div class="bg-white border-b border-gray-100">-->
-<!--              <div class="max-w-7xl mx-auto px-4 py-3">-->
-<!--                  <div class="flex items-center justify-between">-->
-<!--                      <button class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">-->
-<!--                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
-<!--                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>-->
-<!--                          </svg>-->
-<!--                          Back to venues-->
-<!--                      </button>-->
-<!--                      <div class="text-sm text-gray-500">-->
-<!--        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">-->
-<!--          {{ venueState.$currentVenue()?.primary_type }}-->
-<!--        </span>-->
-<!--                      </div>-->
-<!--                  </div>-->
-<!--              </div>-->
-<!--          </div>-->
-
-
           
           <app-breadcrumb></app-breadcrumb>
 
@@ -141,28 +112,12 @@ import {RouterStateService} from "@core/services/router-state.service";
                   <!-- Right Column - Map & Interactive Elements -->
                   <div class="space-y-6">
 
-                      <!-- Map Component -->
-                      <div class="bg-white rounded-xl shadow-lg" [style.height]="'600px'">
-<!--                          <div class="h-80 bg-gray-200 flex items-center justify-center">-->
-<!--                              <div class="text-center">-->
-<!--                                  <svg class="w-16 h-16 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"-->
-<!--                                       viewBox="0 0 24 24">-->
-<!--                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-<!--                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>-->
-<!--                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
-<!--                                            d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"/>-->
-<!--                                  </svg>-->
-<!--                                  <p class="text-gray-500">Map showing venue location</p>-->
-<!--                                  <p class="text-sm text-gray-400">{{ venueState.$currentVenue()?.full_address }}</p>-->
-<!--                              </div>-->
-<!--                          </div>-->
+                      <app-quick-actions [venue]="$currentVenue()"></app-quick-actions>
+
+                      <div class="bg-white rounded-xl shadow-lg mt-3" [style.height]="'700px'">
                           <app-single-venue-map [venue]="$currentVenue()"></app-single-venue-map>
                       </div>
 
-                      <!-- Quick Actions -->
-                      <div class="bg-white rounded-xl shadow-lg p-6">
-                          <app-quick-actions [venue]="$currentVenue()"></app-quick-actions>
-                      </div>
                   </div>
               </div>
           </div>
@@ -172,23 +127,20 @@ import {RouterStateService} from "@core/services/router-state.service";
 })
 export class VenueDetails {
 
+  /* injections */
   venueState = inject(VenueStateService);
   private seo = inject(SeoService);
   private routerState = inject(RouterStateService);
+
+  /* signals */
   $currentVenue = this.venueState.$currentVenue;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
-
-  scrollToTop() {
-    if (isPlatformBrowser(this.platformId)) {
-      window.scrollTo(0, 0);
-    }
-  }
-
-  // This would come from your API or route resolver
+  /* properties */
   venueName = this.$currentVenue()?.name;
   citySlug = '';
   countryCode = '';
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit() {
     this.citySlug = this.routerState.$citySlug() ?? '';
@@ -245,5 +197,10 @@ export class VenueDetails {
     }
   }
 
+  scrollToTop() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo(0, 0);
+    }
+  }
 
 }

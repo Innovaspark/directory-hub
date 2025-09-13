@@ -1,5 +1,4 @@
 import {Component, inject, input} from '@angular/core';
-import {RouterLink} from "@angular/router";
 import {VenueStateService} from "@core/services/venue-state.service";
 import {CommonModule} from "@angular/common";
 

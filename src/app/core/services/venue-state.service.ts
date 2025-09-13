@@ -8,10 +8,10 @@ import { CityService } from './city.service';
 import { TenantService } from './tenant.service';
 import { Venue } from '../models/venue.model';
 import { City } from '../models/city.model';
-import { VenueType } from '../models/venue-type.model';
 import { VenueService, VenuesResponse } from "@core/services/venue.service";
 import { AppStateService } from "@core/services/application-state.service";
 import {catchError, Observable, of, tap} from "rxjs";
+import {VenueType} from "@core/models/tenant.model";
 
 export interface FilterOption {
   slug: string;

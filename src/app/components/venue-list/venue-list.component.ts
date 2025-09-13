@@ -201,10 +201,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  setViewMode(mode: 'cards' | 'split') {
-    this.venueState.setViewMode(mode);
-  }
-
   onScrollDown() {
     this.venueState.loadMoreVenues();
   }

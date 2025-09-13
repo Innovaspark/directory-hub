@@ -118,14 +118,6 @@ import { VenueStateService } from "@core/services/venue-state.service";
           flex-shrink: 0;
       }
 
-      .form-label {
-          font-size: 14px;
-          font-weight: 600;
-          color: white;
-          margin-bottom: 6px;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      }
-
       .city-select,
       .search-input {
           height: 48px;
@@ -254,12 +246,12 @@ export class SearchBarComponent {
   // Local hardcoded cities - replace with data service later
   cities = [
     { id: 1, slug: 'amersfoort', name: 'Amersfoort', emoji: '🏙️' },
-    { id: 2, slug: 'amsterdam', name: 'Amsterdam', emoji: '🏙️' },
-    { id: 3, slug: 'utrecht', name: 'Utrecht', emoji: '🌿' },
-    { id: 4, slug: 'rotterdam', name: 'Rotterdam', emoji: '🚢' },
-    { id: 5, slug: 'the-hague', name: 'The Hague', emoji: '🏛️' },
-    { id: 6, slug: 'eindhoven', name: 'Eindhoven', emoji: '💡' },
-    { id: 7, slug: 'groningen', name: 'Groningen', emoji: '🌟' }
+    // { id: 2, slug: 'amsterdam', name: 'Amsterdam', emoji: '🏙️' },
+    // { id: 3, slug: 'utrecht', name: 'Utrecht', emoji: '🌿' },
+    // { id: 4, slug: 'rotterdam', name: 'Rotterdam', emoji: '🚢' },
+    // { id: 5, slug: 'the-hague', name: 'The Hague', emoji: '🏛️' },
+    // { id: 6, slug: 'eindhoven', name: 'Eindhoven', emoji: '💡' },
+    // { id: 7, slug: 'groningen', name: 'Groningen', emoji: '🌟' }
   ];
 
   ngOnInit(): void {

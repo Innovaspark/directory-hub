@@ -7,6 +7,7 @@ export interface VenueType {
   description: string;
 }
 
+
 export interface Tenant {
   id: string;
   name: string;

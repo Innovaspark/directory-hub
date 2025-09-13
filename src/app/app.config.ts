@@ -19,7 +19,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes, withDebugTracing()),
+    // provideRouter(routes, withDebugTracing()),
+    provideRouter(routes),
     provideHttpClient(withFetch()),
     provideClientHydration(withEventReplay()),
     ...provideApolloConfig(),
