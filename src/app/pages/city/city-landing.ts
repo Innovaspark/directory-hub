@@ -3,6 +3,8 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {VenueStateService} from "@core/services/venue-state.service";
+import {RouterStateService} from "@core/services/router-state.service";
+import {SeoService} from "@core/services/seo.service";
 
 @Component({
   selector: 'app-city-landing',
@@ -226,4 +228,24 @@ import {VenueStateService} from "@core/services/venue-state.service";
 })
 export class CityLandingComponent {
   venueState = inject(VenueStateService);
+  private seo = inject(SeoService);
+  private routerState = inject(RouterStateService);
+
+  ngOnInit() {
+    const citySlug = this.routerState.$citySlug();
+
+    if (citySlug) {
+      this.seo.setMeta({
+        title: `${citySlug} Live Music – Jam Sessions, Open Mics & Live Bands | GigaWhat`,
+        description: `Discover jam sessions, open mics, live bands, concerts, and gigs in ${citySlug}. Explore the best live music venues and festivals with GigaWhat.`,
+        jsonLd: {
+          "@context": "https://schema.org",
+          "@type": "City",
+          "name": citySlug,
+          "description": `Live music in ${citySlug}: jam sessions, open mics, live bands, concerts, festivals, and gigs.`,
+        },
+      });
+    }
+  }
+
 }

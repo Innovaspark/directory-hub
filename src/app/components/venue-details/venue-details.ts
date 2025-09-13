@@ -6,6 +6,8 @@ import {HoursComponent} from "@components/hours/hours";
 import {QuickActionsComponent} from "@components/quick-actions/quick-actions";
 import {SingleVenueMapComponent} from "@components/venue-map/venue-map";
 import {BreadcrumbComponent} from "@components/breadcrumb/breadcrumb";
+import {SeoService} from "@core/services/seo.service";
+import {RouterStateService} from "@core/services/router-state.service";
 
 @Component({
   selector: 'app-venue-details',
@@ -171,6 +173,8 @@ import {BreadcrumbComponent} from "@components/breadcrumb/breadcrumb";
 export class VenueDetails {
 
   venueState = inject(VenueStateService);
+  private seo = inject(SeoService);
+  private routerState = inject(RouterStateService);
   $currentVenue = this.venueState.$currentVenue;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
@@ -181,9 +185,41 @@ export class VenueDetails {
     }
   }
 
+  // This would come from your API or route resolver
+  venueName = this.$currentVenue()?.name;
+  citySlug = '';
+  countryCode = '';
+
   ngOnInit() {
-    // Force scroll to top when component loads
+    this.citySlug = this.routerState.$citySlug() ?? '';
+    this.countryCode = this.routerState.$countryCode() ?? '';
+
+    const locationName = this.citySlug || this.countryCode || 'the Netherlands';
+
+    const title = `${this.venueName} – Live Music, Jam Sessions, Open Mics & Live Bands | GigaWhat`;
+    const description = `Experience live music at ${this.venueName} in ${locationName}. Enjoy jam sessions, open mics, live bands, concerts, and gigs.`;
+
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "MusicVenue",
+      "name": this.venueName,
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": this.citySlug || undefined,
+        "addressCountry": this.countryCode || undefined
+      },
+      "description": description,
+      "url": undefined // SeoService automatically handles URL
+    };
+
+    this.seo.setMeta({
+      title,
+      description,
+      jsonLd
+    });
+
     this.scrollToTop();
+
   }
 
   onGetDirections() {

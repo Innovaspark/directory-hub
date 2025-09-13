@@ -30,35 +30,46 @@ export const routes: Routes = [
                 component: HomeComponent
             },
             {
-                path: ':country',
+                path: 'nl',
                 canMatch: [countryGuard],
                 component: CountryLandingPageComponent
             },
             {
+                path: ':country',
+                canMatch: [countryGuard],
+                component: CountryLandingPageComponent,
+                data: { prerender: false }
+            },
+            {
                 path: ':country/:city',
                 canMatch: [cityGuard],
-                component: CityLandingComponent
+                component: CityLandingComponent,
+                data: { prerender: false }
             },
             {
                 path: ':country/:city/venues',
                 canMatch: [cityGuard],
-                component: VenueDashboardComponent
+                component: VenueDashboardComponent,
+                data: { prerender: false }
             },
             {
                 path: ':country/:city/venues/:venueId',
                 component: VenueDetails,
                 resolve: {
                     venue: venueDetailResolver
-                }
+                },
+                data: { prerender: false }
             },
             {
                 path: ':country/:city/about',
                 canMatch: [cityGuard],
-                component: CityAboutComponent
+                component: CityAboutComponent,
+                data: { prerender: false }
             },
             {
                 path: '**',
-                component: NotFoundComponent
+                component: NotFoundComponent,
+                data: { prerender: false }
             }
         ]
     }
@@ -70,3 +81,15 @@ export const routes: Routes = [
 // - venue-hub.routes.ts
 // - country.routes.ts
 // - auth folder (for now)
+
+/*
+const routes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'nl', component: CountryLandingComponent },
+  { path: ':country', component: CountryLandingComponent, data: { prerender: false } },
+  { path: ':country/:city', component: CityLandingComponent, data: { prerender: false } },
+  { path: ':country/:city/venues/:venueId', component: VenueDetailComponent, data: { prerender: false } },
+  { path: ':country/:city/about', component: AboutCityComponent, data: { prerender: false } },
+  { path: '**', component: NotFoundComponent, data: { prerender: false } },
+];
+ */

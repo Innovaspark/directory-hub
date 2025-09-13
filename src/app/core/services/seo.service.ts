@@ -54,19 +54,43 @@ export class SeoService {
     if (data.jsonLd) {
       this.addJsonLd(data.jsonLd);
     }
+
+    // Set canonical link
+    this.setCanonical(url);
   }
 
   /** Add JSON-LD structured data dynamically */
+  /** Add JSON-LD structured data dynamically (SSR-friendly) */
   private addJsonLd(jsonLd: Record<string, any>) {
-    // Only execute in the browser
-    if (!isPlatformBrowser(this.platformId)) return;
-
+    // Remove any previously rendered JSON-LD
     const existing = document.querySelectorAll('script[type="application/ld+json"]');
     existing.forEach(el => el.remove());
 
+    // Create the script element
     const script = this.renderer.createElement('script');
     script.type = 'application/ld+json';
+
+    // Use JSON.stringify to inject data
     script.text = JSON.stringify(jsonLd);
+
+    // Append to head
+    // Renderer2 works both in SSR and browser
     this.renderer.appendChild(document.head, script);
+  }
+
+  /** Add canonical link dynamically */
+  private setCanonical(url: string) {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    let link: HTMLLinkElement | null = document.querySelector("link[rel='canonical']");
+    if (!link) {
+      link = this.renderer.createElement('link') as HTMLLinkElement;
+      this.renderer.setAttribute(link, 'rel', 'canonical');
+      this.renderer.appendChild(document.head, link);
+    }
+
+    if (link) {
+      this.renderer.setAttribute(link, 'href', url);
+    }
   }
 }

@@ -17,6 +17,8 @@ import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 import {VenuesMapComponent} from "@components/venues-map/venues-map";
 import {VenueCardComponent} from "@components/venue-card/venue-card";
+import {RouterStateService} from "@core/services/router-state.service";
+import {SeoService} from "@core/services/seo.service";
 
 @Component({
   selector: 'app-venue-list',
@@ -145,6 +147,10 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     return (apiLoading || moreLoading) && hasVenues;
   });
 
+  private seo = inject(SeoService);
+  private routerState = inject(RouterStateService);
+
+
   constructor() {
     // Auto-scroll to selected venue
     effect(() => {
@@ -156,6 +162,32 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
       }
     });
   }
+
+  ngOnInit() {
+    const citySlug = this.routerState.$citySlug();
+    const countryCode = this.routerState.$countryCode();
+
+    let locationName = '';
+    if (citySlug && citySlug !== 'all') {
+      locationName = citySlug;
+    } else if (countryCode) {
+      locationName = countryCode.toUpperCase();
+    } else {
+      locationName = 'the Netherlands';
+    }
+
+    this.seo.setMeta({
+      title: `${locationName} Venues – Live Bands, Jam Sessions & Open Mics | GigaWhat`,
+      description: `Find the best live music venues in ${locationName}, featuring jam sessions, open mics, live bands, concerts, and gigs.`,
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": `${locationName} Venues`,
+        "description": `Live music venues in ${locationName}: jam sessions, open mics, live bands, concerts, festivals, and gigs.`,
+      },
+    });
+  }
+
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
