@@ -16,6 +16,10 @@ import {SeoService} from "@core/services/seo.service";
 <!--          <app-popular-countries></app-popular-countries>-->
           <app-featured-venues></app-featured-venues>
       </div>
+
+      <script type="application/ld+json">
+          {{ jsonLd | json }}
+      </script>
   `,
   styles: [`
     .home {
