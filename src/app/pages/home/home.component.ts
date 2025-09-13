@@ -4,6 +4,7 @@ import {FeaturedVenuesComponent} from "@components/featured-venues/featured-venu
 import {HeroSectionComponent} from "@components/hero-section/hero-section";
 import {SearchBarComponent} from "@components/search-bar/search-bar";
 import {SeoService} from "@core/services/seo.service";
+import {environment} from "@environments/environment";
 
 @Component({
   selector: 'app-home',
@@ -36,12 +37,38 @@ export class HomeComponent {
     this.seo.setMeta({
       title: 'Discover Live Music Venues in the Netherlands',
       description: 'Explore live music venues, concerts, festivals, open mics, jam sessions, and gigs across the Netherlands.',
-      jsonLd: {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "GigaWhat",
-        "description": "Explore live music venues, concerts, festivals, open mics, jam sessions, and gigs across the Netherlands."
-      }
+      url: '/', // current page path
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "GigaWhat",
+          "url": environment.siteUrl,
+          "description": "Explore live music venues, concerts, festivals, open mics, jam sessions, and gigs across the Netherlands.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": `${environment.siteUrl}/search?q={search_term_string}`,
+            "query-input": "required name=search_term_string"
+          },
+          "publisher": {
+            "@id": `${environment.siteUrl}/#organization`
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "@id": `${environment.siteUrl}/#organization`,
+          "name": "GigaWhat",
+          "url": environment.siteUrl
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "url": environment.siteUrl,
+          "name": "GigaWhat Homepage",
+          "description": "Explore live music venues, concerts, festivals, open mics, jam sessions, and gigs across the Netherlands."
+        }
+      ]
     });
   }
 

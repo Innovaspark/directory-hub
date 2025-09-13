@@ -98,7 +98,7 @@ export class SeoService {
 
     // Handle JSON-LD structured data
     if (data.jsonLd) {
-      // this.setJsonLd(data.jsonLd, fullUrl);
+      this.setJsonLd(data.jsonLd, fullUrl);
     }
 
     // Set robots meta tag
