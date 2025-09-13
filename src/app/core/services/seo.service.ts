@@ -5,6 +5,7 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterStateService } from '@core/services/router-state.service';
 import { TenantService, TenantSeoConfig } from '@core/services/tenant.service';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '@environments/environment';
 
 export interface SeoData {
   title?: string;
@@ -97,7 +98,7 @@ export class SeoService {
 
     // Handle JSON-LD structured data
     if (data.jsonLd) {
-      this.setJsonLd(data.jsonLd);
+      this.setJsonLd(data.jsonLd, fullUrl);
     }
 
     // Set robots meta tag
@@ -223,7 +224,7 @@ export class SeoService {
   }
 
   /** Handle JSON-LD structured data */
-  private setJsonLd(jsonLd: Record<string, any> | Record<string, any>[]) {
+  private setJsonLd(jsonLd: Record<string, any> | Record<string, any>[], fullUrl?: string) {
     // Remove existing JSON-LD scripts
     const existingScripts = this.document.querySelectorAll('script[type="application/ld+json"]');
     existingScripts.forEach(script => script.remove());
@@ -232,6 +233,11 @@ export class SeoService {
     const jsonLdArray = Array.isArray(jsonLd) ? jsonLd : [jsonLd];
 
     jsonLdArray.forEach(data => {
+      // Always add URL for WebSite schema
+      if (data['@type'] === 'WebSite' && fullUrl) {
+        data.url = fullUrl;
+      }
+
       const script = this.document.createElement('script');
       script.type = 'application/ld+json';
       script.textContent = JSON.stringify(data, null, 2);
@@ -284,7 +290,8 @@ export class SeoService {
   /** Get base URL for the site */
   private getBaseUrl(config?: TenantSeoConfig | null): string {
     if (!isPlatformBrowser(this.platformId)) {
-      return config?.domain ? `https://${config.domain}` : 'https://localhost';
+      // In SSR, prioritize environment URL, then tenant domain, then fallback
+      return environment.siteUrl || (config?.domain ? `https://${config.domain}` : 'https://localhost');
     }
     return `${this.document.location.protocol}//${this.document.location.host}`;
   }
@@ -293,76 +300,6 @@ export class SeoService {
   private getPageNumber(url: string): number {
     const pageMatch = url.match(/[?&]page=(\d+)/);
     return pageMatch ? parseInt(pageMatch[1], 10) : 1;
-  }
-
-  /** Generate venue-specific JSON-LD */
-  generateVenueJsonLd(venue: any): Record<string, any> {
-    return {
-      "@context": "https://schema.org",
-      "@type": "MusicVenue",
-      "name": venue.name,
-      "description": venue.description,
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": venue.address,
-        "addressLocality": venue.city,
-        "addressRegion": venue.province,
-        "addressCountry": "NL"
-      },
-      "geo": venue.coordinates ? {
-        "@type": "GeoCoordinates",
-        "latitude": venue.coordinates.lat,
-        "longitude": venue.coordinates.lng
-      } : undefined,
-      "telephone": venue.phone,
-      "url": venue.website,
-      "sameAs": venue.socialMedia || []
-    };
-  }
-
-  /** Generate event JSON-LD */
-  generateEventJsonLd(event: any, venue: any): Record<string, any> {
-    return {
-      "@context": "https://schema.org",
-      "@type": "MusicEvent",
-      "name": event.name,
-      "description": event.description,
-      "startDate": event.startDate,
-      "endDate": event.endDate,
-      "eventStatus": "https://schema.org/EventScheduled",
-      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-      "location": {
-        "@type": "MusicVenue",
-        "name": venue.name,
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": venue.address,
-          "addressLocality": venue.city,
-          "addressRegion": venue.province,
-          "addressCountry": "NL"
-        }
-      },
-      "offers": event.ticketPrice ? {
-        "@type": "Offer",
-        "price": event.ticketPrice,
-        "priceCurrency": "EUR",
-        "availability": "https://schema.org/InStock"
-      } : undefined
-    };
-  }
-
-  /** Generate breadcrumb JSON-LD */
-  generateBreadcrumbJsonLd(items: { name: string; url: string }[]): Record<string, any> {
-    return {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": items.map((item, index) => ({
-        "@type": "ListItem",
-        "position": index + 1,
-        "name": item.name,
-        "item": this.buildFullUrl(item.url)
-      }))
-    };
   }
 
   /** Clear all meta tags */
