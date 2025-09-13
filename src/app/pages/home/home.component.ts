@@ -16,6 +16,7 @@ import {SeoService} from "@core/services/seo.service";
 <!--          <app-popular-countries></app-popular-countries>-->
           <app-featured-venues></app-featured-venues>
       </div>
+      
   `,
   styles: [`
     .home {
