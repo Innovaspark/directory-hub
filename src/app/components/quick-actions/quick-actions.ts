@@ -11,7 +11,7 @@ import { Venue } from '@core/models/venue.model';
           <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div class="flex gap-3">
               <button
-                      class="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors relative group"
+                      class="button-quick-action bg-green-600  hover:bg-green-700  relative group"
                       [disabled]="!venue()?.phone"
                       [class.opacity-50]="!venue()?.phone"
                       [class.cursor-not-allowed]="!venue()?.phone"
@@ -27,7 +27,7 @@ import { Venue } from '@core/models/venue.model';
               </button>
 
               <button
-                      class="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors relative group"
+                      class="button-quick-action bg-blue-600 hover:bg-blue-700 relative group"
                       [disabled]="!venue()?.full_address"
                       [class.opacity-50]="!venue()?.full_address"
                       [class.cursor-not-allowed]="!venue()?.full_address"
@@ -42,7 +42,7 @@ import { Venue } from '@core/models/venue.model';
                   </div>
               </button>
 
-              <button class="flex-1 flex items-center justify-center gap-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors relative group" (click)="toggleShareMenu()">
+              <button class="button-quick-action bg-purple-600 hover:bg-purple-700 relative group" (click)="toggleShareMenu()">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>

@@ -3,10 +3,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminRoutingModule } from './admin-routing.module';
 import { DxButtonModule, DxFormModule, DxPopupModule } from 'devextreme-angular';
-import {LoginDialogComponent} from "./pages/login-dialog/login-dialog.component";
+import {LoginDialogComponent} from "@components/auth/login-dialog/login-dialog.component";
 
 @NgModule({
-  declarations: [LoginDialogComponent],
+  declarations: [],
   imports: [
     CommonModule,
     AdminRoutingModule,

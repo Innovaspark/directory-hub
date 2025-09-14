@@ -16,8 +16,8 @@ import {Venue} from "@core/models/venue.model";
         <p class="featured-venues-subtitle">Discover some of our most popular live music spots</p>
         <div class="featured-venues-grid">
           @for (venue of venueState.$featuredVenues(); track venue.id) {
-            
-            <a [routerLink]="['/', venue.cityByCityId?.country?.name, venue.cityByCityId?.name, 'venues', venue.id]" class="featured-venue-card">
+
+            <a [routerLink]="['/', venue.cityByCityId?.country?.slug, venue.cityByCityId?.slug, 'venues', venue.id]" class="featured-venue-card">
               <div class="featured-venue-image">
                 <img [src]="venue.photo || defaultImage" [alt]="venue.name" />
                 <div class="featured-venue-badge">Featured</div>

@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
   imports: [CommonModule, RouterLink],
   template: `
       <section class="hero">
-          <div class="container">
+          <div class="hero-container">
 
               <!-- Centered heading & tagline -->
               <div class="hero-header text-center">

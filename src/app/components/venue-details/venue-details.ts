@@ -8,16 +8,17 @@ import {SingleVenueMapComponent} from "@components/venue-map/venue-map";
 import {BreadcrumbComponent} from "@components/breadcrumb/breadcrumb";
 import {SeoService} from "@core/services/seo.service";
 import {RouterStateService} from "@core/services/router-state.service";
+import {ScrollToTop} from '@components/scroll-to-top/scroll-to-top';
 
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [CommonModule, HoursComponent, QuickActionsComponent, SingleVenueMapComponent, BreadcrumbComponent],
+  imports: [CommonModule, HoursComponent, QuickActionsComponent, SingleVenueMapComponent, BreadcrumbComponent, ScrollToTop],
   template: `
-      
+
 
       <div class="min-h-screen bg-gray-50">
-          
+
           <app-breadcrumb></app-breadcrumb>
 
           <div class="max-w-7xl mx-auto px-4 py-8">
@@ -122,6 +123,8 @@ import {RouterStateService} from "@core/services/router-state.service";
               </div>
           </div>
       </div>
+
+      <app-scroll-to-top></app-scroll-to-top>
 
   `
 })
