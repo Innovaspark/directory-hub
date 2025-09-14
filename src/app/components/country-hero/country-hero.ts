@@ -11,19 +11,19 @@ import { NavigationService } from '@core/services/navigation.service';
   imports: [CommonModule, FormsModule],
   template: `
     <section class="hero">
-      <div class="container">
-        <div class="hero-content">
+      <div class="hero-container">
+        <div class="hero-country-content">
           <h1>
             <span class="country-emoji">{{ $currentCountry()?.emoji }}</span>
             Live Music in {{ $currentCountry()?.name }}
           </h1>
           <p class="hero-description">{{ $currentCountry()?.description }}</p>
-          
+
           <!-- Country-scoped Search -->
           <div class="search-box">
             <div class="search-input-group">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 [placeholder]="'Search venues in ' + $currentCountry()?.name + '...'"
                 [(ngModel)]="searchQuery"
                 (keyup.enter)="onSearch()"
@@ -38,13 +38,8 @@ import { NavigationService } from '@core/services/navigation.service';
     </section>
   `,
   styles: [`
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
 
-    .hero-content {
+    .hero-country-content {
       text-align: center;
       max-width: 800px;
       margin: 0 auto;
@@ -54,16 +49,6 @@ import { NavigationService } from '@core/services/navigation.service';
       font-size: 4rem;
       display: block;
       margin-bottom: 1rem;
-    }
-
-    .hero-description {
-      font-size: 1.1rem;
-      color: rgba(255, 255, 255, 0.9);
-      margin-bottom: 2.5rem;
-      line-height: 1.6;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
     }
 
     .search-box {
