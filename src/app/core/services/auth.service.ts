@@ -1,92 +1,87 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { IAuthResponse, IUser } from '../../models/auth.model';
-import { Router } from '@angular/router';
-import { catchError, of, tap } from 'rxjs';
-import { ApiService } from '@core/services/api.service';
+import { Injectable } from '@angular/core';
+import { NhostClient } from '@nhost/nhost-js';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private nhost = new NhostClient({
+    subdomain: environment.nhostSubdomain,
+    region: environment.nhostRegion
+  });
 
-  private apiService = inject(ApiService);
-  private router = inject(Router);
+  private userSubject = new BehaviorSubject<any>(null);
+  private isLoggedInSubject = new BehaviorSubject<boolean>(false);
 
-  // Reactive signal for user session
-  user = signal<IAuthResponse | null>(null);
+  public user$: Observable<any> = this.userSubject.asObservable();
+  public isLoggedIn$: Observable<boolean> = this.isLoggedInSubject.asObservable();
 
-  /**
-   * To check if the user is signed in.
-   * This will return the user details if the user is logged in.
-   * @returns 
-   */
-  isSignedIn() {
-    return this.user() !== null;
-  }
+  constructor() {
+    // Initialize with existing session if available
+    const session = this.nhost.auth.getSession();
+    if (session?.user) {
+      this.userSubject.next(session.user);
+    }
 
-  /**
-   * To sign in a user using email and password.
-   * @param body 
-   * @returns 
-   */
-  signIn(body: IUser) {
-    return this.apiService.post('auth/sign-in/email', body);
-  }
-
-  /**
-   * To sign up a user using name, email and password.
-   * @param body 
-   * @returns 
-   */
-  signUp(body: IUser) {
-    return this.apiService.post('auth/sign-up/email', body);
-  }
-
-  /**
-   * To get the current session of the user.
-   * This will return the user details if the user is logged in.
-   * @returns 
-   */
-  getSession(): any {
-    return this.apiService.get<IAuthResponse>('auth/get-session').pipe(
-      tap((user) => {
-        this.user.set(user)
-      }),
-      catchError(() => {
-        this.user.set(null);
-        return of(null);
-      })
-    )
-  }
-
-  /**
-   * To sign out the user.
-   * @returns 
-   */
-  signOut() {
-    this.apiService.post('auth/sign-out', {}).subscribe(() => {
-      this.user.set(null);
-      this.router.navigate(['auth/signin']);
+    // Listen for auth state changes (no type annotations to avoid conflicts)
+    this.nhost.auth.onAuthStateChanged((event, session) => {
+      this.userSubject.next(session?.user || null);
     });
   }
 
-  /**
-   * To trigger forgot password email using better-auth endpoint.
-   * @param email
-   * @returns
-   */
-  forgotPassword(email: string) {
-    const redirectTo = `${window.location.origin}/auth/reset-password`;
-    return this.apiService.post('auth/forget-password', { email, redirectTo });
+  async signUp(email: string, password: string, displayName?: string) {
+    const { session, error } = await this.nhost.auth.signUp({
+      email,
+      password,
+      options: displayName ? { displayName } : undefined
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { session, error };
   }
 
-  /**
-   * To reset password using better-auth endpoint.
-   * @param token
-   * @param password
-   * @returns
-   */
-  resetPassword(newPassword: string, token: string) {
-    return this.apiService.post('auth/reset-password', { newPassword, token });
+  async signIn(email: string, password: string) {
+    const { session, error } = await this.nhost.auth.signIn({
+      email,
+      password
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { session, error };
+  }
+
+  async signOut() {
+    const { error } = await this.nhost.auth.signOut();
+    if (error) {
+      console.error('Sign out error:', error);
+    }
+  }
+
+  isAuthenticated(): boolean {
+    return this.nhost.auth.isAuthenticated();
+  }
+
+  isLoggedIn(): boolean {
+    return this.isLoggedInSubject.value;
+  }
+
+  getUser() {
+    return this.userSubject.value;
+  }
+
+  getAccessToken(): string | null {
+    return this.nhost.auth.getAccessToken() || null;
+  }
+
+  async refreshToken() {
+    return await this.nhost.auth.refreshSession();
   }
 }

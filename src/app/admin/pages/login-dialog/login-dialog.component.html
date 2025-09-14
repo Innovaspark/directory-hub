@@ -1,0 +1,10 @@
+<dx-form [formData]="{email: email, password: password}" [colCount]="1">
+    <dxi-item dataField="email" editorType="dxTextBox" [isRequired]="true" editorOptions="{ placeholder: 'Email' }">
+    </dxi-item>
+    <dxi-item dataField="password" editorType="dxTextBox" [isRequired]="true" editorOptions="{ mode: 'password', placeholder: 'Password' }">
+    </dxi-item>
+    <dxi-item>
+        <dx-button text="Login" type="success" [useSubmitBehavior]="false" (onClick)="login()" [disabled]="loading">
+        </dx-button>
+    </dxi-item>
+</dx-form>

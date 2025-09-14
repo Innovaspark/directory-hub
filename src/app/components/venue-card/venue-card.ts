@@ -31,8 +31,11 @@ import {NavigationService} from "@core/services/navigation.service";
                   <span class="text-gray-700 text-sm">{{venue().rating}} ({{venue().review_count}} reviews)</span>
               </div>
               <div class="flex justify-between items-center">
-                  <span class="text-purple-600 font-medium">Wed: Open Mic</span>
-                  <button class="text-purple-600 hover:text-purple-800 font-medium">View Details</button>
+<!--                  <span class="text-purple-600 font-medium">Wed: Open Mic</span>-->
+<!--                  <button class="text-purple-600 hover:text-purple-800 font-medium"-->
+<!--                          (click)="viewDetailsQuick($event)"-->
+<!--                  >View Details</button>-->
+<!--                  <span class="text-purple-600 font-medium">{{venue().business_status}}</span>-->
               </div>
           </div>
 
@@ -111,5 +114,10 @@ export class VenueCardComponent {
   closePopOver(event: Event) {
     event.stopPropagation();
     this.venueState.clearSelectedVenue();
+  }
+
+  viewDetailsQuick(event: Event) {
+    this.viewDetails();
+    event.stopPropagation();
   }
 }

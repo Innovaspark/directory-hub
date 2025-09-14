@@ -1,21 +1,23 @@
-import { CanMatchFn, Router } from '@angular/router';
-import { inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { map } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { CanActivate, Router, UrlTree } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 
-export const adminGuard: CanMatchFn = (route, segments) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const platformId = inject(PLATFORM_ID);
+@Injectable({
+  providedIn: 'root'
+})
+export class AdminGuard implements CanActivate {
 
-  if (isPlatformBrowser(platformId)) {
-    const returnUrl = '/' + segments.map(s => s.path).join('/');
-    if (authService.isSignedIn()) {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  canActivate(): boolean | UrlTree {
+    if (this.authService.isLoggedIn()) {
       return true;
     }
-    return authService.getSession().pipe(
-      map(user => user ? true : router.createUrlTree(['/auth/signin'], { queryParams: { returnUrl } }))
-    );
+
+    // Preferred: return a UrlTree to redirect
+    return this.router.createUrlTree(['/admin/login']);
   }
-};
+}
