@@ -1,19 +1,18 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import {UserStateService} from '@core/state/user-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminGuard implements CanActivate {
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  userStateService = inject(UserStateService);
+  router = inject(Router);
 
   canActivate(): boolean | UrlTree {
-    if (this.authService.isLoggedIn()) {
+    if (this.userStateService.$isLoggedIn()) {
       return true;
     }
 

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import {DialogRef} from '@core/services/modal.service';
 import {FormsModule} from '@angular/forms';
 import {AuthService} from '@core/services/auth.service';
+import {UserStateService} from '@core/state/user-state.service';
 
 @Component({
   selector: 'app-login-dialog',
@@ -52,15 +53,12 @@ import {AuthService} from '@core/services/auth.service';
 })
 export class LoginDialogComponent {
   private dialogRef = inject(DialogRef);
-  authService = inject(AuthService);
+  userStateService = inject(UserStateService);
 
   username = '';
   password = '';
 
   constructor() {
-    this.authService.isLoggedIn$.subscribe(result => {
-      alert('is logged in: ' + result);
-    })
   }
 
   close() {
@@ -68,9 +66,7 @@ export class LoginDialogComponent {
   }
 
   login() {
-    console.log('Logging in with', this.username, this.password);
-    // You can call your login API here
-    this.authService.signIn(this.username, this.password);
+    this.userStateService.signIn(this.username, this.password);
     this.dialogRef.close();
   }
 }

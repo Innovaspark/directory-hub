@@ -1,4 +1,4 @@
-// expand-header.ts - Updated with smaller Get Started + Login button
+// expand-header.ts - Complete with UserStateService only
 import {Component, OnInit, OnDestroy, HostListener, ElementRef, Inject, PLATFORM_ID, inject} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {RouterLink} from "@angular/router";
@@ -6,7 +6,7 @@ import {NavigationService} from "@core/services/navigation.service";
 import {RouterStateService} from "@core/services/router-state.service";
 import {ModalService} from '@core/services/modal.service';
 import {LoginDialogComponent} from '@components/auth/login-dialog/login-dialog.component';
-import {AuthService} from '@core/services/auth.service';
+import {UserStateService} from '@core/state/user-state.service';
 
 @Component({
   selector: 'app-expand-header',
@@ -27,9 +27,6 @@ import {AuthService} from '@core/services/auth.service';
           </a>
         </div>
         <nav class="nav">
-          <!--          <ul class="nav-list">-->
-          <!--            <li><a [routerLink]="'/'">Home</a></li>-->
-          <!--          </ul>-->
         </nav>
         <div class="header-actions">
           @if($isOnHomePage()) {
@@ -38,10 +35,43 @@ import {AuthService} from '@core/services/auth.service';
                     (click)="getStarted()">
               Get Started
             </button>
-            <button class="btn-login" [class.btn-small]="isContracted"
-                    (click)="login()">
-              Login
+
+            @if(!$isLoggedIn()) {
+          <button class="btn-login" [class.btn-small]="isContracted"
+                  (click)="login()">
+            Login
+          </button>
+          } @else {
+          <div class="user-dropdown" [class.dropdown-small]="isContracted">
+            <button class="btn-profile" [class.btn-small]="isContracted"
+                    (click)="toggleUserMenu()">
+              <svg class="user-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+              <span class="user-name">{{ $displayName() }}</span>
+              <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
             </button>
+
+            @if(showUserMenu) {
+            <div class="dropdown-menu">
+              <button class="dropdown-item" (click)="profile()">
+                <svg class="dropdown-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                Profile
+              </button>
+              <button class="dropdown-item" (click)="logout()">
+                <svg class="dropdown-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                </svg>
+                Logout
+              </button>
+            </div>
+            }
+          </div>
+          }
           </div>
           }
         </div>
@@ -173,6 +203,92 @@ import {AuthService} from '@core/services/auth.service';
       box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
     }
 
+    .user-dropdown {
+      position: relative;
+    }
+
+    .btn-profile {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 120px;
+    }
+
+    .btn-profile:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .user-icon, .dropdown-arrow {
+      width: 16px;
+      height: 16px;
+    }
+
+    .user-name {
+      flex: 1;
+      text-align: left;
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      min-width: 160px;
+      z-index: 1001;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      background: none;
+      color: #333;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      border-radius: 0;
+    }
+
+    .dropdown-item:first-child {
+      border-radius: 12px 12px 0 0;
+    }
+
+    .dropdown-item:last-child {
+      border-radius: 0 0 12px 12px;
+    }
+
+    .dropdown-item:hover {
+      background-color: #f5f5f5;
+    }
+
+    .dropdown-icon {
+      width: 16px;
+      height: 16px;
+      color: #666;
+    }
+
     .btn-small {
       padding: 0.4rem 0.8rem !important;
       font-size: 0.8rem !important;
@@ -193,6 +309,15 @@ import {AuthService} from '@core/services/auth.service';
         padding: 0.45rem 0.9rem;
         font-size: 0.8rem;
         min-width: 75px;
+      }
+
+      .user-name {
+        display: none;
+      }
+
+      .btn-profile {
+        min-width: 45px;
+        padding: 0.45rem 0.75rem;
       }
 
       .nav-list {
@@ -237,14 +362,16 @@ import {AuthService} from '@core/services/auth.service';
 export class ExpandHeader implements OnInit, OnDestroy {
 
   private routerStateService = inject(RouterStateService);
-  private authService =inject(AuthService);
+  private userStateService = inject(UserStateService);
 
   $isOnHomePage = this.routerStateService.$isHomePage;
-  $isLoggedIn = this.authService.$isLoggedIn;
+  $isLoggedIn = this.userStateService.$isLoggedIn;
+  $displayName = this.userStateService.$displayName;
 
   isContracted = false;
   isScrolled = false;
   isBrowser = false;
+  showUserMenu = false;
 
   private scrollThreshold = 50;
   private contractThreshold = 100;
@@ -257,12 +384,6 @@ export class ExpandHeader implements OnInit, OnDestroy {
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
-
-  // ngOnInit() {
-  //   if (this.isBrowser) {
-  //     this.checkScroll();
-  //   }
-  // }
 
   ngOnInit() {
     if (this.isBrowser) {
@@ -277,6 +398,14 @@ export class ExpandHeader implements OnInit, OnDestroy {
   onScroll(event: Event) {
     if (this.isBrowser) {
       this.checkScroll();
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.user-dropdown')) {
+      this.showUserMenu = false;
     }
   }
 
@@ -295,8 +424,20 @@ export class ExpandHeader implements OnInit, OnDestroy {
   }
 
   login() {
-    this.modalService.open(LoginDialogComponent)
+    this.modalService.open(LoginDialogComponent);
   }
 
+  toggleUserMenu() {
+    this.showUserMenu = !this.showUserMenu;
+  }
 
+  profile() {
+    this.showUserMenu = false;
+    // Navigate to profile page
+  }
+
+  async logout() {
+    this.showUserMenu = false;
+    await this.userStateService.signOut();
+  }
 }
