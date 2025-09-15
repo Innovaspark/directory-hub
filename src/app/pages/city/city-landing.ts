@@ -14,10 +14,10 @@ import {SeoService} from "@core/services/seo.service";
     <div class="city-landing">
       <!-- Hero Section -->
       <section class="hero">
-        <div class="container">
+        <div class="hero-container">
           <h1>Live Music in {{ venueState.$cityName() }} - Best Venues & Events</h1>
           <p class="hero-subtitle">
-            Discover {{ venueState.$totalVenueCount() }} live music venues in {{ venueState.$cityName() }}. 
+            Discover {{ venueState.$totalVenueCount() }} live music venues in {{ venueState.$cityName() }}.
             From intimate jazz clubs to major concert halls, find concerts, gigs, and live events tonight.
           </p>
           <div class="hero-stats">
@@ -38,7 +38,7 @@ import {SeoService} from "@core/services/seo.service";
 
       <!-- Quick Venue Types -->
       <section class="venue-types">
-        <div class="container">
+        <div class="venue-type-container">
           <h2>Find {{ venueState.$cityName() }} Venues By Type</h2>
           <div class="types-grid">
             @for (type of venueState.$filterOptions(); track type.slug) {
@@ -53,17 +53,17 @@ import {SeoService} from "@core/services/seo.service";
 
       <!-- SEO Content -->
       <section class="seo-content">
-        <div class="container">
+        <div class="venue-type-container">
           <h2>{{ venueState.$cityName() }} Live Music Scene</h2>
           <p>
-            {{ venueState.$cityName() }} offers an incredible variety of live music venues, from world-class concert halls 
-            to intimate neighborhood bars. Whether you're looking for rock concerts, jazz performances, electronic music, 
+            {{ venueState.$cityName() }} offers an incredible variety of live music venues, from world-class concert halls
+            to intimate neighborhood bars. Whether you're looking for rock concerts, jazz performances, electronic music,
             or acoustic sets, {{ venueState.$cityName() }} has something for every music lover.
           </p>
-          
+
           <h3>Popular Music Venues in {{ venueState.$cityName() }}</h3>
           <p>
-            The {{ venueState.$cityName() }} music scene features everything from historic theaters to cutting-edge clubs. 
+            The {{ venueState.$cityName() }} music scene features everything from historic theaters to cutting-edge clubs.
             Live music happens every night of the week, with local bands and touring artists performing across the city.
           </p>
         </div>
@@ -71,29 +71,6 @@ import {SeoService} from "@core/services/seo.service";
     </div>
   `,
   styles: [`
-    .hero {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 4rem 0;
-      text-align: center;
-    }
-
-    .hero h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-      line-height: 1.2;
-    }
-
-    .hero-subtitle {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
-      opacity: 0.9;
-      line-height: 1.5;
-    }
 
     .hero-stats {
       display: flex;
@@ -203,7 +180,7 @@ import {SeoService} from "@core/services/seo.service";
       margin-bottom: 1.5rem;
     }
 
-    .container {
+    .venue-type-container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 1rem;

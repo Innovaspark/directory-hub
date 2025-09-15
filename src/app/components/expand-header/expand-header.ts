@@ -1,40 +1,47 @@
-// expand-header.ts
+// expand-header.ts - Updated with smaller Get Started + Login button
 import {Component, OnInit, OnDestroy, HostListener, ElementRef, Inject, PLATFORM_ID, inject} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {RouterLink} from "@angular/router";
 import {NavigationService} from "@core/services/navigation.service";
 import {RouterStateService} from "@core/services/router-state.service";
+import {ModalService} from '@core/services/modal.service';
+import {LoginDialogComponent} from '@components/auth/login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-expand-header',
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <header 
-      class="header" 
+    <header
+      class="header"
       [class.contracted]="isContracted"
       [class.scrolled]="isScrolled">
       <div class="header-content">
-          <div class="logo">
-              <a [routerLink]="'/'">
-              <img src="/images/logos/main-logo.svg"
-                   alt="GigaWhat.live"
-                   class="logo-img"
-                   [class.logo-small]="isContracted">
-              </a>
-          </div>
+        <div class="logo">
+          <a [routerLink]="'/'">
+            <img src="/images/logos/main-logo.svg"
+                 alt="GigaWhat.live"
+                 class="logo-img"
+                 [class.logo-small]="isContracted">
+          </a>
+        </div>
         <nav class="nav">
-<!--          <ul class="nav-list">-->
-<!--            <li><a [routerLink]="'/'">Home</a></li>-->
-<!--          </ul>-->
+          <!--          <ul class="nav-list">-->
+          <!--            <li><a [routerLink]="'/'">Home</a></li>-->
+          <!--          </ul>-->
         </nav>
         <div class="header-actions">
-            @if($isOnHomePage()) {
-          <button class="btn-primary" [class.btn-small]="isContracted"
-                  (click)="getStarted()"
-          >
-            Get Started
-          </button>
+          @if($isOnHomePage()) {
+          <div class="button-group">
+            <button class="btn-secondary" [class.btn-small]="isContracted"
+                    (click)="getStarted()">
+              Get Started
+            </button>
+            <button class="btn-login" [class.btn-small]="isContracted"
+                    (click)="login()">
+              Login
+            </button>
+          </div>
           }
         </div>
       </div>
@@ -74,7 +81,6 @@ import {RouterStateService} from "@core/services/router-state.service";
       padding: 0 2rem;
       transition: all 0.3s ease;
     }
-
 
     .nav-list {
       display: flex;
@@ -118,48 +124,88 @@ import {RouterStateService} from "@core/services/router-state.service";
       align-items: center;
     }
 
-    .btn-primary {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      padding: 0.75rem 1.5rem;
-      border-radius: 50px;
-      font-weight: 600;
+    .button-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-secondary,
+    .btn-login {
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
+      text-transform: none;
+      letter-spacing: 0.2px;
+      min-width: 85px;
     }
 
-    .btn-primary.btn-small {
-      padding: 0.5rem 1.2rem;
-      font-size: 0.9rem;
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
     }
 
-    .btn-primary:hover {
+    .btn-secondary:hover {
       background: rgba(255, 255, 255, 0.3);
       border-color: rgba(255, 255, 255, 0.5);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
     }
 
-    /* Mobile responsive */
+    .btn-login {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+      color: white;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-login:hover {
+      background: linear-gradient(135deg, #ff5252 0%, #e53935 100%);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .btn-small {
+      padding: 0.4rem 0.8rem !important;
+      font-size: 0.8rem !important;
+      min-width: 75px !important;
+    }
+
     @media (max-width: 768px) {
       .header-content {
         padding: 0 1rem;
       }
-      
+
+      .button-group {
+        gap: 0.5rem;
+      }
+
+      .btn-secondary,
+      .btn-login {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.8rem;
+        min-width: 75px;
+      }
+
       .nav-list {
         gap: 1rem;
       }
-      
+
       .nav-list li a {
         font-size: 0.9rem;
       }
-      
+
       .logo h1 {
         font-size: 1.5rem;
       }
-      
+
       .logo h1.logo-small {
         font-size: 1.2rem;
       }
@@ -169,9 +215,20 @@ import {RouterStateService} from "@core/services/router-state.service";
       .nav-list {
         display: none;
       }
-      
+
       .header-content {
         justify-content: space-between;
+      }
+
+      .button-group {
+        gap: 0.4rem;
+      }
+
+      .btn-secondary,
+      .btn-login {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+        min-width: 65px;
       }
     }
   `]
@@ -179,7 +236,6 @@ import {RouterStateService} from "@core/services/router-state.service";
 export class ExpandHeader implements OnInit, OnDestroy {
   isContracted = false;
   isScrolled = false;
-  // logoText = 'YourLogo';
   isBrowser = false;
 
   private scrollThreshold = 50;
@@ -191,46 +247,50 @@ export class ExpandHeader implements OnInit, OnDestroy {
     private elementRef: ElementRef,
     @Inject(PLATFORM_ID) private platformId: Object,
     private navigationService: NavigationService,
+    private modalService: ModalService
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
+  // ngOnInit() {
+  //   if (this.isBrowser) {
+  //     this.checkScroll();
+  //   }
+  // }
+
   ngOnInit() {
-    // Only run on client-side
     if (this.isBrowser) {
-      // Initial check in case page is already scrolled
       this.checkScroll();
     }
   }
 
   ngOnDestroy() {
-    // Cleanup handled automatically by Angular for HostListener
   }
 
   @HostListener('window:scroll', ['$event'])
   onScroll(event: Event) {
-    // Only run on client-side
     if (this.isBrowser) {
       this.checkScroll();
     }
   }
 
   private checkScroll() {
-    // Double-check we're in browser environment
     if (!this.isBrowser || typeof window === 'undefined') {
       return;
     }
 
     const scrollY = window.scrollY || window.pageYOffset;
-
-    // Add scrolled class for background opacity change
     this.isScrolled = scrollY > this.scrollThreshold;
-
-    // Contract header when scrolled past threshold
     this.isContracted = scrollY > this.contractThreshold;
   }
 
   getStarted() {
     this.navigationService.navigateToCountry('nl');
   }
+
+  login() {
+    this.modalService.open(LoginDialogComponent)
+  }
+
+
 }

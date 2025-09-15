@@ -9,9 +9,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { join } from 'node:path';
-import apiRoutes from './api/api';
-import { toNodeHandler } from "better-auth/node";
-// import { auth } from './api/lib/auth';
 import morgan from 'morgan';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
@@ -49,8 +46,6 @@ if (process.env['NODE_ENV'] === 'production') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Register API routes
-app.use('/api', apiRoutes);
 
 /**
  * Serve static files from /browser
