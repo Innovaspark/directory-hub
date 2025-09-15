@@ -6,7 +6,7 @@ import {HeaderComponent} from '@components/header/header.component';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, ExpandHeader, FooterComponent, HeaderComponent],
+  imports: [RouterOutlet, ExpandHeader, FooterComponent],
   template: `
     <div class="bg-gray-50">
 

@@ -1,5 +1,6 @@
 // user-state.service.ts - Now orchestrates auth
 import { Injectable, signal, computed, inject } from '@angular/core';
+import { BehaviorSubject, map, distinctUntilChanged } from 'rxjs';
 import {AuthService} from '@core/services/auth.service';
 import {NavigationService} from '@core/services/navigation.service';
 
@@ -20,7 +21,14 @@ export class UserStateService {
   private userSignal = signal<User | null>(null);
   private navigationService = inject(NavigationService);
 
-  // Public readonly signals
+  // Add subject alongside signal - don't change anything else
+  private userSubject = new BehaviorSubject<User | null>(null);
+  public isLoggedIn$ = this.userSubject.pipe(
+    map(user => !!user),
+    distinctUntilChanged()
+  );
+
+  // Public readonly signals - unchanged
   public $user = this.userSignal.asReadonly();
   public $isLoggedIn = computed(() => !!this.userSignal());
   public $displayName = computed(() => {
@@ -52,7 +60,7 @@ export class UserStateService {
   private initializeFromSession() {
     const session = this.authService.getSession();
     if (session?.user) {
-      this.userSignal.set(this.mapNhostUser(session.user));
+      this.updateUser(this.mapNhostUser(session.user));
     }
   }
 
@@ -60,11 +68,17 @@ export class UserStateService {
     this.authService.onAuthStateChanged((event, session) => {
       const user = session?.user || null;
       if (user) {
-        this.userSignal.set(this.mapNhostUser(user));
+        this.updateUser(this.mapNhostUser(user));
       } else {
-        this.userSignal.set(null);
+        this.updateUser(null);
       }
     });
+  }
+
+  // Helper method to update both signal and subject
+  private updateUser(user: User | null) {
+    this.userSignal.set(user);
+    this.userSubject.next(user);
   }
 
   private mapNhostUser(nhostUser: any): User {
@@ -87,7 +101,7 @@ export class UserStateService {
     }
 
     if (session?.user) {
-      this.userSignal.set(this.mapNhostUser(session.user));
+      this.updateUser(this.mapNhostUser(session.user));
     }
 
     return { session, error };
@@ -101,7 +115,7 @@ export class UserStateService {
     }
 
     if (session?.user) {
-      this.userSignal.set(this.mapNhostUser(session.user));
+      this.updateUser(this.mapNhostUser(session.user));
     }
 
     return { session, error };
@@ -109,7 +123,7 @@ export class UserStateService {
 
   async signOut() {
     await this.authService.signOut();
-    this.userSignal.set(null);
+    this.updateUser(null);
     this.navigationService.navigateToHome();
   }
 

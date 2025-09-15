@@ -140,6 +140,7 @@
             ],
             "styles": [
               "node_modules/mapbox-gl/dist/mapbox-gl.css",
+              "node_modules/devextreme/dist/css/dx.common.css",
               "node_modules/devextreme/dist/css/dx.light.css",
               "src/styles.scss"
             ]
