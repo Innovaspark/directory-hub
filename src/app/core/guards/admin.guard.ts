@@ -1,22 +1,23 @@
-import {inject, Injectable} from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
-import {UserStateService} from '@core/state/user-state.service';
+import { inject, Injectable } from '@angular/core';
+import { CanActivate, Router, UrlTree, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { UserStateService } from '@core/state/user-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminGuard implements CanActivate {
 
-  userStateService = inject(UserStateService);
-  router = inject(Router);
+  private userStateService = inject(UserStateService);
+  private router = inject(Router);
 
-  canActivate(): boolean | UrlTree {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
     if (this.userStateService.$isLoggedIn()) {
       return true;
     }
 
-    // Preferred: return a UrlTree to redirect
-    return this.router.createUrlTree(['/admin/login']);
+    // Redirect to login and include intended URL
+    return this.router.createUrlTree(['/auth/login'], {
+      queryParams: { returnUrl: state.url }
+    });
   }
 }

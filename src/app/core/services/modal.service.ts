@@ -9,17 +9,33 @@ import {
   StaticProvider,
 } from '@angular/core';
 
-// DialogRef class
-export class DialogRef {
-  constructor(private closeFn: () => void) {}
+import { Observable, Subject } from 'rxjs';
 
-  close() {
-    this.closeFn();
+export class DialogRef<T = boolean> {
+  private readonly _afterClosed = new Subject<T | undefined>();
+
+  constructor(private _closeHandler: (result?: T) => void) {}
+
+  /** Called by the component to close the dialog */
+  close(result?: T): void {
+    this._closeHandler(result);
+  }
+
+  /** Called by the service after cleanup to notify subscribers */
+  _notifyClosed(result?: T): void {
+    this._afterClosed.next(result);
+    this._afterClosed.complete();
+  }
+
+  /** Exposes the observable like CDK: dialogRef.afterClosed() */
+  afterClosed(): Observable<T | undefined> {
+    return this._afterClosed.asObservable();
   }
 }
 
 // ModalInstance interface
 interface ModalInstance {
+  wrapper: HTMLElement;
   overlay: HTMLElement;
   container: HTMLElement;
   componentRef?: ComponentRef<any>;
@@ -40,24 +56,32 @@ export class ModalService {
   open(content: TemplateRef<any> | Type<any>): DialogRef | undefined {
     if (typeof document === 'undefined') return undefined; // SSR-safe
 
+    // Create wrapper (highest z-index)
+    const wrapper = document.createElement('div');
+    wrapper.className = 'fixed inset-0 z-[9999]';
+
     // Create overlay
     const overlay = document.createElement('div');
     overlay.className =
-      'fixed inset-0 bg-black/50 z-40 opacity-0 transition-opacity duration-200';
+      'absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-200';
     overlay.addEventListener('click', () => this.closeTopModal());
-    document.body.appendChild(overlay);
+    wrapper.appendChild(overlay);
 
     // Create container
     const container = document.createElement('div');
     container.className =
-      'fixed inset-0 flex items-center justify-center z-50';
+      'absolute inset-0 flex items-center justify-center';
     container.addEventListener('click', (e) => e.stopPropagation());
-    document.body.appendChild(container);
+    wrapper.appendChild(container);
 
-    const instance: ModalInstance = { overlay, container };
+    document.body.appendChild(wrapper);
+
+    const instance: ModalInstance = { wrapper, overlay, container };
 
     // Create DialogRef
-    const dialogRef = new DialogRef(() => this.closeInstance(instance));
+    const dialogRef = new DialogRef((result?: any) =>
+      this.closeInstance(instance, result)
+    );
     instance.dialogRef = dialogRef;
 
     if (content instanceof TemplateRef) {
@@ -89,27 +113,30 @@ export class ModalService {
     return dialogRef;
   }
 
-  closeTopModal() {
+  closeTopModal(result?: any) {
     const top = this.modals.pop();
     if (!top) return;
-    this.closeInstance(top);
+    this.closeInstance(top, result);
   }
 
-  private closeInstance(instance: ModalInstance) {
+  private closeInstance(instance: ModalInstance, result?: any) {
     // Animate out
     instance.overlay.classList.remove('opacity-100');
     instance.container.firstElementChild?.classList.remove('scale-100');
 
     setTimeout(() => {
-      if (document.body.contains(instance.overlay))
-        document.body.removeChild(instance.overlay);
-      if (document.body.contains(instance.container))
-        document.body.removeChild(instance.container);
+      if (document.body.contains(instance.wrapper)) {
+        document.body.removeChild(instance.wrapper);
+      }
 
       if (instance.componentRef) {
         this.appRef.detachView(instance.componentRef.hostView);
         instance.componentRef.destroy();
       }
+
+      // Notify subscribers
+      // instance.dialogRef?.close(result);
+      instance.dialogRef?._notifyClosed(result);
     }, 200);
   }
 }

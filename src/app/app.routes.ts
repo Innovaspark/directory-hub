@@ -11,6 +11,8 @@ import {NotFoundComponent} from "@pages/not-found/not-found.component";
 import {VenueListComponent} from "@components/venue-list/venue-list.component";
 import {VenueDetails} from "@components/venue-details/venue-details";
 import {VenueDashboardComponent} from "@pages/venue-hub/dashboard/venue-dashboard.component";
+import {LoginPageComponent} from '@pages/auth/login-page';
+import {AdminGuard} from '@core/guards/admin.guard';
 
 // export const routes: Routes = [
 //     {
@@ -29,11 +31,21 @@ export const routes: Routes = [
                 path: '',
                 component: HomeComponent
             },
-            {
-                path: 'nl',
-                canMatch: [countryGuard],
-                component: CountryLandingPageComponent
-            },
+          {
+            path: 'auth/login',
+            component: LoginPageComponent
+          },
+          {
+            path: 'admin',
+            canActivate: [AdminGuard],
+            loadChildren: () =>
+              import('./admin/admin.module').then(m => m.AdminModule)
+          },
+          {
+            path: 'nl',
+            canMatch: [countryGuard],
+            component: CountryLandingPageComponent
+          },
             {
                 path: ':country',
                 canMatch: [countryGuard],

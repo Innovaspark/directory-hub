@@ -67,6 +67,6 @@ export class LoginDialogComponent {
 
   login() {
     this.userStateService.signIn(this.username, this.password);
-    this.dialogRef.close();
+    this.dialogRef.close(true);
   }
 }

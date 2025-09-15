@@ -1,0 +1,69 @@
+<header
+  class="header"
+  [class.contracted]="isContracted"
+  [class.scrolled]="isScrolled">
+  <div class="header-content">
+    <div class="logo">
+      <a [routerLink]="'/'">
+        <img src="/images/logos/main-logo.svg"
+             alt="GigaWhat.live"
+             class="logo-img"
+             [class.logo-small]="isContracted">
+      </a>
+    </div>
+    <nav class="nav">
+    </nav>
+    <div class="header-actions">
+      @if($isOnHomePage()) {
+      <div class="button-group">
+        <button class="btn-secondary" [class.btn-small]="isContracted"
+                (click)="getStarted()">
+          Get Started
+        </button>
+
+        <button class="btn-secondary" [class.btn-small]="isContracted"
+                (click)="goToAdmin()">
+          Admin
+        </button>
+
+        @if(!$isLoggedIn()) {
+      <button class="btn-login" [class.btn-small]="isContracted"
+              (click)="login()">
+        Login
+      </button>
+      } @else {
+      <div class="user-dropdown" [class.dropdown-small]="isContracted">
+        <button class="btn-profile" [class.btn-small]="isContracted"
+                (click)="toggleUserMenu()">
+          <svg class="user-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          <span class="user-name">{{ $displayName() }}</span>
+          <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+
+        @if(showUserMenu) {
+        <div class="dropdown-menu">
+          <button class="dropdown-item" (click)="profile()">
+            <svg class="dropdown-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            Profile
+          </button>
+          <button class="dropdown-item" (click)="logout()">
+            <svg class="dropdown-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </svg>
+            Logout
+          </button>
+        </div>
+        }
+      </div>
+      }
+      </div>
+      }
+    </div>
+  </div>
+</header>

@@ -68,4 +68,13 @@ export class NavigationService {
       queryParams: queryParams || {}
     });
   }
+
+  navigateToReturnUrl(returnUrl: string) {
+    this.router.navigateByUrl(returnUrl);
+  }
+
+  navigateToAdmin() {
+    this.router.navigate(['admin']);
+  }
+
 }
