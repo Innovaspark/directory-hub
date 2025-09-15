@@ -6,14 +6,14 @@ import {HeaderComponent} from '@components/header/header.component';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, ExpandHeader, FooterComponent, HeaderComponent],
+  imports: [RouterOutlet, ExpandHeader],
   template: `
     <div class="bg-gray-50">
 
       <div class="py-2"></div>
       <div class="py-16">
 
-        <app-expand-header></app-expand-header>
+        <app-expand-header [showButtons]="false"></app-expand-header>
 
         <router-outlet></router-outlet>
       </div>

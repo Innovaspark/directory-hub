@@ -14,12 +14,14 @@
     <nav class="nav">
     </nav>
     <div class="header-actions">
-      @if($isOnHomePage()) {
+      @if(showButtons()) {
       <div class="button-group">
+        @if($isOnHomePage()) {
         <button class="btn-secondary" [class.btn-small]="isContracted"
                 (click)="getStarted()">
           Get Started
         </button>
+        }
 
         <button class="btn-secondary" [class.btn-small]="isContracted"
                 (click)="goToAdmin()">

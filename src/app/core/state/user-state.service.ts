@@ -1,6 +1,7 @@
 // user-state.service.ts - Now orchestrates auth
 import { Injectable, signal, computed, inject } from '@angular/core';
 import {AuthService} from '@core/services/auth.service';
+import {NavigationService} from '@core/services/navigation.service';
 
 export interface User {
   id: string;
@@ -17,6 +18,7 @@ export interface User {
 export class UserStateService {
   private authService = inject(AuthService);
   private userSignal = signal<User | null>(null);
+  private navigationService = inject(NavigationService);
 
   // Public readonly signals
   public $user = this.userSignal.asReadonly();
@@ -108,6 +110,7 @@ export class UserStateService {
   async signOut() {
     await this.authService.signOut();
     this.userSignal.set(null);
+    this.navigationService.navigateToHome();
   }
 
   // Convenience methods

@@ -1,4 +1,14 @@
-import {Component, OnInit, OnDestroy, HostListener, ElementRef, Inject, PLATFORM_ID, inject} from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  HostListener,
+  ElementRef,
+  Inject,
+  PLATFORM_ID,
+  inject,
+  input
+} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {RouterLink} from "@angular/router";
 import {NavigationService} from "@core/services/navigation.service";
@@ -16,7 +26,8 @@ import {UserStateService} from '@core/state/user-state.service';
 })
 export class ExpandHeader implements OnInit, OnDestroy {
 
-  private elementRef = inject(ElementRef);
+  showButtons = input<boolean>(true);
+
   private platformId = inject(PLATFORM_ID);
   private navigationService = inject(NavigationService);
   private modalService = inject(ModalService);
