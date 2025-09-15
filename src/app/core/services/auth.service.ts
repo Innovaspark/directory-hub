@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { NhostClient } from '@nhost/nhost-js';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {BehaviorSubject, map, Observable} from 'rxjs';
 import { environment } from '@environments/environment';
 
 @Injectable({
@@ -13,22 +13,40 @@ export class AuthService {
   });
 
   private userSubject = new BehaviorSubject<any>(null);
-  private isLoggedInSubject = new BehaviorSubject<boolean>(false);
+  private userSignal = signal<any>(null);
 
+  // Observables for existing code
   public user$: Observable<any> = this.userSubject.asObservable();
-  public isLoggedIn$: Observable<boolean> = this.isLoggedInSubject.asObservable();
+  public isLoggedIn$: Observable<boolean> = this.userSubject.pipe(
+    map(user => !!user)
+  );
+
+  // Signals for modern Angular
+  public $user = this.userSignal.asReadonly();
+  public $isLoggedIn = computed(() => !!this.userSignal());
 
   constructor() {
-    // Initialize with existing session if available
+    this.initializeAuth();
+    this.setupAuthStateListener();
+  }
+
+  private initializeAuth() {
     const session = this.nhost.auth.getSession();
     if (session?.user) {
-      this.userSubject.next(session.user);
+      this.updateUser(session.user);
     }
+  }
 
-    // Listen for auth state changes (no type annotations to avoid conflicts)
+  private setupAuthStateListener() {
     this.nhost.auth.onAuthStateChanged((event, session) => {
-      this.userSubject.next(session?.user || null);
+      const user = session?.user || null;
+      this.updateUser(user);
     });
+  }
+
+  private updateUser(user: any) {
+    this.userSubject.next(user);
+    this.userSignal.set(user);
   }
 
   async signUp(email: string, password: string, displayName?: string) {
@@ -40,6 +58,10 @@ export class AuthService {
 
     if (error) {
       throw new Error(error.message);
+    }
+
+    if (session?.user) {
+      this.updateUser(session.user);
     }
 
     return { session, error };
@@ -55,11 +77,17 @@ export class AuthService {
       throw new Error(error.message);
     }
 
+    if (session?.user) {
+      this.updateUser(session.user);
+    }
+
     return { session, error };
   }
 
   async signOut() {
     const { error } = await this.nhost.auth.signOut();
+    this.updateUser(null);
+
     if (error) {
       console.error('Sign out error:', error);
     }
@@ -70,11 +98,11 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.isLoggedInSubject.value;
+    return !!this.userSignal();
   }
 
   getUser() {
-    return this.userSubject.value;
+    return this.userSignal();
   }
 
   getAccessToken(): string | null {

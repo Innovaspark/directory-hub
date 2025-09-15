@@ -6,6 +6,7 @@ import {NavigationService} from "@core/services/navigation.service";
 import {RouterStateService} from "@core/services/router-state.service";
 import {ModalService} from '@core/services/modal.service';
 import {LoginDialogComponent} from '@components/auth/login-dialog/login-dialog.component';
+import {AuthService} from '@core/services/auth.service';
 
 @Component({
   selector: 'app-expand-header',
@@ -234,14 +235,19 @@ import {LoginDialogComponent} from '@components/auth/login-dialog/login-dialog.c
   `]
 })
 export class ExpandHeader implements OnInit, OnDestroy {
+
+  private routerStateService = inject(RouterStateService);
+  private authService =inject(AuthService);
+
+  $isOnHomePage = this.routerStateService.$isHomePage;
+  $isLoggedIn = this.authService.$isLoggedIn;
+
   isContracted = false;
   isScrolled = false;
   isBrowser = false;
 
   private scrollThreshold = 50;
   private contractThreshold = 100;
-  private routerStateService = inject(RouterStateService);
-  $isOnHomePage = this.routerStateService.$isHomePage;
 
   constructor(
     private elementRef: ElementRef,

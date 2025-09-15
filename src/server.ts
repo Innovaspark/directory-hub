@@ -63,28 +63,6 @@ app.use(
  */
 app.use((req, res, next) => {
 
-  // Relax CSP: allow all images and styles
-  // res.setHeader(
-  //   'Content-Security-Policy',
-  //   "default-src 'self'; img-src * data:; style-src * 'unsafe-inline';"
-  // );
-
-  // res.setHeader(
-  //   'Content-Security-Policy',
-  //   "default-src 'self'; " +
-  //   "img-src * data:; " +
-  //   "style-src * 'unsafe-inline'; " +
-  //   "font-src *; " +
-  //   "script-src 'self' https://maps.googleapis.com https://api.mapbox.com; " +
-  //   "script-src-elem 'self' https://maps.googleapis.com https://api.mapbox.com; " +
-  //   "connect-src 'self' " +
-  //   "https://jneykstixikhsieyjsjd.hasura.eu-central-1.nhost.run " +
-  //   "https://maps.googleapis.com " +
-  //   "https://api.mapbox.com " +
-  //   "https://*.tiles.mapbox.com " +
-  //   "https://events.mapbox.com; " +
-  //   "worker-src 'self' blob:;"
-  // );
   res.setHeader(
     'Content-Security-Policy',
     "default-src 'self'; " +
@@ -93,10 +71,15 @@ app.use((req, res, next) => {
     "font-src *; " +
     "script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://api.mapbox.com; " +
     "script-src-elem 'self' 'unsafe-inline' https://maps.googleapis.com https://api.mapbox.com; " +
-    "connect-src 'self' https://jneykstixikhsieyjsjd.hasura.eu-central-1.nhost.run https://maps.googleapis.com https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com; " +
+    "connect-src 'self' " +
+    "https://jneykstixikhsieyjsjd.hasura.eu-central-1.nhost.run " +
+    "https://jneykstixikhsieyjsjd.auth.eu-central-1.nhost.run " +
+    "https://maps.googleapis.com " +
+    "https://api.mapbox.com " +
+    "https://*.tiles.mapbox.com " +
+    "https://events.mapbox.com; " +
     "worker-src 'self' blob:;"
   );
-
   angularApp
     .handle(req)
     .then((response) =>
