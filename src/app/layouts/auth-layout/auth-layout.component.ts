@@ -18,11 +18,10 @@ import {HeaderComponent} from '@components/header/header.component';
         <router-outlet></router-outlet>
       </div>
 
-      <app-footer></app-footer>
 
     </div>
   `
 })
-export class DirectoryLayoutComponent {
+export class AuthLayoutComponent {
 
 }

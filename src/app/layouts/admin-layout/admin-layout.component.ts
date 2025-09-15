@@ -15,14 +15,15 @@ import {HeaderComponent} from '@components/header/header.component';
 
         <app-expand-header></app-expand-header>
 
+        <h1>This is the admin layout!!!!</h1>
+
         <router-outlet></router-outlet>
       </div>
 
-      <app-footer></app-footer>
 
     </div>
   `
 })
-export class DirectoryLayoutComponent {
+export class AdminLayoutComponent {
 
 }
