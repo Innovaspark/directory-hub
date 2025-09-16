@@ -1,9 +1,10 @@
-// tenant-table.component.ts (refactored to use generic table)
+// tenant-table.component.ts (updated to use TenantService)
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {GenericTableComponent} from '@components/generic-table/generic-table.component';
-import {Tenant, VenueType} from '@core/models/tenant.model';
-import {TableColumn, TableConfig} from '@components/generic-table/types';
+import { GenericTableComponent } from '@components/generic-table/generic-table.component';
+import { Tenant, VenueType } from '@core/models/tenant.model';
+import { TableColumn, TableConfig } from '@components/generic-table/types';
+import { TenantService, PaginatedTenantsResponse } from '@services/tenant.service';
 
 @Component({
   selector: 'app-tenant-table',
@@ -19,24 +20,24 @@ import {TableColumn, TableConfig} from '@components/generic-table/types';
 })
 export class TenantTableComponent implements OnInit {
   data = signal<Tenant[]>([]);
+  loading = signal<boolean>(false);
 
-  // Same table config as before
+  constructor(private tenantService: TenantService) {}
+
   tableConfig: TableConfig = {
     title: 'Tenant Management',
     searchPlaceholder: 'Search tenants...',
   };
 
-  // Same column definitions as before - no changes
+  // Simplified column definitions - mostly just display raw values
   columns: TableColumn<Tenant>[] = [
     {
       accessorKey: 'name' as keyof Tenant,
-      header: 'Name',
-      cell: (info: any) => `
-        <div>
-          <div class="tenant-name">${info.getValue()}</div>
-          <div class="tenant-slug">${info.row.original.slug}</div>
-        </div>
-      `
+      header: 'Name'
+    },
+    {
+      accessorKey: 'slug' as keyof Tenant,
+      header: 'Slug'
     },
     {
       accessorKey: 'description' as keyof Tenant,
@@ -45,26 +46,21 @@ export class TenantTableComponent implements OnInit {
     },
     {
       accessorKey: 'domain_names' as keyof Tenant,
-      header: 'Domains',
-      cell: (info: any) => {
-        const domains = info.getValue() as string[];
-        return `
-          <div class="domain-list">
-            ${domains.map(domain => `<span class="tag">${domain}</span>`).join('')}
-          </div>
-        `;
-      }
+      header: 'Domains'
     },
     {
       accessorKey: 'venue_types' as keyof Tenant,
       header: 'Venue Types',
       cell: (info: any) => {
         const types = info.getValue() as VenueType[];
+        if (!types || !Array.isArray(types)) {
+          return '-';
+        }
         return `
           <div class="venue-types">
             ${types.map(type => `
               <span class="venue-type-chip" style="background-color: ${type.color}20; color: ${type.color};">
-                ${type.icon} ${type.label}
+                <i class="fas fa-${type.icon}"></i> ${type.label}
               </span>
             `).join('')}
           </div>
@@ -73,25 +69,12 @@ export class TenantTableComponent implements OnInit {
     },
     {
       accessorKey: 'keywords' as keyof Tenant,
-      header: 'Keywords',
-      cell: (info: any) => {
-        const keywords = info.getValue() as string[];
-        return `
-          <div class="keywords-list">
-            ${keywords.slice(0, 3).map(keyword => `<span class="tag">${keyword}</span>`).join('')}
-            ${keywords.length > 3 ? `<span class="tag">+${keywords.length - 3}</span>` : ''}
-          </div>
-        `;
-      }
+      header: 'Keywords'
     },
     {
       accessorKey: 'updated_at' as keyof Tenant,
       header: 'Last Updated',
-      cell: (info: any) => `
-        <div class="date-cell">
-          ${new Date(info.getValue() as string).toLocaleDateString()}
-        </div>
-      `
+      cell: (info: any) => new Date(info.getValue() as string).toLocaleDateString()
     },
     {
       id: 'actions',
@@ -105,44 +88,24 @@ export class TenantTableComponent implements OnInit {
     }
   ];
 
-  // Same sample data as before
-  private sampleData: Tenant[] = [
-    {
-      id: '1',
-      name: 'Amsterdam Music Hub',
-      slug: 'amsterdam-music',
-      description: 'Live music venues in Amsterdam',
-      domain_names: ['amsterdam-music.com', 'music-amsterdam.nl'],
-      search_terms: ['live music', 'concerts', 'venues'],
-      keywords: ['jazz', 'rock', 'electronic'],
-      venue_types: [
-        { slug: 'bar', label: 'Bar', icon: '🍺', color: '#f39c12', description: 'Bars with live music' },
-        { slug: 'club', label: 'Club', icon: '🎵', color: '#9b59b6', description: 'Music clubs' }
-      ],
-      settings: { timezone: 'Europe/Amsterdam' },
-      created_at: '2024-01-15T10:30:00Z',
-      updated_at: '2024-03-20T14:45:00Z'
-    },
-    {
-      id: '2',
-      name: 'Berlin Underground',
-      slug: 'berlin-underground',
-      description: 'Underground music scene in Berlin',
-      domain_names: ['berlin-underground.de'],
-      search_terms: ['underground', 'techno', 'clubs'],
-      keywords: ['techno', 'house', 'minimal'],
-      venue_types: [
-        { slug: 'club', label: 'Club', icon: '🎵', color: '#9b59b6', description: 'Music clubs' },
-        { slug: 'warehouse', label: 'Warehouse', icon: '🏭', color: '#34495e', description: 'Warehouse venues' }
-      ],
-      settings: { timezone: 'Europe/Berlin', currency: 'EUR' },
-      created_at: '2024-02-01T09:15:00Z',
-      updated_at: '2024-03-18T11:20:00Z'
-    }
-  ];
-
   ngOnInit() {
-    // Load sample data - same as before
-    this.data.set(this.sampleData);
+    this.loadTenants();
+  }
+
+  loadTenants() {
+    this.loading.set(true);
+
+    // For now, just load first page with default page size
+    this.tenantService.getAllTenants(1, 10).subscribe({
+      next: (response: PaginatedTenantsResponse) => {
+        this.data.set(response.tenants);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading tenants:', error);
+        this.data.set([]);
+        this.loading.set(false);
+      }
+    });
   }
 }

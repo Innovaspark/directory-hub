@@ -1,4 +1,4 @@
-// services/tenant.service.ts
+// services/tenant.service.ts (updated with getAllTenants)
 import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Apollo } from 'apollo-angular';
@@ -7,7 +7,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import {Tenant, VenueType} from "@core/models/tenant.model";
 
-// SEO and content constants
+// SEO and content constants (unchanged)
 const DEFAULT_KEYWORDS = [
   'live music', 'concerts', 'music venues', 'open mic', 'jam sessions',
   'live bands', 'music events', 'jazz clubs', 'rock venues', 'acoustic nights',
@@ -39,23 +39,56 @@ const DEFAULT_EVENT_TYPES = [
   'rock_show', 'indie_concert', 'folk_evening', 'blues_night', 'singer_songwriter'
 ];
 
-const GET_TENANT_BY_DOMAIN = gql`
-    query GetTenantByDomain($domain: String!) {
-        tenants(where: { domain_names: { _contains: [$domain] } }) {
-            id
-            name
-            slug
-            description
-            domain_names
-            search_terms
-            keywords
-            venue_types
-            settings
-            created_at
-            updated_at
-        }
+// NEW: GraphQL query for getting all tenants with pagination
+const GET_ALL_TENANTS = gql`
+  query GetAllTenants($limit: Int!, $offset: Int!) {
+    tenants(limit: $limit, offset: $offset, order_by: { updated_at: desc }) {
+      id
+      name
+      slug
+      description
+      domain_names
+      search_terms
+      keywords
+      venue_types
+      settings
+      created_at
+      updated_at
     }
+    tenants_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
 `;
+
+const GET_TENANT_BY_DOMAIN = gql`
+  query GetTenantByDomain($domain: String!) {
+    tenants(where: { domain_names: { _contains: [$domain] } }) {
+      id
+      name
+      slug
+      description
+      domain_names
+      search_terms
+      keywords
+      venue_types
+      settings
+      created_at
+      updated_at
+    }
+  }
+`;
+
+// NEW: Interface for paginated response
+export interface PaginatedTenantsResponse {
+  tenants: Tenant[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
 
 export interface TenantSeoConfig {
   siteName: string;
@@ -79,6 +112,45 @@ export class TenantService {
   private document = inject(DOCUMENT);
 
   constructor(private apollo: Apollo) {}
+
+  // NEW: Get all tenants with pagination
+  getAllTenants(page: number = 1, pageSize: number = 10): Observable<PaginatedTenantsResponse> {
+    const offset = (page - 1) * pageSize;
+
+    return this.apollo.query<{
+      tenants: Tenant[];
+      tenants_aggregate: { aggregate: { count: number } };
+    }>({
+      query: GET_ALL_TENANTS,
+      variables: {
+        limit: pageSize,
+        offset: offset
+      },
+      errorPolicy: 'ignore',
+      fetchPolicy: 'cache-first'
+    }).pipe(
+      map(result => {
+        const tenants = result.data?.tenants || [];
+        const totalCount = result.data?.tenants_aggregate?.aggregate?.count || 0;
+        const totalPages = Math.ceil(totalCount / pageSize);
+
+        return {
+          tenants,
+          totalCount,
+          page,
+          pageSize,
+          totalPages
+        };
+      }),
+      catchError(() => of({
+        tenants: [],
+        totalCount: 0,
+        page,
+        pageSize,
+        totalPages: 0
+      }))
+    );
+  }
 
   private getHostname(): string {
     // SSR-safe way to get hostname
