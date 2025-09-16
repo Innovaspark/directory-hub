@@ -1,7 +1,7 @@
 // country-cities.component.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LocationStateService } from '@core/services/location-state.service';
+import { LocationStateService } from '@core/state/location-state.service';
 import { NavigationService } from '@core/services/navigation.service';
 import { CarouselComponent } from '@components/carousel/carousel';
 
@@ -17,7 +17,7 @@ import { CarouselComponent } from '@components/carousel/carousel';
 
         <app-carousel [scrollAmount]="180">
           @for (city of $citiesInCountry(); track city.slug) {
-            <button 
+            <button
               (click)="navigateToCity(city.slug)"
               class="city-card">
               <span class="city-emoji">{{ city.emoji }}</span>

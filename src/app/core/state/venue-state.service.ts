@@ -4,12 +4,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 
 import { RouterStateService } from './router-state.service';
-import { CityService } from './city.service';
-import { TenantService } from './tenant.service';
+import { CityService } from '../services/city.service';
+import { TenantService } from '../services/tenant.service';
 import { Venue } from '../models/venue.model';
 import { City } from '../models/city.model';
 import { VenueService, VenuesResponse } from "@core/services/venue.service";
-import { AppStateService } from "@core/services/application-state.service";
+import { AppStateService } from "@core/state/application-state.service";
 import {catchError, Observable, of, tap} from "rxjs";
 import {VenueType} from "@core/models/tenant.model";
 

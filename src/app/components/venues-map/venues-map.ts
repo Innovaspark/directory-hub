@@ -5,7 +5,7 @@ import {
   MarkerComponent,
 } from 'ngx-mapbox-gl';
 import { Venue } from '@core/models/venue.model';
-import { VenueStateService } from '@core/services/venue-state.service';
+import { VenueStateService } from '@core/state/venue-state.service';
 import {NavigationService} from "@core/services/navigation.service";
 
 @Component({
@@ -36,7 +36,7 @@ import {NavigationService} from "@core/services/navigation.service";
               </ng-container>
           </mgl-map>
       </div>
-      
+
   `,
   styles: [`
       .map-container {
@@ -59,7 +59,7 @@ import {NavigationService} from "@core/services/navigation.service";
              height: 100vh !important;
              width: 100% !important;
          }
-         
+
       mgl-map {
           height: 100% !important;
           width: 100% !important;

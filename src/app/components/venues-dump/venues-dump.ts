@@ -1,8 +1,8 @@
 // venues-dump.component.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {VenueStateService} from "@core/services/venue-state.service";
-import {RouterStateService} from "@core/services/router-state.service";
+import {VenueStateService} from "@core/state/venue-state.service";
+import {RouterStateService} from "@core/state/router-state.service";
 
 @Component({
   selector: 'app-venues-dump',
@@ -18,7 +18,7 @@ import {RouterStateService} from "@core/services/router-state.service";
             <p><strong>Current URL:</strong> {{ routerState.$url() }}</p>
             <p><strong>City Slug:</strong> {{ routerState.$citySlug() }}</p>
             <p><strong>Query Params:</strong> {{ routerState.$queryParams() | json }}</p>
-            
+
             <p><strong>City:</strong> {{ venueState.$cityName() }} {{ venueState.$cityEmoji() }}</p>
           <p><strong>Search Query:</strong> "{{ venueState.$searchQuery() }}"</p>
           <p><strong>Selected Filter:</strong> {{ venueState.$selectedFilter() || 'None' }}</p>

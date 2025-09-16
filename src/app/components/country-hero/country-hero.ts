@@ -2,7 +2,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LocationStateService } from '@core/services/location-state.service';
+import { LocationStateService } from '@core/state/location-state.service';
 import { NavigationService } from '@core/services/navigation.service';
 
 @Component({

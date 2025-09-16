@@ -11,7 +11,7 @@ import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import {provideApolloConfig} from "./apollo.config";
-import {AppStateService} from "@core/services/application-state.service";
+import {AppStateService} from "@core/state/application-state.service";
 import {environment} from "../environments/environment";
 import {provideMapboxGL} from "ngx-mapbox-gl";
 

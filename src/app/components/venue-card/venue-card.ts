@@ -1,7 +1,7 @@
 import {Component, inject, input, computed} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {Venue} from "@core/models/venue.model";
-import {VenueStateService} from "@core/services/venue-state.service";
+import {VenueStateService} from "@core/state/venue-state.service";
 import {NavigationService} from "@core/services/navigation.service";
 
 @Component({

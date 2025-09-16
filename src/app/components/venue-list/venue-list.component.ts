@@ -12,12 +12,12 @@ import {
   effect
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from "@angular/common";
-import { VenueStateService } from "@core/services/venue-state.service";
+import { VenueStateService } from "@core/state/venue-state.service";
 import {ViewModeButtons} from "@components/view-mode-buttons/view-mode-buttons";
 import {InfiniteScrollDirective} from "ngx-infinite-scroll";
 import {VenuesMapComponent} from "@components/venues-map/venues-map";
 import {VenueCardComponent} from "@components/venue-card/venue-card";
-import {RouterStateService} from "@core/services/router-state.service";
+import {RouterStateService} from "@core/state/router-state.service";
 import {SeoService} from "@core/services/seo.service";
 
 @Component({

@@ -2,7 +2,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import {VenueStateService} from "@core/services/venue-state.service";
+import {VenueStateService} from "@core/state/venue-state.service";
 
 @Component({
   selector: 'app-city-about',
@@ -29,8 +29,8 @@ import {VenueStateService} from "@core/services/venue-state.service";
             <div class="main-content">
               <h2>{{ venueState.$cityName() }} Music Scene</h2>
               <p>
-                {{ venueState.$cityName() }} has a rich musical heritage spanning decades. The city's diverse 
-                neighborhoods each contribute their own flavor to the local music scene, from jazz and blues 
+                {{ venueState.$cityName() }} has a rich musical heritage spanning decades. The city's diverse
+                neighborhoods each contribute their own flavor to the local music scene, from jazz and blues
                 to rock, electronic, and everything in between.
               </p>
 

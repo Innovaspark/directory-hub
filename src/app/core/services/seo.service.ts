@@ -2,7 +2,7 @@
 import { Injectable, inject, PLATFORM_ID, Renderer2, RendererFactory2 } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { RouterStateService } from '@core/services/router-state.service';
+import { RouterStateService } from '@core/state/router-state.service';
 import { TenantService, TenantSeoConfig } from '@core/services/tenant.service';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '@environments/environment';

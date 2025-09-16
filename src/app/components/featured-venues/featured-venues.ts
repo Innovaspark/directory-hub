@@ -2,7 +2,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import {VenueStateService} from "@core/services/venue-state.service";
+import {VenueStateService} from "@core/state/venue-state.service";
 import {Venue} from "@core/models/venue.model";
 
 @Component({

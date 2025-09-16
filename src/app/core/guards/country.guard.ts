@@ -1,7 +1,7 @@
 // country.guard.ts
 import { inject } from '@angular/core';
 import { Route, UrlSegment } from '@angular/router';
-import { LocationStateService } from '@core/services/location-state.service';
+import { LocationStateService } from '@core/state/location-state.service';
 import { map } from 'rxjs';
 
 export const countryGuard = (route: Route, segments: UrlSegment[]) => {

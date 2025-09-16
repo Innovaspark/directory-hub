@@ -1,5 +1,5 @@
 import {Component, inject, input} from '@angular/core';
-import {VenueStateService} from "@core/services/venue-state.service";
+import {VenueStateService} from "@core/state/venue-state.service";
 import {CommonModule} from "@angular/common";
 
 @Component({

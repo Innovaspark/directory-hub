@@ -1,7 +1,7 @@
 // venue-filters.component.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VenueStateService } from "@core/services/venue-state.service";
+import { VenueStateService } from "@core/state/venue-state.service";
 
 @Component({
   selector: 'app-venue-filters',
@@ -19,12 +19,12 @@ import { VenueStateService } from "@core/services/venue-state.service";
                       All Types
                   </button>
                   @for (venueType of venueState.$filterOptions(); track venueType.slug) {
-                  <button 
+                  <button
                     class="filter-pill"
                     [class.active]="venueState.$selectedVenueType() === venueType.slug"
                     (click)="venueState.setVenueTypeFilter(venueType.slug)">
                     <i class="fas fa-{{venueType.icon}} mr-2"></i>
-                        {{ venueType.label }}                  
+                        {{ venueType.label }}
                   </button>
                   }
               </div>

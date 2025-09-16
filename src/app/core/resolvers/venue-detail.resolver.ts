@@ -3,7 +3,7 @@ import { ResolveFn, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import {Venue} from "@core/models/venue.model";
-import {VenueStateService} from "@core/services/venue-state.service";
+import {VenueStateService} from "@core/state/venue-state.service";
 
 export const venueDetailResolver: ResolveFn<Venue | null> = (route, state) => {
   const venueStateService = inject(VenueStateService);

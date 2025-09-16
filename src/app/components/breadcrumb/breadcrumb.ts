@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { RouterStateService } from '@core/services/router-state.service';
-import { VenueStateService } from '@core/services/venue-state.service';
+import { RouterStateService } from '@core/state/router-state.service';
+import { VenueStateService } from '@core/state/venue-state.service';
 
 // Hardcoded country lookup
 const COUNTRY_NAMES: { code: string; name: string }[] = [

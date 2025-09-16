@@ -1,13 +1,13 @@
 import {Component, computed, Inject, inject, PLATFORM_ID} from "@angular/core";
 import {CommonModule, isPlatformBrowser} from "@angular/common";
 import {Venue} from "@core/models/venue.model";
-import {VenueStateService} from "@core/services/venue-state.service";
+import {VenueStateService} from "@core/state/venue-state.service";
 import {HoursComponent} from "@components/hours/hours";
 import {QuickActionsComponent} from "@components/quick-actions/quick-actions";
 import {SingleVenueMapComponent} from "@components/venue-map/venue-map";
 import {BreadcrumbComponent} from "@components/breadcrumb/breadcrumb";
 import {SeoService} from "@core/services/seo.service";
-import {RouterStateService} from "@core/services/router-state.service";
+import {RouterStateService} from "@core/state/router-state.service";
 import {ScrollToTop} from '@components/scroll-to-top/scroll-to-top';
 
 @Component({

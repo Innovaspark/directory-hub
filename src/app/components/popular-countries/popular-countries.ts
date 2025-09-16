@@ -1,7 +1,7 @@
 // popular-countries.component.ts
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LocationStateService } from '@core/services/location-state.service';
+import { LocationStateService } from '@core/state/location-state.service';
 import { NavigationService } from '@core/services/navigation.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { NavigationService } from '@core/services/navigation.service';
         <p class="countries-subtitle">Discover live music venues around the world</p>
         <div class="countries-grid">
           @for (country of locationService.$allCountries(); track country.code) {
-            <button 
+            <button
               (click)="navigateToCountry(country.code)"
               class="country-card">
               <span class="country-emoji">{{ country.emoji }}</span>

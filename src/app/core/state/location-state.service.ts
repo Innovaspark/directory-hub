@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { RouterStateService } from './router-state.service';
-import { CityService } from './city.service';
+import { CityService } from '../services/city.service';
 import { City } from '@core/models/city.model';
 import { Country } from '@core/models/country.model';
 
