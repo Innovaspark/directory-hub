@@ -5,21 +5,12 @@ import {FooterComponent} from "@components/footer/footer.component";
 import {HeaderComponent} from '@components/header/header.component';
 
 @Component({
-  selector: 'app-main-layout',
+  selector: 'app-admin-layout',
   imports: [RouterOutlet, ExpandHeader],
   template: `
     <div class="bg-gray-50">
 
-      <div class="py-2"></div>
-      <div class="py-16">
-
-        <app-expand-header></app-expand-header>
-
-        <h1>This is the admin layout!!!!</h1>
-
         <router-outlet></router-outlet>
-      </div>
-
 
     </div>
   `

@@ -4,37 +4,15 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import {AdminSidebarComponent} from '../../shared/components/admin-sidebar/admin-sidebar';
 import {AdminHeaderComponent} from '../../shared/components/admin-header/admin-header';
+import {DrawerComponent} from '../../shared/components/drawer/drawer';
+import {SidebarMenuComponent} from '../../shared/components/sidebar-menu/sidebar-menu';
+import {ExpandHeader} from '@components/expand-header/expand-header';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, AdminSidebarComponent, AdminHeaderComponent],
-  template: `
-    <div class="flex h-screen bg-gray-50">
-      <!-- Sidebar -->
-      <app-admin-sidebar
-        [isExpanded]="sidebarExpanded"
-        [isMobileOpen]="mobileSidebarOpen"
-        (toggleExpanded)="toggleSidebar()"
-        (closeMobile)="closeMobileSidebar()">
-      </app-admin-sidebar>
-
-      <!-- Main Content -->
-      <div class="flex-1 flex flex-col min-h-0">
-        <!-- Header -->
-        <app-admin-header
-          [pageTitle]="currentPageTitle"
-          [pageSubtitle]="currentPageSubtitle"
-          (toggleMobile)="openMobileSidebar()">
-        </app-admin-header>
-
-        <!-- Page Content -->
-        <main class="flex-1 overflow-auto p-6">
-          <router-outlet></router-outlet>
-        </main>
-      </div>
-    </div>
-  `
+  imports: [CommonModule, AdminHeaderComponent, DrawerComponent, SidebarMenuComponent, ExpandHeader],
+  templateUrl: './admin-dashboard.component.html'
 })
 export class AdminDashboardComponent {
   sidebarExpanded = true;

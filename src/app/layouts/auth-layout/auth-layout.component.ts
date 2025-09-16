@@ -5,7 +5,7 @@ import {FooterComponent} from "@components/footer/footer.component";
 import {HeaderComponent} from '@components/header/header.component';
 
 @Component({
-  selector: 'app-main-layout',
+  selector: 'app-auth-layout',
   imports: [RouterOutlet, ExpandHeader],
   template: `
     <div class="bg-gray-50">
