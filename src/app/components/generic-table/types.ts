@@ -1,9 +1,7 @@
 // types/table-column.interface.ts
 import { ColumnDef } from '@tanstack/angular-table';
 
-export interface TableColumn<T = any> extends ColumnDef<T> {
-  // Additional custom properties can be added here if needed
-}
+export type TableColumn<T = any> = ColumnDef<T>;
 
 // types/table-config.interface.ts
 export interface TableConfig {

@@ -29,34 +29,48 @@ export class GenericTableComponent<T = any> implements OnInit, OnChanges {
 
   // Internal signals for reactivity
   private dataSignal = signal<T[]>([]);
-  private globalFilter = signal('');
+  globalFilter = signal('');
 
   // Merged configuration
   tableConfig: TableConfig = DEFAULT_TABLE_CONFIG;
 
-  table = createAngularTable(() => ({
-    data: this.dataSignal(),
-    columns: this.columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: this.tableConfig.sortable ? getSortedRowModel() : undefined,
-    getFilteredRowModel: this.tableConfig.filterable ? getFilteredRowModel() : undefined,
-    getPaginationRowModel: this.tableConfig.showPagination ? getPaginationRowModel() : undefined,
-    state: {
-      globalFilter: this.globalFilter(),
-    },
-    onGlobalFilterChange: (updater) => {
-      if (this.tableConfig.filterable) {
-        const value = typeof updater === 'function' ? updater(this.globalFilter()) : updater;
-        this.globalFilter.set(value ?? '');
-      }
-    },
-    globalFilterFn: 'includesString',
-    initialState: {
-      pagination: {
-        pageSize: this.tableConfig.pageSize || 10,
+  table = createAngularTable(() => {
+    const options: any = {
+      data: this.dataSignal(),
+      columns: this.columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        globalFilter: this.globalFilter(),
       },
-    },
-  }));
+      onGlobalFilterChange: (updater: any) => {
+        if (this.tableConfig.filterable) {
+          const value = typeof updater === 'function' ? updater(this.globalFilter()) : updater;
+          this.globalFilter.set(value ?? '');
+        }
+      },
+      globalFilterFn: 'includesString',
+      initialState: {
+        pagination: {
+          pageSize: this.tableConfig.pageSize || 10,
+        },
+      },
+    };
+
+    // Conditionally add features
+    if (this.tableConfig.sortable) {
+      options.getSortedRowModel = getSortedRowModel();
+    }
+
+    if (this.tableConfig.filterable) {
+      options.getFilteredRowModel = getFilteredRowModel();
+    }
+
+    if (this.tableConfig.showPagination) {
+      options.getPaginationRowModel = getPaginationRowModel();
+    }
+
+    return options;
+  });
 
   ngOnInit() {
     this.updateConfig();

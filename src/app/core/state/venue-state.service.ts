@@ -126,7 +126,7 @@ export class VenueStateService {
   // readonly $citySearchTerm = this.citySearchTerm.asReadonly();
   // readonly $citySuggestions = this.citySuggestions.asReadonly();
 
-  $viewMode = signal<'cards' | 'split'>('cards');
+  $viewMode = signal<'cards' | 'split'>('split');
 
   $selectedVenue = signal<Venue | null>(null);
 

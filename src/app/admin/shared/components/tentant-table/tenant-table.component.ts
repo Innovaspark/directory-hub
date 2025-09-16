@@ -1,29 +1,111 @@
-import { Tenant, VenueType } from '@core/models/tenant.model';
-
-// tenant-table.component.ts
+// tenant-table.component.ts (refactored to use generic table)
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  createAngularTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  ColumnDef,
-} from '@tanstack/angular-table';
+import {GenericTableComponent} from '@components/generic-table/generic-table.component';
+import {Tenant, VenueType} from '@core/models/tenant.model';
+import {TableColumn, TableConfig} from '@components/generic-table/types';
 
 @Component({
   selector: 'app-tenant-table',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './tenant-table.component.html',
-  styleUrls: ['./tenant-table.component.scss']
+  imports: [CommonModule, GenericTableComponent],
+  template: `
+    <app-generic-table
+      [data]="data()"
+      [columns]="columns"
+      [config]="tableConfig">
+    </app-generic-table>
+  `
 })
 export class TenantTableComponent implements OnInit {
   data = signal<Tenant[]>([]);
-  globalFilter = signal('');
 
-  // Sample data
+  // Same table config as before
+  tableConfig: TableConfig = {
+    title: 'Tenant Management',
+    searchPlaceholder: 'Search tenants...',
+  };
+
+  // Same column definitions as before - no changes
+  columns: TableColumn<Tenant>[] = [
+    {
+      accessorKey: 'name' as keyof Tenant,
+      header: 'Name',
+      cell: (info: any) => `
+        <div>
+          <div class="tenant-name">${info.getValue()}</div>
+          <div class="tenant-slug">${info.row.original.slug}</div>
+        </div>
+      `
+    },
+    {
+      accessorKey: 'description' as keyof Tenant,
+      header: 'Description',
+      cell: (info: any) => info.getValue() || '-'
+    },
+    {
+      accessorKey: 'domain_names' as keyof Tenant,
+      header: 'Domains',
+      cell: (info: any) => {
+        const domains = info.getValue() as string[];
+        return `
+          <div class="domain-list">
+            ${domains.map(domain => `<span class="tag">${domain}</span>`).join('')}
+          </div>
+        `;
+      }
+    },
+    {
+      accessorKey: 'venue_types' as keyof Tenant,
+      header: 'Venue Types',
+      cell: (info: any) => {
+        const types = info.getValue() as VenueType[];
+        return `
+          <div class="venue-types">
+            ${types.map(type => `
+              <span class="venue-type-chip" style="background-color: ${type.color}20; color: ${type.color};">
+                ${type.icon} ${type.label}
+              </span>
+            `).join('')}
+          </div>
+        `;
+      }
+    },
+    {
+      accessorKey: 'keywords' as keyof Tenant,
+      header: 'Keywords',
+      cell: (info: any) => {
+        const keywords = info.getValue() as string[];
+        return `
+          <div class="keywords-list">
+            ${keywords.slice(0, 3).map(keyword => `<span class="tag">${keyword}</span>`).join('')}
+            ${keywords.length > 3 ? `<span class="tag">+${keywords.length - 3}</span>` : ''}
+          </div>
+        `;
+      }
+    },
+    {
+      accessorKey: 'updated_at' as keyof Tenant,
+      header: 'Last Updated',
+      cell: (info: any) => `
+        <div class="date-cell">
+          ${new Date(info.getValue() as string).toLocaleDateString()}
+        </div>
+      `
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: () => `
+        <div class="action-buttons">
+          <button class="btn btn-edit">Edit</button>
+          <button class="btn btn-delete">Delete</button>
+        </div>
+      `
+    }
+  ];
+
+  // Same sample data as before
   private sampleData: Tenant[] = [
     {
       id: '1',
@@ -59,128 +141,8 @@ export class TenantTableComponent implements OnInit {
     }
   ];
 
-  columns: ColumnDef<Tenant>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Name',
-      cell: (info) => `
-        <div>
-          <div class="tenant-name">${info.getValue()}</div>
-          <div class="tenant-slug">${info.row.original.slug}</div>
-        </div>
-      `
-    },
-    {
-      accessorKey: 'description',
-      header: 'Description',
-      cell: (info) => info.getValue() || '-'
-    },
-    {
-      accessorKey: 'domain_names',
-      header: 'Domains',
-      cell: (info) => {
-        const domains = info.getValue() as string[];
-        return `
-          <div class="domain-list">
-            ${domains.map(domain => `<span class="tag">${domain}</span>`).join('')}
-          </div>
-        `;
-      }
-    },
-    {
-      accessorKey: 'venue_types',
-      header: 'Venue Types',
-      cell: (info) => {
-        const types = info.getValue() as VenueType[];
-        return `
-          <div class="venue-types">
-            ${types.map(type => `
-              <span class="venue-type-chip" style="background-color: ${type.color}20; color: ${type.color};">
-                ${type.icon} ${type.label}
-              </span>
-            `).join('')}
-          </div>
-        `;
-      }
-    },
-    {
-      accessorKey: 'keywords',
-      header: 'Keywords',
-      cell: (info) => {
-        const keywords = info.getValue() as string[];
-        return `
-          <div class="keywords-list">
-            ${keywords.slice(0, 3).map(keyword => `<span class="tag">${keyword}</span>`).join('')}
-            ${keywords.length > 3 ? `<span class="tag">+${keywords.length - 3}</span>` : ''}
-          </div>
-        `;
-      }
-    },
-    {
-      accessorKey: 'updated_at',
-      header: 'Last Updated',
-      cell: (info) => `
-        <div class="date-cell">
-          ${new Date(info.getValue() as string).toLocaleDateString()}
-        </div>
-      `
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: () => `
-        <div class="action-buttons">
-          <button class="btn btn-edit">Edit</button>
-          <button class="btn btn-delete">Delete</button>
-        </div>
-      `
-    }
-  ];
-
-  table = createAngularTable(() => ({
-    data: this.data(),
-    columns: this.columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    state: {
-      globalFilter: this.globalFilter(),
-    },
-    onGlobalFilterChange: (updater) => {
-      const value = typeof updater === 'function' ? updater(this.globalFilter()) : updater;
-      this.globalFilter.set(value ?? '');
-    },
-    globalFilterFn: 'includesString',
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
-  }));
-
   ngOnInit() {
-    // Load sample data
+    // Load sample data - same as before
     this.data.set(this.sampleData);
   }
-
-  // Helper method for sorting
-  handleSort(column: any, event: Event) {
-    event.preventDefault();
-    if (column.getCanSort()) {
-      column.toggleSorting();
-    }
-  }
-
-  // Helper method to get cell value for rendering
-  getCellValue(cell: any): string {
-    const cellRenderer = cell.column.columnDef.cell;
-    if (typeof cellRenderer === 'function') {
-      return cellRenderer(cell.getContext());
-    }
-    return cell.getValue();
-  }
-
-  // Helper for Math.min in template
-  Math = Math;
 }
