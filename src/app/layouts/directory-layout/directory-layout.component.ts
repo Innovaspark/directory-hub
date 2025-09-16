@@ -8,19 +8,25 @@ import {HeaderComponent} from '@components/header/header.component';
   selector: 'app-directory-layout',
   imports: [RouterOutlet, ExpandHeader, FooterComponent],
   template: `
-    <div class="bg-gray-50">
 
-      <div class="py-2"></div>
-      <div class="py-16">
-
+    <div class="page-container">
+      <header class="header">
         <app-expand-header></app-expand-header>
+      </header>
 
-        <router-outlet></router-outlet>
+      <main class="main-content">
+        <div class="content-wrapper">
+
+          <router-outlet></router-outlet>
+
+        </div>
+      </main>
+
+      <div class="footer">
+        <app-footer></app-footer>
       </div>
-
-      <app-footer></app-footer>
-
     </div>
+
   `
 })
 export class DirectoryLayoutComponent {

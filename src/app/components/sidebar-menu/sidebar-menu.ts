@@ -71,8 +71,13 @@ export class SidebarMenuComponent {
   menuItems: MenuItem[] = [
     {
       label: 'Dashboard',
-      path: '/',
+      path: './',
       icon: 'home'
+    },
+    {
+      label: 'Tenants',
+      path: 'tenants',
+      icon: 'building'
     },
     {
       label: 'Venues',

@@ -28,7 +28,32 @@
   @apply flex-1 flex items-center justify-center  gap-2 text-white py-3 px-4 rounded-lg transition-colors cursor-pointer;
 }
 
-.hamburger-button {
+.button-hamburger {
   @apply fixed top-4 left-4 p-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors cursor-pointer;
   z-index: 1000;
 }
+
+.cta-btn {
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+
+  &:hover {
+    background: #047857;
+    transform: translateY(-1px);
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+}
+
