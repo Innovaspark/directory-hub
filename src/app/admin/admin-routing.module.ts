@@ -10,7 +10,7 @@ const routes: Routes = [
     component: AdminDashboardComponent
   },
   {
-    path: 'tenants/:tenantId/edit',
+    path: 'tenants/:id/edit',
     component: TenantEditComponent
   },
   {

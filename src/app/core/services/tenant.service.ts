@@ -1,4 +1,4 @@
-// services/tenant.service.ts (updated with getAllTenants)
+// services/tenant.service.ts (updated with getAllTenants and save mutations)
 import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Apollo } from 'apollo-angular';
@@ -39,7 +39,7 @@ const DEFAULT_EVENT_TYPES = [
   'rock_show', 'indie_concert', 'folk_evening', 'blues_night', 'singer_songwriter'
 ];
 
-// NEW: GraphQL query for getting all tenants with pagination
+// GraphQL queries and mutations
 const GET_ALL_TENANTS = gql`
   query GetAllTenants($limit: Int!, $offset: Int!) {
     tenants(limit: $limit, offset: $offset, order_by: { updated_at: desc }) {
@@ -81,7 +81,61 @@ const GET_TENANT_BY_DOMAIN = gql`
   }
 `;
 
-// NEW: Interface for paginated response
+const GET_TENANT_BY_ID = gql`
+  query GetTenantById($id: uuid!) {
+    tenants_by_pk(id: $id) {
+      id
+      name
+      slug
+      description
+      domain_names
+      search_terms
+      keywords
+      venue_types
+      settings
+      created_at
+      updated_at
+    }
+  }
+`;
+
+const CREATE_TENANT = gql`
+  mutation CreateTenant($input: tenants_insert_input!) {
+    insert_tenants_one(object: $input) {
+      id
+      name
+      slug
+      description
+      domain_names
+      search_terms
+      keywords
+      venue_types
+      settings
+      created_at
+      updated_at
+    }
+  }
+`;
+
+const UPDATE_TENANT = gql`
+  mutation UpdateTenant($id: uuid!, $input: tenants_set_input!) {
+    update_tenants_by_pk(pk_columns: { id: $id }, _set: $input) {
+      id
+      name
+      slug
+      description
+      domain_names
+      search_terms
+      keywords
+      venue_types
+      settings
+      created_at
+      updated_at
+    }
+  }
+`;
+
+// Interfaces
 export interface PaginatedTenantsResponse {
   tenants: Tenant[];
   totalCount: number;
@@ -113,7 +167,7 @@ export class TenantService {
 
   constructor(private apollo: Apollo) {}
 
-  // NEW: Get all tenants with pagination
+  // Get all tenants with pagination
   getAllTenants(page: number = 1, pageSize: number = 10): Observable<PaginatedTenantsResponse> {
     const offset = (page - 1) * pageSize;
 
@@ -172,6 +226,65 @@ export class TenantService {
   getCurrentTenant(): Observable<Tenant | null> {
     const hostname = this.getHostname();
     return this.getTenantByDomain(hostname);
+  }
+
+  getTenantById(id: string): Observable<Tenant | null> {
+    return this.apollo.query<{tenants_by_pk: Tenant}>({
+      query: GET_TENANT_BY_ID,
+      variables: { id },
+      errorPolicy: 'ignore',
+      fetchPolicy: 'cache-first'
+    }).pipe(
+      map(result => result.data?.tenants_by_pk || null),
+      catchError(() => of(null))
+    );
+  }
+
+  // Save tenant (create or update)
+  saveTenant(tenant: Partial<Tenant>): Observable<Tenant> {
+    // Clean the input - remove read-only fields and Apollo's __typename
+    const { id, created_at, updated_at, __typename, ...input } = tenant as any;
+
+    if (tenant.id) {
+      // Update existing tenant
+      return this.apollo.mutate<{update_tenants_by_pk: Tenant}>({
+        mutation: UPDATE_TENANT,
+        variables: {
+          id: tenant.id,
+          input
+        },
+        errorPolicy: 'ignore'
+      }).pipe(
+        map(result => {
+          if (!result.data?.update_tenants_by_pk) {
+            throw new Error('Failed to update tenant');
+          }
+          return result.data.update_tenants_by_pk;
+        }),
+        catchError(error => {
+          console.error('Error updating tenant:', error);
+          throw error;
+        })
+      );
+    } else {
+      // Create new tenant
+      return this.apollo.mutate<{insert_tenants_one: Tenant}>({
+        mutation: CREATE_TENANT,
+        variables: { input },
+        errorPolicy: 'ignore'
+      }).pipe(
+        map(result => {
+          if (!result.data?.insert_tenants_one) {
+            throw new Error('Failed to create tenant');
+          }
+          return result.data.insert_tenants_one;
+        }),
+        catchError(error => {
+          console.error('Error creating tenant:', error);
+          throw error;
+        })
+      );
+    }
   }
 
   /** Get SEO configuration for current tenant */
@@ -247,30 +360,5 @@ export class TenantService {
       defaultImage: '/assets/images/default-og-image.jpg',
       domain: 'localhost'
     };
-  }
-
-  /** Get default keywords (for external use) */
-  getDefaultKeywords(): string[] {
-    return [...DEFAULT_KEYWORDS];
-  }
-
-  /** Get default venue types (for external use) */
-  getDefaultVenueTypes(): string[] {
-    return [...DEFAULT_VENUE_TYPES];
-  }
-
-  /** Get default search terms (for external use) */
-  getDefaultSearchTerms(): string[] {
-    return [...DEFAULT_SEARCH_TERMS];
-  }
-
-  /** Get default content types (for external use) */
-  getDefaultContentTypes(): string[] {
-    return [...DEFAULT_CONTENT_TYPES];
-  }
-
-  /** Get default event types (for external use) */
-  getDefaultEventTypes(): string[] {
-    return [...DEFAULT_EVENT_TYPES];
   }
 }
