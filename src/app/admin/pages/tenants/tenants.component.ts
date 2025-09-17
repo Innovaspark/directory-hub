@@ -7,9 +7,7 @@ import {TenantTableComponent} from '../../shared/components/tentant-table/tenant
   selector: 'app-tenants',
   standalone: true,
   imports: [CommonModule, TenantTableComponent],
-  template: `
-    <app-tenant-table></app-tenant-table>
-  `
+  templateUrl: './tenants.component.html'
 })
 export class TenantsComponent  {
 

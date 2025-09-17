@@ -1,9 +1,10 @@
 // tenant-table.component.ts (updated to use TenantService)
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { GenericTableComponent } from '@components/generic-table/generic-table.component';
 import { Tenant, VenueType } from '@core/models/tenant.model';
-import { TableColumn, TableConfig } from '@components/generic-table/types';
+import { TableColumn, TableConfig, TableAction } from '@components/generic-table/types';
 import { TenantService, PaginatedTenantsResponse } from '@services/tenant.service';
 
 @Component({
@@ -14,22 +15,34 @@ import { TenantService, PaginatedTenantsResponse } from '@services/tenant.servic
     <app-generic-table
       [data]="data()"
       [columns]="columns"
-      [config]="tableConfig">
+      [config]="tableConfig"
+      [totalCount]="totalCount()"
+      [currentPage]="currentPage()"
+      [pageSize]="pageSize()"
+      [loading]="loading()"
+      (pageChanged)="onPageChange($event)"
+      (actionTriggered)="onActionTriggered($event)">
     </app-generic-table>
   `
 })
 export class TenantTableComponent implements OnInit {
   data = signal<Tenant[]>([]);
+  totalCount = signal<number>(0);
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
   loading = signal<boolean>(false);
 
-  constructor(private tenantService: TenantService) {}
+  constructor(
+    private tenantService: TenantService,
+    private router: Router
+  ) {}
 
   tableConfig: TableConfig = {
     title: 'Tenant Management',
     searchPlaceholder: 'Search tenants...',
   };
 
-  // Simplified column definitions - mostly just display raw values
+  // Simplified column definitions - no actions column needed
   columns: TableColumn<Tenant>[] = [
     {
       accessorKey: 'name' as keyof Tenant,
@@ -75,16 +88,6 @@ export class TenantTableComponent implements OnInit {
       accessorKey: 'updated_at' as keyof Tenant,
       header: 'Last Updated',
       cell: (info: any) => new Date(info.getValue() as string).toLocaleDateString()
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: () => `
-        <div class="action-buttons">
-          <button class="btn btn-edit">Edit</button>
-          <button class="btn btn-delete">Delete</button>
-        </div>
-      `
     }
   ];
 
@@ -95,17 +98,55 @@ export class TenantTableComponent implements OnInit {
   loadTenants() {
     this.loading.set(true);
 
-    // For now, just load first page with default page size
-    this.tenantService.getAllTenants(1, 10).subscribe({
+    this.tenantService.getAllTenants(this.currentPage(), this.pageSize()).subscribe({
       next: (response: PaginatedTenantsResponse) => {
         this.data.set(response.tenants);
+        this.totalCount.set(response.totalCount);
         this.loading.set(false);
       },
       error: (error) => {
         console.error('Error loading tenants:', error);
         this.data.set([]);
+        this.totalCount.set(0);
         this.loading.set(false);
       }
     });
+  }
+
+  onPageChange(page: number) {
+    this.currentPage.set(page);
+    this.loadTenants();
+  }
+
+  onActionTriggered(event: {action: string, data: Tenant}) {
+    const { action, data } = event;
+
+    switch (action) {
+      case 'edit':
+        this.editTenant(data);
+        break;
+      case 'delete':
+        this.deleteTenant(data);
+        break;
+      default:
+        console.warn('Unknown action:', action);
+    }
+  }
+
+  private editTenant(tenant: Tenant) {
+    // Navigate to edit page
+    this.router.navigate(['/admin/tenants', tenant.id, 'edit']);
+  }
+
+  private deleteTenant(tenant: Tenant) {
+    // Show confirmation dialog
+    if (confirm(`Are you sure you want to delete "${tenant.name}"? This action cannot be undone.`)) {
+      // TODO: Implement actual delete via service
+      console.log('Deleting tenant:', tenant);
+
+      // For now, just reload the data
+      // Later: call tenantService.deleteTenant(tenant.id) then reload
+      this.loadTenants();
+    }
   }
 }
