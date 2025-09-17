@@ -11,7 +11,6 @@ import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
   imports: [
     CommonModule,
     VenueListComponent,
-    ScrollToTop,
     SearchBarComponent,
     VenueFiltersComponent
   ],
@@ -23,7 +22,6 @@ import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
       <app-venue-list></app-venue-list>
     </div>
 
-    <app-scroll-to-top></app-scroll-to-top>
   `
 })
 export class VenueDashboardComponent {

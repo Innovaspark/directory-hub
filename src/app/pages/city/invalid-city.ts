@@ -9,57 +9,52 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-      <div class="invalid-city">
-          <div class="container">
-              <div class="header">
-                  <h1>This city isn't available yet</h1>
-                  <p class="subtitle">We're working on expanding to more cities in {{ countryName }}</p>
-              </div>
+    <div class="invalid-city">
+      <div class="local-container">
+        <div class="header">
+          <h1>This city isn't available yet</h1>
+          <p class="subtitle">We're working on expanding to more cities in {{ countryName }}</p>
+        </div>
 
-              <div class="suggestions-section">
-                  <h2>Available cities nearby</h2>
-                  <div class="city-grid">
-                      <a [routerLink]="['/nl', 'amsterdam']" class="city-card">
-                          <span class="city-emoji">🏙️</span>
-                          <span class="city-name">Amsterdam</span>
-                          <span class="venue-count">89 venues</span>
-                      </a>
-                      <a [routerLink]="['/nl', 'utrecht']" class="city-card">
-                          <span class="city-emoji">🌿</span>
-                          <span class="city-name">Utrecht</span>
-                          <span class="venue-count">34 venues</span>
-                      </a>
-                      <a [routerLink]="['/nl', 'rotterdam']" class="city-card">
-                          <span class="city-emoji">🚢</span>
-                          <span class="city-name">Rotterdam</span>
-                          <span class="venue-count">23 venues</span>
-                      </a>
-                      <a [routerLink]="['/nl', 'the-hague']" class="city-card">
-                          <span class="city-emoji">🏛️</span>
-                          <span class="city-name">The Hague</span>
-                          <span class="venue-count">18 venues</span>
-                      </a>
-                  </div>
-              </div>
-
-              <div class="actions-section">
-                  <a [routerLink]="['/']" class="btn-primary">Browse all locations</a>
-                  <a [href]="'mailto:hello@gigawhat.live?subject=Add ' + cityName" class="btn-secondary">Request {{ cityName }}</a>
-              </div>
+        <div class="suggestions-section">
+          <h2>Available cities nearby</h2>
+          <div class="city-grid">
+            <a [routerLink]="['/nl', 'amsterdam']" class="city-card">
+              <span class="city-emoji">🏙️</span>
+              <span class="city-name">Amsterdam</span>
+              <span class="venue-count">89 venues</span>
+            </a>
+            <a [routerLink]="['/nl', 'utrecht']" class="city-card">
+              <span class="city-emoji">🌿</span>
+              <span class="city-name">Utrecht</span>
+              <span class="venue-count">34 venues</span>
+            </a>
+            <a [routerLink]="['/nl', 'rotterdam']" class="city-card">
+              <span class="city-emoji">🚢</span>
+              <span class="city-name">Rotterdam</span>
+              <span class="venue-count">23 venues</span>
+            </a>
+            <a [routerLink]="['/nl', 'the-hague']" class="city-card">
+              <span class="city-emoji">🏛️</span>
+              <span class="city-name">The Hague</span>
+              <span class="venue-count">18 venues</span>
+            </a>
           </div>
+        </div>
+
+        <div class="actions-section">
+          <a [routerLink]="['/']" class="btn-primary">Browse all locations</a>
+          <a [href]="'mailto:hello@gigawhat.live?subject=Add ' + cityName"
+             class="btn-secondary">Request {{ cityName }}</a>
+        </div>
       </div>
+    </div>
   `,
   styles: [`
     .invalid-city {
       min-height: 100vh;
       background: #f8fafc;
       padding: 4rem 0;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 2rem;
     }
 
     .header {

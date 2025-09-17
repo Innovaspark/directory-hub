@@ -5,6 +5,7 @@ import {FooterComponent} from "@components/footer/footer.component";
 import {HeaderComponent} from '@components/header/header.component';
 import {DrawerComponent} from '@components/drawer/drawer';
 import {SidebarMenuComponent} from '@components/sidebar-menu/sidebar-menu';
+import {StyleLoaderService} from '@services/style-loader.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -13,4 +14,13 @@ import {SidebarMenuComponent} from '@components/sidebar-menu/sidebar-menu';
 })
 export class AdminLayoutComponent {
 
+  constructor(private styleLoader: StyleLoaderService) {}
+
+  ngOnInit() {
+    this.styleLoader.loadBootstrap();
+  }
+
+  ngOnDestroy() {
+    this.styleLoader.unloadBootstrap();
+  }
 }

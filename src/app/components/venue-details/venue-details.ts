@@ -13,7 +13,7 @@ import {ScrollToTop} from '@components/scroll-to-top/scroll-to-top';
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [CommonModule, HoursComponent, QuickActionsComponent, SingleVenueMapComponent, BreadcrumbComponent, ScrollToTop],
+  imports: [CommonModule, HoursComponent, QuickActionsComponent, SingleVenueMapComponent, BreadcrumbComponent],
   template: `
 
 
@@ -123,8 +123,6 @@ import {ScrollToTop} from '@components/scroll-to-top/scroll-to-top';
               </div>
           </div>
       </div>
-
-      <app-scroll-to-top></app-scroll-to-top>
 
   `
 })

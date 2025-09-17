@@ -12,7 +12,7 @@ import {VenueStateService} from "@core/state/venue-state.service";
     <div class="city-about">
       <!-- Header -->
       <section class="about-header">
-        <div class="container">
+        <div class="local-container">
           <nav class="breadcrumb">
             <a [routerLink]="['..']">{{ venueState.$cityName() }}</a>
             <span>About</span>
@@ -24,7 +24,7 @@ import {VenueStateService} from "@core/state/venue-state.service";
 
       <!-- Content -->
       <section class="about-content">
-        <div class="container">
+        <div class="local-container">
           <div class="content-grid">
             <div class="main-content">
               <h2>{{ venueState.$cityName() }} Music Scene</h2>
@@ -198,12 +198,6 @@ import {VenueStateService} from "@core/state/venue-state.service";
 
     .btn-primary:hover {
       background: #5a67d8;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1rem;
     }
 
     @media (max-width: 768px) {

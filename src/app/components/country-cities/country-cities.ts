@@ -11,16 +11,16 @@ import { CarouselComponent } from '@components/carousel/carousel';
   imports: [CommonModule, CarouselComponent],
   template: `
     <section class="cities-section">
-      <div class="container">
+      <div class="local-container">
         <h2>Explore Cities</h2>
         <p class="cities-subtitle">Browse venues by city in {{ $currentCountry()?.name }}</p>
 
         <app-carousel [scrollAmount]="180">
           @for (city of $citiesInCountry(); track city.slug) {
-            <button
-              (click)="navigateToCity(city.slug)"
-              class="city-card">
-              <span class="city-emoji">{{ city.emoji }}</span>
+          <button
+            (click)="navigateToCity(city.slug)"
+            class="city-card">
+            <span class="city-emoji">{{ city.emoji }}</span>
               <span class="city-name">{{ city.name }}</span>
               <span class="city-venues">{{ city.venueCount || 0 }} venues</span>
             </button>
@@ -30,11 +30,6 @@ import { CarouselComponent } from '@components/carousel/carousel';
     </section>
   `,
   styles: [`
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
 
     .cities-section {
       padding: 3rem 0;

@@ -10,7 +10,7 @@ import {RouterStateService} from "@core/state/router-state.service";
   imports: [CommonModule],
   template: `
     <div class="venues-dump">
-      <div class="container">
+      <div class="local-container">
         <h3>Venues Debug Info</h3>
 
         <div class="debug-info">
@@ -54,12 +54,6 @@ import {RouterStateService} from "@core/state/router-state.service";
       border: 2px solid #dee2e6;
       margin: 1rem 0;
       border-radius: 8px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem;
     }
 
     .debug-info {

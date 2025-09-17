@@ -20,6 +20,18 @@ import {RepeatTypeComponent} from '@components/formly/repeat-type';
 import {provideToastr} from 'ngx-toastr';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 
+import mapboxgl from 'mapbox-gl';
+
+(mapboxgl as any).workerClass = class extends Worker {
+  constructor() {
+    // second argument is WorkerOptions
+    super(
+      new URL('mapbox-gl/dist/mapbox-gl-csp-worker', import.meta.url),
+      { type: 'module' } as WorkerOptions
+    );
+  }
+};
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),

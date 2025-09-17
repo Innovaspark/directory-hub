@@ -11,7 +11,7 @@ import {Venue} from "@core/models/venue.model";
   imports: [CommonModule, RouterModule],
   template: `
     <section class="featured-venues-section">
-      <div class="container">
+      <div class="local-container">
         <h2>Featured Venues</h2>
         <p class="featured-venues-subtitle">Discover some of our most popular live music spots</p>
         <div class="featured-venues-grid">
@@ -34,11 +34,6 @@ import {Venue} from "@core/models/venue.model";
     </section>
   `,
   styles: [`
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
 
     .featured-venues-section {
       padding: 4rem 0;

@@ -9,7 +9,7 @@ import { VenueStateService } from "@core/state/venue-state.service";
   imports: [CommonModule],
   template: `
       <div class="filters-section">
-          <div class="container">
+          <div class="local-container">
               <!-- Filter Pills -->
               <div class="filter-pills">
                   <button
@@ -68,12 +68,6 @@ import { VenueStateService } from "@core/state/venue-state.service";
               color: white;
               border-color: #667eea;
           }
-      }
-
-      .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 1rem;
       }
 
       @media (max-width: 768px) {

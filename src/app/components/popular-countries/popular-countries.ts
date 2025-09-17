@@ -10,7 +10,7 @@ import { NavigationService } from '@core/services/navigation.service';
   imports: [CommonModule],
   template: `
     <section class="countries-section">
-      <div class="container">
+      <div class="local-container">
         <h2>Explore Countries</h2>
         <p class="countries-subtitle">Discover live music venues around the world</p>
         <div class="countries-grid">
@@ -28,12 +28,6 @@ import { NavigationService } from '@core/services/navigation.service';
     </section>
   `,
   styles: [`
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-
     .countries-section {
       padding: 4rem 0;
       background: #fafafa;

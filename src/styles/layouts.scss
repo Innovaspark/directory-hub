@@ -10,6 +10,12 @@
     "footer";
 }
 
+.local-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
 .header {
   grid-area: header;
   position: sticky;
