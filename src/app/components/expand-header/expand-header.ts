@@ -10,12 +10,12 @@ import {
   input
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import {RouterLink} from "@angular/router";
-import {NavigationService} from "@core/services/navigation.service";
-import {RouterStateService} from "@core/state/router-state.service";
-import {ModalService} from '@core/services/modal.service';
-import {LoginDialogComponent} from '@components/auth/login-dialog/login-dialog.component';
-import {UserStateService} from '@core/state/user-state.service';
+import { RouterLink } from "@angular/router";
+import { NavigationService } from "@core/services/navigation.service";
+import { RouterStateService } from "@core/state/router-state.service";
+import { ModalService } from '@core/services/modal.service';
+import { LoginDialogComponent } from '@components/auth/login-dialog/login-dialog.component';
+import { UserStateService } from '@core/state/user-state.service';
 
 @Component({
   selector: 'app-expand-header',
@@ -45,6 +45,7 @@ export class ExpandHeader implements OnInit, OnDestroy {
 
   private scrollThreshold = 50;
   private contractThreshold = 100;
+  private hysteresis = 20; // <-- buffer to prevent oscillation
 
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -56,8 +57,7 @@ export class ExpandHeader implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
-  }
+  ngOnDestroy() {}
 
   @HostListener('window:scroll', ['$event'])
   onScroll(event: Event) {
@@ -80,8 +80,16 @@ export class ExpandHeader implements OnInit, OnDestroy {
     }
 
     const scrollY = window.scrollY || window.pageYOffset;
+
+    // hysteresis buffer for isContracted
+    if (!this.isContracted && scrollY > this.contractThreshold + this.hysteresis) {
+      this.isContracted = true;
+    } else if (this.isContracted && scrollY < this.contractThreshold - this.hysteresis) {
+      this.isContracted = false;
+    }
+
+    // simple check for isScrolled
     this.isScrolled = scrollY > this.scrollThreshold;
-    this.isContracted = scrollY > this.contractThreshold;
   }
 
   getStarted() {
@@ -109,5 +117,4 @@ export class ExpandHeader implements OnInit, OnDestroy {
   goToAdmin() {
     this.navigationService.navigateToAdmin();
   }
-
 }

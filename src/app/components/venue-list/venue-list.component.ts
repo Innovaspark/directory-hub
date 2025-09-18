@@ -45,7 +45,7 @@ import {SeoService} from "@core/services/seo.service";
                   @if ($viewMode() === 'split') {
                   <div class="sidebar">
                       @defer {
-                  <app-venues-map></app-venues-map>
+                <b>put map here</b>
                   } @placeholder {
                   <div class="map-placeholder">Loading map...</div>
                   }
@@ -191,7 +191,7 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      // window.scrollTo({ top: 0, behavior: 'auto' });
     }
   }
 

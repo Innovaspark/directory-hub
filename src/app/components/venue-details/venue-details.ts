@@ -116,7 +116,10 @@ import {ScrollToTop} from '@components/scroll-to-top/scroll-to-top';
                       <app-quick-actions [venue]="$currentVenue()"></app-quick-actions>
 
                       <div class="bg-white rounded-xl shadow-lg mt-3" [style.height]="'700px'">
+                        <ng-container *ngIf="isBrowser">
                           <app-single-venue-map [venue]="$currentVenue()"></app-single-venue-map>
+                          <b>wtf am i supposed to do?  this suckssss!!!!</b>
+                        </ng-container>
                       </div>
 
                   </div>
@@ -141,7 +144,10 @@ export class VenueDetails {
   citySlug = '';
   countryCode = '';
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  isBrowser = false;
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
     this.citySlug = this.routerState.$citySlug() ?? '';
