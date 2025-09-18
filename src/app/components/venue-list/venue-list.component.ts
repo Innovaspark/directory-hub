@@ -31,7 +31,7 @@ import {SeoService} from "@core/services/seo.service";
               <app-view-mode-buttons></app-view-mode-buttons>
 
               <div [class]="$viewMode() === 'split' ? 'split-layout' : 'full-layout'">
-                  <div class="venues-grid"
+                  <div class="venues-grid left-panel"
                        infiniteScroll
                        [scrollWindow]="true"
                        (scrolled)="onScrollDown()">
@@ -43,7 +43,7 @@ import {SeoService} from "@core/services/seo.service";
                   </div>
 
                   @if ($viewMode() === 'split') {
-                  <div class="sidebar">
+                  <div #mapPanel class="sidebar right-panel">
                       @defer {
                 <ng-container *ngIf="isBrowser">
                   <app-venues-map></app-venues-map>
@@ -95,10 +95,30 @@ import {SeoService} from "@core/services/seo.service";
             display: block;
         }
 
+        /*.split-layout {*/
+        /*    display: grid;*/
+        /*    grid-template-columns: 1fr 1fr;*/
+        /*    gap: 2rem;*/
+        /*}*/
+
         .split-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+          /*display: grid;*/
+          /*grid-template-columns: 1fr 1fr;*/
+          /*gap: 2rem;*/
+          /*height: 100vh; !* full viewport height so panels can scroll independently *!*/
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+          max-height: 100vh; /* total viewport height */
+          overflow-y: auto;  /* container scrolls if content exceeds viewport */
+          padding: 1rem;
+        }
+
+        .left-panel,
+        .right-panel {
+          overflow-y: auto;   /* each panel scrolls independently */
+          max-height: 100%;   /* constrain height to grid row */
+          padding: 1rem;
         }
 
         .sidebar {
@@ -123,6 +143,7 @@ import {SeoService} from "@core/services/seo.service";
 export class VenueListComponent implements AfterViewInit, OnDestroy {
   @ViewChild('loadTrigger') loadTrigger!: ElementRef;
   @ViewChildren('venueCard', { read: ElementRef }) venueCards!: QueryList<ElementRef>;
+  @ViewChild('mapPanel') mapPanel!: ElementRef<HTMLDivElement>;
 
   private venueState = inject(VenueStateService);
   private platformId = inject(PLATFORM_ID);
@@ -208,17 +229,29 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   }
 
   scrollToSelectedVenue(venueId: string) {
-    // const venues = this.$venues();
-    // const selectedIndex = venues.findIndex(v => v.id === venueId);
-    //
-    // if (selectedIndex >= 0 && this.venueCards) {
-    //   const cardElement = this.venueCards.toArray()[selectedIndex];
-    //   if (cardElement) {
-    //     cardElement.nativeElement.scrollIntoView({
-    //       behavior: 'smooth',
-    //       block: 'center'
-    //     });
-    //   }
-    // }
+    const venues = this.$venues();
+    const selectedIndex = venues.findIndex(v => v.id === venueId);
+
+    if (selectedIndex >= 0 && this.venueCards) {
+      const cardElement = this.venueCards.toArray()[selectedIndex];
+      if (cardElement) {
+        cardElement.nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
   }
+
+  scrollRightToElement(elementId: string) {
+    const container = this.mapPanel.nativeElement;
+    const target = container.querySelector(`#${elementId}`) as HTMLElement;
+    if (target) {
+      container.scrollTo({
+        top: target.offsetTop,
+        behavior: 'smooth' // optional
+      });
+    }
+  }
+
 }
