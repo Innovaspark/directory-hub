@@ -45,7 +45,9 @@ import {SeoService} from "@core/services/seo.service";
                   @if ($viewMode() === 'split') {
                   <div class="sidebar">
                       @defer {
-                <b>put map here</b>
+                <ng-container *ngIf="isBrowser">
+                  <app-venues-map></app-venues-map>
+                </ng-container>
                   } @placeholder {
                   <div class="map-placeholder">Loading map...</div>
                   }
@@ -206,17 +208,17 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   }
 
   scrollToSelectedVenue(venueId: string) {
-    const venues = this.$venues();
-    const selectedIndex = venues.findIndex(v => v.id === venueId);
-
-    if (selectedIndex >= 0 && this.venueCards) {
-      const cardElement = this.venueCards.toArray()[selectedIndex];
-      if (cardElement) {
-        cardElement.nativeElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      }
-    }
+    // const venues = this.$venues();
+    // const selectedIndex = venues.findIndex(v => v.id === venueId);
+    //
+    // if (selectedIndex >= 0 && this.venueCards) {
+    //   const cardElement = this.venueCards.toArray()[selectedIndex];
+    //   if (cardElement) {
+    //     cardElement.nativeElement.scrollIntoView({
+    //       behavior: 'smooth',
+    //       block: 'center'
+    //     });
+    //   }
+    // }
   }
 }

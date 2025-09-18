@@ -8,7 +8,6 @@ import {SingleVenueMapComponent} from "@components/venue-map/venue-map";
 import {BreadcrumbComponent} from "@components/breadcrumb/breadcrumb";
 import {SeoService} from "@core/services/seo.service";
 import {RouterStateService} from "@core/state/router-state.service";
-import {ScrollToTop} from '@components/scroll-to-top/scroll-to-top';
 
 @Component({
   selector: 'app-venue-details',
