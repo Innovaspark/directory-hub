@@ -207,7 +207,7 @@ export class HasuraCrudService {
 
     // Use GraphQL alias 'item' to guarantee a known key
     const query = gql`
-      query fetch_${tableName}_by_id($id: bigint!) {
+      query fetch_${tableName}_by_id($id: uuid!) {
       item: ${tableName}(where: { ${idColumn}: { _eq: $id } }) {
       ${columns.join('\n')}
       }
