@@ -195,5 +195,33 @@ export class HasuraCrudService {
     return { columns, query, variables };
   }
 
+  // ===== Fetch a single record by primary key =====
+// ===== Fetch a single record by primary key =====
+  async fetchById<T = any>(
+    tableName: string,          // e.g., 'countries'
+    idColumn: string,           // e.g., 'id'
+    idValue: string | number,   // e.g., 5
+    selectColumns?: string[]    // optional list of fields, fallback below
+  ): Promise<T | null> {
+    const columns = selectColumns && selectColumns.length ? selectColumns : ['id', 'name'];
+
+    // Use GraphQL alias 'item' to guarantee a known key
+    const query = gql`
+      query fetch_${tableName}_by_id($id: bigint!) {
+      item: ${tableName}(where: { ${idColumn}: { _eq: $id } }) {
+      ${columns.join('\n')}
+      }
+      }
+    `;
+
+    const result = await firstValueFrom(
+      this.apollo.query<{ item: T[] }>({ query, variables: { id: idValue } })
+    );
+
+    // Optional chaining ensures no crash if the response is empty
+    return result.data?.item?.[0] ?? null;
+  }
+
+
 
 }
