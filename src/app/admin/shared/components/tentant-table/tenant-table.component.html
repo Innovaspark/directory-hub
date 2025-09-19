@@ -1,90 +1,90 @@
-<!-- tenant-table.component.html -->
-<div class="table-container">
-  <!-- Search/Filter Bar -->
-  <div class="table-header">
-    <h3>Tenant Management</h3>
-    <div class="search-bar">
-      <input
-        type="text"
-        placeholder="Search tenants..."
-        (input)="globalFilter.set($any($event.target).value)"
-        class="search-input"
-      />
-    </div>
-  </div>
+<!--&lt;!&ndash; tenant-table.component.html &ndash;&gt;-->
+<!--<div class="table-container">-->
+<!--  &lt;!&ndash; Search/Filter Bar &ndash;&gt;-->
+<!--  <div class="table-header">-->
+<!--    <h3>Tenant Management</h3>-->
+<!--    <div class="search-bar">-->
+<!--      <input-->
+<!--        type="text"-->
+<!--        placeholder="Search tenants..."-->
+<!--        (input)="globalFilter.set($any($event.target).value)"-->
+<!--        class="search-input"-->
+<!--      />-->
+<!--    </div>-->
+<!--  </div>-->
 
-  <!-- Table -->
-  <div class="table-wrapper">
-    <table class="data-table">
-      <thead>
-      <tr *ngFor="let headerGroup of table.getHeaderGroups()">
-        <th
-          *ngFor="let header of headerGroup.headers"
-          [class.sortable]="header.column.getCanSort()"
-          (click)="handleSort(header.column, $event)"
-        >
-          <div class="header-content">
-              <span *ngIf="!header.isPlaceholder">
-                {{ header.column.columnDef.header }}
-              </span>
-            <span class="sort-indicator" *ngIf="header.column.getCanSort()">
-                <span *ngIf="header.column.getIsSorted() === 'asc'">↑</span>
-                <span *ngIf="header.column.getIsSorted() === 'desc'">↓</span>
-                <span *ngIf="!header.column.getIsSorted()">⇅</span>
-              </span>
-          </div>
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let row of table.getRowModel().rows" class="table-row">
-        <td *ngFor="let cell of row.getVisibleCells()">
-          <div [innerHTML]="getCellValue(cell)"></div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+<!--  &lt;!&ndash; Table &ndash;&gt;-->
+<!--  <div class="table-wrapper">-->
+<!--    <table class="data-table">-->
+<!--      <thead>-->
+<!--      <tr *ngFor="let headerGroup of table.getHeaderGroups()">-->
+<!--        <th-->
+<!--          *ngFor="let header of headerGroup.headers"-->
+<!--          [class.sortable]="header.column.getCanSort()"-->
+<!--          (click)="handleSort(header.column, $event)"-->
+<!--        >-->
+<!--          <div class="header-content">-->
+<!--              <span *ngIf="!header.isPlaceholder">-->
+<!--                {{ header.column.columnDef.header }}-->
+<!--              </span>-->
+<!--            <span class="sort-indicator" *ngIf="header.column.getCanSort()">-->
+<!--                <span *ngIf="header.column.getIsSorted() === 'asc'">↑</span>-->
+<!--                <span *ngIf="header.column.getIsSorted() === 'desc'">↓</span>-->
+<!--                <span *ngIf="!header.column.getIsSorted()">⇅</span>-->
+<!--              </span>-->
+<!--          </div>-->
+<!--        </th>-->
+<!--      </tr>-->
+<!--      </thead>-->
+<!--      <tbody>-->
+<!--      <tr *ngFor="let row of table.getRowModel().rows" class="table-row">-->
+<!--        <td *ngFor="let cell of row.getVisibleCells()">-->
+<!--          <div [innerHTML]="getCellValue(cell)"></div>-->
+<!--        </td>-->
+<!--      </tr>-->
+<!--      </tbody>-->
+<!--    </table>-->
+<!--  </div>-->
 
-  <!-- Pagination -->
-  <div class="pagination">
-    <div class="pagination-info">
-      Showing {{ table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1 }}
-      to {{ Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length) }}
-      of {{ table.getFilteredRowModel().rows.length }} entries
-    </div>
-    <div class="pagination-controls">
-      <button
-        (click)="table.setPageIndex(0)"
-        [disabled]="!table.getCanPreviousPage()"
-        class="page-btn"
-      >
-        ««
-      </button>
-      <button
-        (click)="table.previousPage()"
-        [disabled]="!table.getCanPreviousPage()"
-        class="page-btn"
-      >
-        ‹
-      </button>
-      <span class="page-info">
-        Page {{ table.getState().pagination.pageIndex + 1 }} of {{ table.getPageCount() }}
-      </span>
-      <button
-        (click)="table.nextPage()"
-        [disabled]="!table.getCanNextPage()"
-        class="page-btn"
-      >
-        ›
-      </button>
-      <button
-        (click)="table.setPageIndex(table.getPageCount() - 1)"
-        [disabled]="!table.getCanNextPage()"
-        class="page-btn"
-      >
-        »»
-      </button>
-    </div>
-  </div>
-</div>
+<!--  &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--  <div class="pagination">-->
+<!--    <div class="pagination-info">-->
+<!--      Showing {{ table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1 }}-->
+<!--      to {{ Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length) }}-->
+<!--      of {{ table.getFilteredRowModel().rows.length }} entries-->
+<!--    </div>-->
+<!--    <div class="pagination-controls">-->
+<!--      <button-->
+<!--        (click)="table.setPageIndex(0)"-->
+<!--        [disabled]="!table.getCanPreviousPage()"-->
+<!--        class="page-btn"-->
+<!--      >-->
+<!--        ««-->
+<!--      </button>-->
+<!--      <button-->
+<!--        (click)="table.previousPage()"-->
+<!--        [disabled]="!table.getCanPreviousPage()"-->
+<!--        class="page-btn"-->
+<!--      >-->
+<!--        ‹-->
+<!--      </button>-->
+<!--      <span class="page-info">-->
+<!--        Page {{ table.getState().pagination.pageIndex + 1 }} of {{ table.getPageCount() }}-->
+<!--      </span>-->
+<!--      <button-->
+<!--        (click)="table.nextPage()"-->
+<!--        [disabled]="!table.getCanNextPage()"-->
+<!--        class="page-btn"-->
+<!--      >-->
+<!--        ›-->
+<!--      </button>-->
+<!--      <button-->
+<!--        (click)="table.setPageIndex(table.getPageCount() - 1)"-->
+<!--        [disabled]="!table.getCanNextPage()"-->
+<!--        class="page-btn"-->
+<!--      >-->
+<!--        »»-->
+<!--      </button>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->

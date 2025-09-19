@@ -4,10 +4,11 @@ import { ExpandHeader } from "@components/expand-header/expand-header";
 import {FooterComponent} from "@components/footer/footer.component";
 import {HeaderComponent} from '@components/header/header.component';
 import {ScrollToTop} from '@components/scroll-to-top/scroll-to-top';
+import {FloatingToolbarComponent} from '@components/floating-toolbar';
 
 @Component({
   selector: 'app-directory-layout',
-  imports: [RouterOutlet, ExpandHeader, FooterComponent, ScrollToTop],
+  imports: [RouterOutlet, ExpandHeader, FooterComponent, ScrollToTop, FloatingToolbarComponent],
   template: `
 
     <div class="page-container">

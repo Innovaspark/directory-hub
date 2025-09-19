@@ -86,6 +86,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
   });
 
   ngOnInit() {
+    debugger;
     this.updateConfig();
     this.dataSignal.set(this.data);
 

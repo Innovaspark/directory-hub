@@ -4,6 +4,7 @@ import { VenueListComponent } from "@components/venue-list/venue-list.component"
 import { ScrollToTop } from "@components/scroll-to-top/scroll-to-top";
 import { SearchBarComponent } from "@components/search-bar/search-bar";
 import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
+import {ViewModeButtons} from '@components/view-mode-buttons/view-mode-buttons';
 
 @Component({
   selector: 'app-venue-hub',
@@ -12,13 +13,16 @@ import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
     CommonModule,
     VenueListComponent,
     SearchBarComponent,
-    VenueFiltersComponent
+    VenueFiltersComponent,
+    ViewModeButtons
   ],
   template: `
     <app-search-bar></app-search-bar>
 
     <div class="mt-5">
+      <div>
         <app-venue-filters></app-venue-filters>
+      </div>
       <app-venue-list></app-venue-list>
     </div>
 

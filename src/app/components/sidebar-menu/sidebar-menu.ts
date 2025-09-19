@@ -80,6 +80,11 @@ export class SidebarMenuComponent {
       icon: 'building'
     },
     {
+      label: 'Countries',
+      path: 'countries',
+      icon: 'map'
+    },
+    {
       label: 'Venues',
       icon: 'building',
       children: [

@@ -19,21 +19,29 @@ import {VenuesMapComponent} from "@components/venues-map/venues-map";
 import {VenueCardComponent} from "@components/venue-card/venue-card";
 import {RouterStateService} from "@core/state/router-state.service";
 import {SeoService} from "@core/services/seo.service";
+import {FloatingToolbarComponent} from '@components/floating-toolbar';
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMapComponent, VenueCardComponent],
+  imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMapComponent, VenueCardComponent, FloatingToolbarComponent],
   template: `
       <section>
-          <div class="container mx-auto px-4">
+          <div #mapContainer class="container mx-auto px-4"
+               infiniteScroll
+               [scrollWindow]="true"
+               (scrolled)="onScrollDown()">
 
+            <app-floating-toolbar [parent]="mapContainer">
               <app-view-mode-buttons></app-view-mode-buttons>
+            </app-floating-toolbar>
+
+<!--            <app-view-mode-buttons></app-view-mode-buttons>-->
 
               <div [class]="$viewMode() === 'split' ? 'split-layout' : 'full-layout'">
-                  <div class="venues-grid left-panel"
+                  <div #venueGrid class="venues-grid left-panel"
                        infiniteScroll
-                       [scrollWindow]="true"
+                       [scrollWindow]="false"
                        (scrolled)="onScrollDown()">
 
                       @for (venue of $venues(); track venue.id; let i = $index) {
@@ -43,7 +51,7 @@ import {SeoService} from "@core/services/seo.service";
                   </div>
 
                   @if ($viewMode() === 'split') {
-                  <div #mapPanel class="sidebar right-panel">
+                  <div #mapPanel class="right-panel">
                       @defer {
                 <ng-container *ngIf="isBrowser">
                   <app-venues-map></app-venues-map>
@@ -102,10 +110,10 @@ import {SeoService} from "@core/services/seo.service";
         /*}*/
 
         .split-layout {
-          /*display: grid;*/
-          /*grid-template-columns: 1fr 1fr;*/
-          /*gap: 2rem;*/
-          /*height: 100vh; !* full viewport height so panels can scroll independently *!*/
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+          height: 100vh; /* full viewport height so panels can scroll independently */
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 2rem;
@@ -119,12 +127,6 @@ import {SeoService} from "@core/services/seo.service";
           overflow-y: auto;   /* each panel scrolls independently */
           max-height: 100%;   /* constrain height to grid row */
           padding: 1rem;
-        }
-
-        .sidebar {
-            position: sticky;
-            top: 20px;
-            height: 100vh;
         }
 
         .map-placeholder {
@@ -182,6 +184,10 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
         setTimeout(() => {
           this.scrollToSelectedVenue(selectedVenue.id);
         }, 100);
+      }
+      const viewMode = this.$viewMode();
+      if (viewMode && selectedVenue) {
+        this.scrollToSelectedVenue(selectedVenue.id);
       }
     });
   }
