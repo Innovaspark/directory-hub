@@ -14,7 +14,6 @@ import {ViewModeButtons} from '@components/view-mode-buttons/view-mode-buttons';
     VenueListComponent,
     SearchBarComponent,
     VenueFiltersComponent,
-    ViewModeButtons
   ],
   template: `
     <app-search-bar></app-search-bar>

@@ -4,6 +4,7 @@ import {AdminDashboardComponent} from './pages/admin-dashboard/admin-dashboard.c
 import {TenantsComponent} from './pages/tenants/tenants.component';
 import {TenantEditComponent} from './pages/tenant-edit/tenant-edit.component';
 import {CountriesComponent} from './pages/countries/countries.component';
+import {CountryEditComponent} from './pages/country-edit/country-edit.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,10 @@ const routes: Routes = [
   {
     path: 'tenants',
     component: TenantsComponent
+  },
+  {
+    path: 'countries/:id/edit',
+    component: CountryEditComponent
   },
   {
     path: 'countries',

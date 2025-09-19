@@ -13,6 +13,7 @@ export class LocationStateService {
 
   private countries = signal<Country[]>([
     {
+      id: 'dummy',
       code: 'nl',
       name: 'Netherlands',
       emoji: '🇳🇱',

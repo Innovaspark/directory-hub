@@ -77,4 +77,9 @@ export class NavigationService {
     this.router.navigate(['admin']);
   }
 
+  navigateToChild(parent: string, id: string, child: string = '') {
+    this.router.navigate([parent, id, child]);
+  }
+
+
 }

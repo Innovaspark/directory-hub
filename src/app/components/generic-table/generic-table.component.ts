@@ -1,13 +1,7 @@
-// generic-table.component.ts (simplified without generics)
-import { Component, Input, Output, EventEmitter, OnInit, signal, OnChanges, SimpleChanges } from '@angular/core';
+// generic-table.component.ts
+import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  createAngularTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-} from '@tanstack/angular-table';
+import { createAngularTable, getCoreRowModel, getSortedRowModel, getFilteredRowModel, getPaginationRowModel } from '@tanstack/angular-table';
 import { TableColumn, TableConfig, TableAction, DEFAULT_TABLE_CONFIG } from './types';
 
 @Component({
@@ -17,38 +11,55 @@ import { TableColumn, TableConfig, TableAction, DEFAULT_TABLE_CONFIG } from './t
   templateUrl: './generic-table.component.html',
   styleUrls: ['./generic-table.component.scss']
 })
-export class GenericTableComponent implements OnInit, OnChanges {
-  @Input() data: any[] = [];
-  @Input() columns: TableColumn<any>[] = [];
-  @Input() config: Partial<TableConfig> = {};
+export class GenericTableComponent {
+  // ------------------ Inputs ------------------
+  /** Table data; automatically updates table when changed */
+  @Input() set data(rows: any[]) { this.dataSignal.set(rows ?? []); }
+
+  /** Table columns; automatically updates merged columns when changed */
+  @Input() set columns(cols: TableColumn<any>[]) { this.parentColumnsSignal.set(cols ?? []); }
+
+  @Input() set config(cfg: Partial<TableConfig>) { this.updateConfig(cfg ?? {}); }
+
   @Input() loading: boolean = false;
   @Input() error: string | null = null;
-
-  // Server-side pagination inputs
   @Input() totalCount?: number;
   @Input() currentPage?: number;
   @Input() pageSize?: number;
 
+  /** Show action buttons in the table (default: true) */
+  @Input() showActions: boolean = true;
+
+  // ------------------ Outputs ------------------
   @Output() rowClick = new EventEmitter<any>();
   @Output() rowAction = new EventEmitter<TableAction<any>>();
-  @Output() actionTriggered = new EventEmitter<{action: string, data: any}>();
+  @Output() actionTriggered = new EventEmitter<{ action: string, data: any }>();
   @Output() pageChanged = new EventEmitter<number>();
 
-  // Internal signals for reactivity
-  private dataSignal = signal<any[]>([]);
-  globalFilter = signal('');
+  // ------------------ Signals ------------------
+  public dataSignal = signal<any[]>([]);
+  private parentColumnsSignal = signal<TableColumn<any>[]>([]);
+  public globalFilter = signal('');
 
-  // Merged configuration
   tableConfig: TableConfig = DEFAULT_TABLE_CONFIG;
 
+  // Merge columns with optional actions column
+  mergedColumns = computed(() => {
+    const cols = this.parentColumnsSignal();
+    if (!this.showActions) return cols;
+    const hasActions = cols.some(c => c.id === 'actions');
+    return hasActions
+      ? cols
+      : [...cols, { id: 'actions', header: 'Actions', cell: () => '' }];
+  });
+
+  // ------------------ Table ------------------
   table = createAngularTable(() => {
     const options: any = {
       data: this.dataSignal(),
-      columns: this.columns,
+      columns: this.mergedColumns(),
       getCoreRowModel: getCoreRowModel(),
-      state: {
-        globalFilter: this.globalFilter(),
-      },
+      state: { globalFilter: this.globalFilter() },
       onGlobalFilterChange: (updater: any) => {
         if (this.tableConfig.filterable) {
           const value = typeof updater === 'function' ? updater(this.globalFilter()) : updater;
@@ -57,22 +68,12 @@ export class GenericTableComponent implements OnInit, OnChanges {
       },
       globalFilterFn: 'includesString',
       initialState: {
-        pagination: {
-          pageSize: this.getEffectivePageSize(),
-        },
-      },
+        pagination: { pageSize: this.getEffectivePageSize() }
+      }
     };
 
-    // Conditionally add features
-    if (this.tableConfig.sortable) {
-      options.getSortedRowModel = getSortedRowModel();
-    }
-
-    if (this.tableConfig.filterable) {
-      options.getFilteredRowModel = getFilteredRowModel();
-    }
-
-    // Handle server-side vs client-side pagination
+    if (this.tableConfig.sortable) options.getSortedRowModel = getSortedRowModel();
+    if (this.tableConfig.filterable) options.getFilteredRowModel = getFilteredRowModel();
     if (this.tableConfig.showPagination) {
       if (this.isServerSidePagination()) {
         options.manualPagination = true;
@@ -85,139 +86,57 @@ export class GenericTableComponent implements OnInit, OnChanges {
     return options;
   });
 
-  ngOnInit() {
-    debugger;
-    this.updateConfig();
-    this.dataSignal.set(this.data);
-
-    // Always add actions column
-    this.columns.push({
-      id: 'actions',
-      header: 'Actions',
-      cell: () => '' // Template handles this
-    });
+  // ------------------ Config ------------------
+  private updateConfig(cfg: Partial<TableConfig>) {
+    this.tableConfig = { ...DEFAULT_TABLE_CONFIG, ...cfg };
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['data']) {
-      this.dataSignal.set(this.data);
-    }
-    if (changes['config']) {
-      this.updateConfig();
-    }
-    if (changes['currentPage'] || changes['pageSize'] || changes['totalCount']) {
-      this.updatePaginationState();
-    }
-  }
-
-  private updateConfig() {
-    this.tableConfig = { ...DEFAULT_TABLE_CONFIG, ...this.config };
-  }
-
-  isServerSidePagination(): boolean {
-    return this.totalCount !== undefined;
-  }
-
-  getEffectivePageSize(): number {
-    return this.pageSize || this.tableConfig.pageSize || 10;
-  }
+  // ------------------ Pagination helpers ------------------
+  isServerSidePagination(): boolean { return this.totalCount !== undefined; }
+  getEffectivePageSize(): number { return this.pageSize || this.tableConfig.pageSize || 10; }
 
   private getTotalPages(): number {
     if (!this.totalCount) return 0;
     return Math.ceil(this.totalCount / this.getEffectivePageSize());
   }
 
-  private updatePaginationState() {
-    if (this.isServerSidePagination() && this.currentPage !== undefined) {
-      this.table.setPageIndex(this.currentPage - 1);
-    }
-  }
-
   onPageChange(page: number) {
-    if (this.isServerSidePagination()) {
-      this.pageChanged.emit(page);
-    } else {
-      this.table.setPageIndex(page - 1);
-    }
+    if (this.isServerSidePagination()) this.pageChanged.emit(page);
+    else this.table.setPageIndex(page - 1);
   }
 
   getCurrentPage(): number {
-    if (this.isServerSidePagination()) {
-      return this.currentPage || 1;
-    }
+    if (this.isServerSidePagination()) return this.currentPage || 1;
     return this.table.getState().pagination.pageIndex + 1;
   }
 
   getTotalPagesCount(): number {
-    if (this.isServerSidePagination()) {
-      return this.getTotalPages();
-    }
+    if (this.isServerSidePagination()) return this.getTotalPages();
     return this.table.getPageCount();
   }
 
-  getCanPreviousPage(): boolean {
-    if (this.isServerSidePagination()) {
-      return this.getCurrentPage() > 1;
-    }
-    return this.table.getCanPreviousPage();
-  }
+  getCanPreviousPage(): boolean { return this.getCurrentPage() > 1; }
+  getCanNextPage(): boolean { return this.getCurrentPage() < this.getTotalPagesCount(); }
+  previousPage() { if (this.getCanPreviousPage()) this.onPageChange(this.getCurrentPage() - 1); }
+  nextPage() { if (this.getCanNextPage()) this.onPageChange(this.getCurrentPage() + 1); }
+  firstPage() { this.onPageChange(1); }
+  lastPage() { this.onPageChange(this.getTotalPagesCount()); }
 
-  getCanNextPage(): boolean {
-    if (this.isServerSidePagination()) {
-      return this.getCurrentPage() < this.getTotalPagesCount();
-    }
-    return this.table.getCanNextPage();
-  }
-
-  previousPage() {
-    if (this.getCanPreviousPage()) {
-      this.onPageChange(this.getCurrentPage() - 1);
-    }
-  }
-
-  nextPage() {
-    if (this.getCanNextPage()) {
-      this.onPageChange(this.getCurrentPage() + 1);
-    }
-  }
-
-  firstPage() {
-    this.onPageChange(1);
-  }
-
-  lastPage() {
-    this.onPageChange(this.getTotalPagesCount());
-  }
+  // ------------------ Row / Action / Sort handlers ------------------
+  onRowClick(row: any, event: Event) { this.rowClick.emit(row.original); }
+  onActionClick(action: string, data: any, event: Event) { event.stopPropagation(); this.actionTriggered.emit({ action, data }); }
+  onAction(type: string, data: any, event?: Event) { event?.stopPropagation(); this.rowAction.emit({ type, data, event }); }
 
   handleSort(column: any, event: Event) {
     event.preventDefault();
-    if (this.tableConfig.sortable && column.getCanSort()) {
-      column.toggleSorting();
-    }
+    if (this.tableConfig.sortable && column.getCanSort()) column.toggleSorting();
   }
 
   getCellValue(cell: any): string {
-    const cellRenderer = cell.column.columnDef.cell;
-    if (typeof cellRenderer === 'function') {
-      return cellRenderer(cell.getContext());
-    }
+    const renderer = cell.column.columnDef.cell;
+    if (typeof renderer === 'function') return renderer(cell.getContext());
     return cell.getValue();
   }
 
-  onRowClick(row: any, event: Event) {
-    this.rowClick.emit(row.original);
-  }
-
-  onActionClick(action: string, data: any, event: Event) {
-    event.stopPropagation();
-    this.actionTriggered.emit({ action, data });
-  }
-
-  onAction(type: string, data: any, event?: Event) {
-    event?.stopPropagation();
-    this.rowAction.emit({ type, data, event });
-  }
-
-  // Helper for Math.min in template
   Math = Math;
 }

@@ -8,13 +8,13 @@ import {GenericTableComponent} from '@components/generic-table/generic-table.com
 import {TableConfig} from '@components/generic-table/types';
 import {Tenant} from '@core/models/tenant.model';
 import {Country} from '@core/models/country.model';
+import {NavigationService} from '@services/navigation.service';
 
 @Component({
   selector: 'app-countries',
   standalone: true,
-  imports: [CommonModule, TenantTableComponent, GenericTableComponent],
+  imports: [CommonModule, GenericTableComponent],
   template: `
-  <h2>Countries Component</h2>
   <app-generic-table
     [data]="data()"
     [columns]="columns"
@@ -26,11 +26,17 @@ import {Country} from '@core/models/country.model';
     (pageChanged)="onPageChange($event)"
     (actionTriggered)="onActionTriggered($event)">
   </app-generic-table>
-
-
   `
 })
 export class CountriesComponent  implements OnInit {
+
+
+  navigationService = inject(NavigationService);
+
+  totalCount = signal<number>(0);
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
+  loading = signal<boolean>(false);
 
   columns: any[] = [];
   data = signal<Country[]>([]);
@@ -39,10 +45,6 @@ export class CountriesComponent  implements OnInit {
     searchPlaceholder: 'Search countries...',
   };
 
-  totalCount = signal<number>(0);
-  currentPage = signal<number>(1);
-  pageSize = signal<number>(10);
-  loading = signal<boolean>(false);
 
   constructor(
     private hasuraCrud: HasuraCrudService,
@@ -68,7 +70,37 @@ export class CountriesComponent  implements OnInit {
 
   }
 
-  onActionTriggered($event: { action: string; data: any }) {
+  onActionTriggered(event: {action: string, data: Country}) {
+    const { action, data } = event;
 
+    switch (action) {
+      case 'edit':
+        this.editCountry(data);
+        break;
+      case 'delete':
+        this.deleteCountry(data);
+        break;
+      default:
+        console.warn('Unknown action:', action);
+    }
   }
+
+  private editCountry(country: Country) {
+    // Navigate to edit page
+    this.navigationService.navigateToChild('/admin/countries', country.id, 'edit');
+  }
+
+  private deleteCountry(country: Country) {
+    // Show confirmation dialog
+    if (confirm(`Are you sure you want to delete "${country.name}"? This action cannot be undone.`)) {
+      // TODO: Implement actual delete via service
+      console.log('Deleting tenant:', country);
+
+      // For now, just reload the data
+      // Later: call tenantService.deleteTenant(tenant.id) then reload
+      // this.loadTenants();
+      alert('add delete here');
+    }
+  }
+
 }

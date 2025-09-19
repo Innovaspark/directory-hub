@@ -41,17 +41,16 @@
         <th
           *ngFor="let header of headerGroup.headers"
           [class.sortable]="tableConfig.sortable && header.column.getCanSort()"
-          (click)="handleSort(header.column, $event)"
-        >
+          (click)="handleSort(header.column, $event)">
           <div class="header-content">
-              <span *ngIf="!header.isPlaceholder">
-                {{ header.column.columnDef.header }}
-              </span>
+            <span *ngIf="!header.isPlaceholder">
+              {{ header.column.columnDef.header }}
+            </span>
             <span class="sort-indicator" *ngIf="tableConfig.sortable && header.column.getCanSort()">
-                <span *ngIf="header.column.getIsSorted() === 'asc'">↑</span>
-                <span *ngIf="header.column.getIsSorted() === 'desc'">↓</span>
-                <span *ngIf="!header.column.getIsSorted()">⇅</span>
-              </span>
+              <span *ngIf="header.column.getIsSorted() === 'asc'">↑</span>
+              <span *ngIf="header.column.getIsSorted() === 'desc'">↓</span>
+              <span *ngIf="!header.column.getIsSorted()">⇅</span>
+            </span>
           </div>
         </th>
       </tr>
@@ -62,23 +61,27 @@
           (click)="onRowClick(row, $event)">
         <td *ngFor="let cell of row.getVisibleCells()">
           <!-- Regular cells -->
-          <div *ngIf="cell.column.id !== 'actions'" [innerHTML]="getCellValue(cell)"></div>
+          <ng-container *ngIf="cell.column.id !== 'actions'">
+            <div [innerHTML]="getCellValue(cell)"></div>
+          </ng-container>
 
-          <!-- Action buttons -->
-          <div *ngIf="cell.column.id === 'actions'" class="action-buttons" style="display: flex; gap: 4px;">
-            <button
-              (click)="onActionClick('edit', $any(row.original), $event)"
-              style="background: #3b82f6; color: white; padding: 4px 12px; border: none; border-radius: 4px; cursor: pointer;"
-              type="button">
-              Edit
-            </button>
-            <button
-              (click)="onActionClick('delete', $any(row.original), $event)"
-              style="background: #ef4444; color: white; padding: 4px 12px; border: none; border-radius: 4px; cursor: pointer;"
-              type="button">
-              Delete
-            </button>
-          </div>
+          <!-- Action buttons (render only if showActions is true) -->
+          <ng-container *ngIf="cell.column.id === 'actions' && showActions">
+            <div class="action-buttons" style="display: flex; gap: 4px;">
+              <button
+                (click)="onActionClick('edit', $any(row.original), $event)"
+                style="background: #3b82f6; color: white; padding: 4px 12px; border: none; border-radius: 4px; cursor: pointer;"
+                type="button">
+                Edit
+              </button>
+              <button
+                (click)="onActionClick('delete', $any(row.original), $event)"
+                style="background: #ef4444; color: white; padding: 4px 12px; border: none; border-radius: 4px; cursor: pointer;"
+                type="button">
+                Delete
+              </button>
+            </div>
+          </ng-container>
         </td>
       </tr>
       </tbody>
@@ -100,37 +103,11 @@
       </ng-container>
     </div>
     <div class="pagination-controls">
-      <button
-        (click)="firstPage()"
-        [disabled]="!getCanPreviousPage()"
-        class="page-btn"
-      >
-        ««
-      </button>
-      <button
-        (click)="previousPage()"
-        [disabled]="!getCanPreviousPage()"
-        class="page-btn"
-      >
-        ‹
-      </button>
-      <span class="page-info">
-        Page {{ getCurrentPage() }} of {{ getTotalPagesCount() }}
-      </span>
-      <button
-        (click)="nextPage()"
-        [disabled]="!getCanNextPage()"
-        class="page-btn"
-      >
-        ›
-      </button>
-      <button
-        (click)="lastPage()"
-        [disabled]="!getCanNextPage()"
-        class="page-btn"
-      >
-        »»
-      </button>
+      <button (click)="firstPage()" [disabled]="!getCanPreviousPage()" class="page-btn">««</button>
+      <button (click)="previousPage()" [disabled]="!getCanPreviousPage()" class="page-btn">‹</button>
+      <span class="page-info">Page {{ getCurrentPage() }} of {{ getTotalPagesCount() }}</span>
+      <button (click)="nextPage()" [disabled]="!getCanNextPage()" class="page-btn">›</button>
+      <button (click)="lastPage()" [disabled]="!getCanNextPage()" class="page-btn">»»</button>
     </div>
   </div>
 </div>

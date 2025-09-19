@@ -8,7 +8,7 @@ import {FloatingToolbarComponent} from '@components/floating-toolbar';
 
 @Component({
   selector: 'app-directory-layout',
-  imports: [RouterOutlet, ExpandHeader, FooterComponent, ScrollToTop, FloatingToolbarComponent],
+  imports: [RouterOutlet, ExpandHeader, FooterComponent, ScrollToTop],
   template: `
 
     <div class="page-container">

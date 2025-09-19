@@ -29,10 +29,18 @@
         <div class="action-card">
           <div class="card-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect width="7" height="9" x="3" y="3" rx="1"/>
-              <rect width="7" height="5" x="14" y="3" rx="1"/>
-              <rect width="7" height="9" x="14" y="12" rx="1"/>
-              <rect width="7" height="5" x="3" y="16" rx="1"/>
+              <!-- Outer circle (globe) -->
+              <circle cx="12" cy="12" r="10" />
+
+              <!-- Vertical meridian -->
+              <line x1="12" y1="2" x2="12" y2="22" />
+
+              <!-- Horizontal equator -->
+              <line x1="2" y1="12" x2="22" y2="12" />
+
+              <!-- Curved latitude lines -->
+              <path d="M4 7c4 2 8 2 16 0" />
+              <path d="M4 17c4 -2 8 -2 16 0" />
             </svg>
           </div>
           <div class="card-content">
