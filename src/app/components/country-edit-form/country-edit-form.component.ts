@@ -1,7 +1,6 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormlyModule, FormlyFieldConfig } from '@ngx-formly/core';
-import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { HasuraCrudService } from '@core/hasura/hasura-crud.service';
 
@@ -16,7 +15,6 @@ export class CountryEditFormComponent {
 
   @Input()
   set countryId(value: string | null) {
-    debugger;
     this._countryId = value;
     if (this._countryId != null) {
       this.loadCountry(this._countryId);
@@ -26,13 +24,8 @@ export class CountryEditFormComponent {
     }
   }
 
-  // get countryId(): string | null {
-  //   return this._countryId;
-  // }
-
   @Input() tableName: string = 'countries';
   @Input() pkConstraint: string = 'countries_pkey';
-  @Input() updateColumns: string[] = [];
 
   @Output() saved = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
@@ -44,25 +37,42 @@ export class CountryEditFormComponent {
   error = signal<string | null>(null);
 
   private _mutation: string = '';
+  private _allowedKeys: string[] = [];
 
-  constructor(private hasuraCrud: HasuraCrudService, private formlyJsonschema: FormlyJsonschema) {}
+  constructor(private hasuraCrud: HasuraCrudService) {}
 
   private async loadCountry(id: string) {
     this.loading.set(true);
     this.error.set(null);
     try {
+      // 1️⃣ Fetch the record first
       const countryData = await this.hasuraCrud.fetchById(this.tableName, 'id', id);
-      const updateColumns = Object.keys(countryData).filter(key => key !== '__typename');
 
-      const { fields, mutation } = await this.hasuraCrud.buildUpsertForm(
+      // 2️⃣ Determine updateColumns entirely from the record keys
+      const updateColumns = Object.keys(countryData).filter(key => key !== '__typename');
+      debugger;
+
+      // 3️⃣ Build upsert form and get allowedKeys (scalar fields)
+      const { fields, mutation, allowedKeys } = await this.hasuraCrud.buildUpsertForm(
         this.tableName,
         this.pkConstraint,
-        this.updateColumns.length ? updateColumns : Object.keys(countryData)
+        updateColumns // use only record-derived keys
       );
 
       this.fields = fields;
-      this.model = { ...countryData };
       this._mutation = mutation;
+      this._allowedKeys = allowedKeys;
+
+      // 4️⃣ Fetch the record again including all scalar fields
+      const countryDataFetched = await this.hasuraCrud.fetchById(
+        this.tableName,
+        'id',
+        id,
+        allowedKeys // ensures required scalars like 'code' are populated
+      );
+
+      this.model = { ...countryDataFetched };
+
     } catch (err: any) {
       this.error.set(err.message || 'Failed to load country');
     } finally {
@@ -71,10 +81,10 @@ export class CountryEditFormComponent {
   }
 
   private buildForm() {
-    // optional: build empty form for create scenario
     this.form = new FormGroup({});
     this.fields = [];
     this._mutation = '';
+    this._allowedKeys = [];
   }
 
   async submit() {
@@ -82,7 +92,16 @@ export class CountryEditFormComponent {
     this.loading.set(true);
     this.error.set(null);
     try {
-      await this.hasuraCrud.runUpsert(this._mutation, { object: this.model });
+      const modelWithoutTypename = { ...this.model };
+      delete modelWithoutTypename.__typename;
+
+      // Strip child types using allowedKeys
+      await this.hasuraCrud.runUpsert(
+        this._mutation,
+        modelWithoutTypename,
+        this._allowedKeys
+      );
+
       this.saved.emit();
     } catch (err: any) {
       this.error.set(err.message || 'Failed to save country');

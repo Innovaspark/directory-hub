@@ -23,7 +23,45 @@ export class HasuraCrudService {
     return { label, tooltip };
   }
 
-  private buildFormlyFieldsFromHasura(fields: any[]): FormlyFieldConfig[] {
+  private buildFormlyFieldsFromHasura(tableName: string, fields: any[]): FormlyFieldConfig[] {
+    return fields.map(f => {
+      const { label, tooltip } = this.parseDescription(f.description);
+      const finalLabel = label || this.friendlyLabel(f.name);
+
+      let type: string;
+
+      // Detect type based on metadata
+      if (f.type.kind === 'ENUM' || f.type.name?.endsWith('_enum')) {
+        type = 'select';
+      } else if (f.type.name === 'Boolean') {
+        type = 'checkbox';
+      } else if (f.type.name === 'String') {
+        // Heuristic for textarea (memo/notes/description/comments)
+        const desc = (f.description || '').toLowerCase();
+        const memoKeywords = ['memo', 'notes', 'description', 'comments'];
+        type = memoKeywords.some(k => f.name.includes(k)) ? 'textarea' : '';
+        if (type == '') {
+          type = memoKeywords.some(k => desc.includes(k)) ? 'textarea' : 'input';
+        }
+      } else {
+        type = 'input'; // fallback
+      }
+
+      return {
+        key: f.name,
+        type,
+        templateOptions: {
+          label: finalLabel,
+          description: tooltip,
+          required: f.type.kind === 'NON_NULL',
+        },
+        className: `input-${tableName}-${f.name}`
+      } as FormlyFieldConfig;
+    });
+  }
+
+
+  private buildFormlyFieldsFromHasura1(tableName: string, fields: any[]): FormlyFieldConfig[] {
     return fields.map(f => {
       const { label, tooltip } = this.parseDescription(f.description);
       const finalLabel = label || this.friendlyLabel(f.name);
@@ -40,8 +78,27 @@ export class HasuraCrudService {
           description: tooltip,
           required: f.type.kind === 'NON_NULL',
         },
+        className: `input-${tableName}-${f.name}`
       } as FormlyFieldConfig;
     });
+  }
+
+  // Strip child/relationship values from the object before submit
+  private stripChildValues(
+    obj: Record<string, any>,
+    allowedKeys: string[]
+  ): Record<string, any> {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([key, value]) => allowedKeys.includes(key))
+        .map(([key, value]) => {
+          // If value is an object (not null), recursively remove nested keys
+          if (value && typeof value === 'object' && !Array.isArray(value)) {
+            return [key, this.stripChildValues(value, allowedKeys)];
+          }
+          return [key, value];
+        })
+    );
   }
 
   // ===== Upsert =====
@@ -49,7 +106,7 @@ export class HasuraCrudService {
     tableName: string,
     pkConstraint: string,
     updateColumns: string[],
-  ): Promise<{ fields: FormlyFieldConfig[]; mutation: string }> {
+  ): Promise<{ fields: FormlyFieldConfig[]; mutation: string; allowedKeys: string[] }> {
     const introspectionQuery = gql`
       query {
         __type(name: "${tableName}_insert_input") {
@@ -74,7 +131,17 @@ export class HasuraCrudService {
     );
 
     const fields = result.data?.__type?.inputFields ?? [];
-    const formlyFields = this.buildFormlyFieldsFromHasura(fields);
+
+    // 🚫 Filter out relationships (INPUT_OBJECT)
+    const scalarFields = fields.filter(
+      (f: any) =>
+        f.type.kind !== 'INPUT_OBJECT' &&
+        f.type.ofType?.kind !== 'INPUT_OBJECT'
+    );
+
+    const formlyFields = this.buildFormlyFieldsFromHasura(tableName, scalarFields);
+
+    const allowedKeys = scalarFields.map((f: any) => f.name);
 
     const mutation = `
       mutation upsert_${tableName}($object: ${tableName}_insert_input!) {
@@ -90,16 +157,19 @@ export class HasuraCrudService {
       }
     `;
 
-    return { fields: formlyFields, mutation };
+    return { fields: formlyFields, mutation, allowedKeys };
   }
 
   async runUpsert<T>(
     mutation: string,
-    object: Record<string, any>
+    object: Record<string, any>,
+    allowedKeys: string[]
   ): Promise<T> {
+    const cleanObject = this.stripChildValues(object, allowedKeys);
+
     const mutationDoc = gql`${mutation}`;
     const result = await firstValueFrom(
-      this.apollo.mutate<T>({ mutation: mutationDoc, variables: { object } })
+      this.apollo.mutate<T>({ mutation: mutationDoc, variables: { object: cleanObject } })
     );
     if (!result.data) throw new Error(`Upsert failed, no data returned`);
     return result.data;
@@ -158,7 +228,7 @@ export class HasuraCrudService {
 
     const fields = result.data?.__type?.fields ?? [];
 
-    // Only scalars or enums
+    // Only scalars or enums (🚫 no relationships)
     const scalarFields = fields.filter(
       (f: any) =>
         f.type.kind === 'SCALAR' ||
@@ -180,12 +250,12 @@ export class HasuraCrudService {
 
     // Build parameterized query with limit/offset
     const query = `
-    query ${tableName}_list($limit: Int, $offset: Int) {
-      ${tableName}(limit: $limit, offset: $offset) {
-        ${fieldNames.join('\n')}
+      query ${tableName}_list($limit: Int, $offset: Int) {
+        ${tableName}(limit: $limit, offset: $offset) {
+          ${fieldNames.join('\n')}
+        }
       }
-    }
-  `;
+    `;
 
     const variables = {
       limit: options?.limit ?? null,
@@ -196,16 +266,56 @@ export class HasuraCrudService {
   }
 
   // ===== Fetch a single record by primary key =====
-// ===== Fetch a single record by primary key =====
+  // ===== Fetch a single record by primary key =====
   async fetchById<T = any>(
-    tableName: string,          // e.g., 'countries'
-    idColumn: string,           // e.g., 'id'
-    idValue: string | number,   // e.g., 5
-    selectColumns?: string[]    // optional list of fields, fallback below
+    tableName: string,
+    idColumn: string,
+    idValue: string | number,
+    selectColumns?: string[]
   ): Promise<T | null> {
-    const columns = selectColumns && selectColumns.length ? selectColumns : ['id', 'name'];
+    let columns: string[];
 
-    // Use GraphQL alias 'item' to guarantee a known key
+    if (selectColumns && selectColumns.length) {
+      columns = selectColumns;
+    } else {
+      // Introspect table metadata to get all scalar fields
+      const introspectionQuery = gql`
+        query {
+          __type(name: "${tableName}") {
+            fields {
+              name
+              type {
+                kind
+                name
+                ofType {
+                  name
+                  kind
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      const result = await firstValueFrom(
+        this.apollo.query<any>({ query: introspectionQuery })
+      );
+
+      const fields = result.data?.__type?.fields ?? [];
+
+      // Scalars + enums only (exclude relationships)
+      const scalarFields = fields.filter(
+        (f: any) =>
+          f.type.kind === 'SCALAR' ||
+          f.type.kind === 'ENUM' ||
+          f.type.ofType?.kind === 'SCALAR' ||
+          f.type.ofType?.kind === 'ENUM'
+      );
+
+      columns = scalarFields.map((f: any) => f.name);
+    }
+
+    // Build query dynamically
     const query = gql`
       query fetch_${tableName}_by_id($id: uuid!) {
       item: ${tableName}(where: { ${idColumn}: { _eq: $id } }) {
@@ -218,10 +328,8 @@ export class HasuraCrudService {
       this.apollo.query<{ item: T[] }>({ query, variables: { id: idValue } })
     );
 
-    // Optional chaining ensures no crash if the response is empty
     return result.data?.item?.[0] ?? null;
   }
-
 
 
 }

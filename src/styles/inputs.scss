@@ -1,0 +1,19 @@
+.memo-field-group {
+  textarea {
+    width: 100%; /* full width of parent */
+    height: 150px; /* desired height for memo field */
+    padding: 8px; /* inner padding */
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical; /* allow vertical resizing only */
+    box-sizing: border-box; /* includes padding in width */
+  }
+}
+
+.input-description-group {
+  @extend .memo-field-group
+}
+
+.input-countries-description {
+  @extend .input-description-group
+}

@@ -8,24 +8,28 @@ import { CountryEditFormComponent } from '@components/country-edit-form/country-
   standalone: true,
   imports: [CommonModule, CountryEditFormComponent],
   template: `
-    <div class="p-4">
-      <h2 class="text-xl font-bold mb-4">{{ pageTitle() }}</h2>
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6 bg-gray-300 text-white edit-page">
+            <h2 class="text-xl font-bold mb-4">{{ pageTitle() }}</h2>
 
-      <app-country-edit-form
-        [tableName]="tableName"
-        [pkConstraint]="pkConstraint"
-        [updateColumns]="updateColumns"
-        [countryId]="id()"
-        (saved)="onSaved()"
-        (cancelled)="onCancelled()"
-      ></app-country-edit-form>
-    </div>
+            <app-country-edit-form
+              [tableName]="tableName"
+              [pkConstraint]="pkConstraint"
+              [countryId]="id()"
+              (saved)="onSaved()"
+              (cancelled)="onCancelled()"
+            ></app-country-edit-form>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+
+
   `
 })
 export class CountryEditComponent {
   tableName = 'countries';
   pkConstraint = 'countries_pkey';
-  updateColumns = ['name', 'code', 'continent'];
 
   // signal to store the ID from route
   // private idSignal = signal<number | null>(null);
