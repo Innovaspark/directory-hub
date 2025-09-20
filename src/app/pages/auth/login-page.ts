@@ -1,7 +1,7 @@
 // login-page.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ModalService } from '@core/services/modal.service';
+import { ModalService } from '@services/modal/modal.service';
 import { NavigationService } from '@core/services/navigation.service';
 import { LoginDialogComponent } from '@components/auth/login-dialog/login-dialog.component';
 

@@ -8,7 +8,7 @@ import {TableConfig} from '@components/generic-table/types';
 import {NavigationService} from '@services/navigation.service';
 import {Router} from '@angular/router';
 import {map} from 'rxjs';
-import {ModalService} from '@services/modal.service';
+import {ModalService} from '@services/modal/modal.service';
 import {CountryEditFormComponent} from '@components/country-edit-form/country-edit-form.component';
 import {LoginDialogComponent} from '@components/auth/login-dialog/login-dialog.component';
 import {EntityEditDialogComponent} from '../../admin/dialogs/entity-edit-dialog.component';

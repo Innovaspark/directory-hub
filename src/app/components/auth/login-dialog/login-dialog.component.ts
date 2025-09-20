@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import {DialogRef} from '@core/services/modal.service';
+import {DialogRef} from '@services/modal/modal.service';
 import {FormsModule} from '@angular/forms';
 import {AuthService} from '@core/services/auth.service';
 import {UserStateService} from '@core/state/user-state.service';

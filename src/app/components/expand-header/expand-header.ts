@@ -13,7 +13,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from "@angular/router";
 import { NavigationService } from "@core/services/navigation.service";
 import { RouterStateService } from "@core/state/router-state.service";
-import { ModalService } from '@core/services/modal.service';
+import { ModalService } from '@services/modal/modal.service';
 import { LoginDialogComponent } from '@components/auth/login-dialog/login-dialog.component';
 import { UserStateService } from '@core/state/user-state.service';
 
