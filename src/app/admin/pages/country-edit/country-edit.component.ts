@@ -15,7 +15,6 @@ import { CountryEditFormComponent } from '@components/country-edit-form/country-
 
             <app-country-edit-form
               [tableName]="tableName"
-              [pkConstraint]="pkConstraint"
               [countryId]="id()"
               (saved)="onSaved()"
               (cancelled)="onCancelled()"
@@ -29,7 +28,6 @@ import { CountryEditFormComponent } from '@components/country-edit-form/country-
 })
 export class CountryEditComponent {
   tableName = 'countries';
-  pkConstraint = 'countries_pkey';
 
   // signal to store the ID from route
   // private idSignal = signal<number | null>(null);

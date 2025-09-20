@@ -5,6 +5,7 @@ import {TenantsComponent} from './pages/tenants/tenants.component';
 import {TenantEditComponent} from './pages/tenant-edit/tenant-edit.component';
 import {CountriesComponent} from './pages/countries/countries.component';
 import {CountryEditComponent} from './pages/country-edit/country-edit.component';
+import {EntityListComponent} from '@pages/entity-list/entity-list.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,10 @@ const routes: Routes = [
   {
     path: 'countries',
     component: CountriesComponent
+  },
+  {
+    path: 'cities',
+    component: EntityListComponent
   }
 
 ];

@@ -117,7 +117,6 @@ import {RouterStateService} from "@core/state/router-state.service";
                       <div class="bg-white rounded-xl shadow-lg mt-3" [style.height]="'700px'">
                         <ng-container *ngIf="isBrowser">
                           <app-single-venue-map [venue]="$currentVenue()"></app-single-venue-map>
-                          <b>wtf am i supposed to do?  this suckssss!!!!</b>
                         </ng-container>
                       </div>
 

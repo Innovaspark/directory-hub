@@ -25,7 +25,6 @@ export class CountryEditFormComponent {
   }
 
   @Input() tableName: string = 'countries';
-  @Input() pkConstraint: string = 'countries_pkey';
 
   @Output() saved = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
@@ -50,12 +49,10 @@ export class CountryEditFormComponent {
 
       // 2️⃣ Determine updateColumns entirely from the record keys
       const updateColumns = Object.keys(countryData).filter(key => key !== '__typename');
-      debugger;
 
       // 3️⃣ Build upsert form and get allowedKeys (scalar fields)
       const { fields, mutation, allowedKeys } = await this.hasuraCrud.buildUpsertForm(
         this.tableName,
-        this.pkConstraint,
         updateColumns // use only record-derived keys
       );
 
