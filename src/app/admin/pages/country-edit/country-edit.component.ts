@@ -8,7 +8,7 @@ import { CountryEditFormComponent } from '@components/country-edit-form/country-
   standalone: true,
   imports: [CommonModule, CountryEditFormComponent],
   template: `
-      <div class="row">
+      <div class="row col-md-12">
         <div class="col-md-3"></div>
         <div class="col-md-6 bg-gray-300 text-white edit-page">
             <h2 class="text-xl font-bold mb-4">{{ pageTitle() }}</h2>

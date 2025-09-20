@@ -11,6 +11,7 @@ import {map} from 'rxjs';
 import {ModalService} from '@services/modal.service';
 import {CountryEditFormComponent} from '@components/country-edit-form/country-edit-form.component';
 import {LoginDialogComponent} from '@components/auth/login-dialog/login-dialog.component';
+import {EntityEditDialogComponent} from '../../admin/dialogs/entity-edit-dialog.component';
 
 @Component({
   selector: 'app-entity-list',
@@ -94,9 +95,7 @@ export class EntityListComponent  implements OnInit {
   }
 
   private editEntity(entity: any) {
-    // Navigate to edit page
-    this.navigationService.navigateToChild(`/admin/${this.entityName}`, entity.id, 'edit');
-    this.modalService.open(LoginDialogComponent);
+    this.modalService.open(EntityEditDialogComponent);
   }
 
   private deleteEntity(entity: any) {

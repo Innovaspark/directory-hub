@@ -1,30 +1,30 @@
-import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import {Component, Input, Output, EventEmitter, signal, input} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormlyModule, FormlyFieldConfig } from '@ngx-formly/core';
 import { FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { HasuraCrudService } from '@core/hasura/hasura-crud.service';
 
 @Component({
-  selector: 'app-country-edit-form',
+  selector: 'app-entity-edit-form',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, FormlyModule],
-  templateUrl: './country-edit-form.component.html'
+  templateUrl: './entity-edit-form.component.html'
 })
-export class CountryEditFormComponent {
-  private _countryId: string | null = null;
+export class EntityEditFormComponent {
+  private _Id: string | null = null;
 
-  @Input()
-  set countryId(value: string | null) {
-    this._countryId = value;
-    if (this._countryId != null) {
-      this.loadCountry(this._countryId);
+  @Input({})
+  set Id(value: string | null) {
+    this._Id = value;
+    if (this._Id != null) {
+      this.loadData(this._Id);
     } else {
       this.model = {};
       this.buildForm();
     }
   }
 
-  @Input() tableName: string = 'countries';
+  tableName = input<string>('cities');
 
   @Output() saved = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
@@ -40,13 +40,18 @@ export class CountryEditFormComponent {
 
   constructor(private hasuraCrud: HasuraCrudService) {}
 
-  private async loadCountry(id: string) {
+  ngAfterViewInit() {
+    this._Id = '103dd42c-a374-4ae9-be29-d5a6d1dcae54';
+    this.loadData(this._Id);
+  }
+
+  private async loadData(id: string) {
     this.loading.set(true);
     this.error.set(null);
     try {
       // 1️⃣ Build upsert form and get allowedKeys (scalar fields)
       const { fields, mutation, allowedKeys } = await this.hasuraCrud.buildUpsertForm(
-        this.tableName,
+        this.tableName(),
         [] // updateColumns can be derived from allowedKeys directly
       );
 
@@ -55,17 +60,17 @@ export class CountryEditFormComponent {
       this._allowedKeys = allowedKeys;
 
       // 2️⃣ Fetch the record including all scalar fields
-      const countryData = await this.hasuraCrud.fetchById(
-        this.tableName,
+      const data = await this.hasuraCrud.fetchById(
+        this.tableName(),
         'id',
         id,
         allowedKeys
       );
 
-      this.model = { ...countryData };
+      this.model = { ...data };
 
     } catch (err: any) {
-      this.error.set(err.message || 'Failed to load country');
+      this.error.set(err.message || 'Failed to load item');
     } finally {
       this.loading.set(false);
     }
@@ -95,7 +100,7 @@ export class CountryEditFormComponent {
 
       this.saved.emit();
     } catch (err: any) {
-      this.error.set(err.message || 'Failed to save country');
+      this.error.set(err.message || 'Failed to save item');
     } finally {
       this.loading.set(false);
     }
