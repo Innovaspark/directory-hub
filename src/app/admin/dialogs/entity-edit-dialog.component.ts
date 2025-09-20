@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import {DialogRef} from '@services/modal/modal.service';
 import {FormsModule} from '@angular/forms';
 import {EntityEditFormComponent} from '@components/entity-edit-form/entity-edit-form.component';
+import {MODAL_DATA} from '@services/modal/modal-data.token';
 
 @Component({
   selector: 'app-entity-edit-dialog',
@@ -27,6 +28,11 @@ import {EntityEditFormComponent} from '@components/entity-edit-form/entity-edit-
 })
 export class EntityEditDialogComponent {
   private dialogRef = inject(DialogRef);
+  private data = inject<{ name: string }>(MODAL_DATA);
+
+  ngAfterViewInit() {
+    alert(JSON.stringify(this.data));
+  }
 
   close() {
     this.dialogRef.close();

@@ -95,7 +95,16 @@ export class EntityListComponent  implements OnInit {
   }
 
   private editEntity(entity: any) {
-    this.modalService.open(EntityEditDialogComponent);
+    // this.modalService.open(EntityEditDialogComponent);
+    this.modalService
+      .open(EntityEditDialogComponent, { data: { name: 'France' } })
+      ?.afterClosed()
+      .subscribe(result => {
+        if (result?.saved) {
+          console.log('Country was saved!');
+        }
+      });
+
   }
 
   private deleteEntity(entity: any) {

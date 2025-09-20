@@ -7,33 +7,30 @@ import {
   ComponentRef,
   Type,
   StaticProvider,
+  InjectionToken,
 } from '@angular/core';
-
 import { Observable, Subject } from 'rxjs';
+import {MODAL_DATA} from '@services/modal/modal-data.token';
 
 export class DialogRef<T = boolean> {
   private readonly _afterClosed = new Subject<T | undefined>();
 
   constructor(private _closeHandler: (result?: T) => void) {}
 
-  /** Called by the component to close the dialog */
   close(result?: T): void {
     this._closeHandler(result);
   }
 
-  /** Called by the service after cleanup to notify subscribers */
+  afterClosed(): Observable<T | undefined> {
+    return this._afterClosed.asObservable();
+  }
+
   _notifyClosed(result?: T): void {
     this._afterClosed.next(result);
     this._afterClosed.complete();
   }
-
-  /** Exposes the observable like CDK: dialogRef.afterClosed() */
-  afterClosed(): Observable<T | undefined> {
-    return this._afterClosed.asObservable();
-  }
 }
 
-// ModalInstance interface
 interface ModalInstance {
   wrapper: HTMLElement;
   overlay: HTMLElement;
@@ -42,7 +39,6 @@ interface ModalInstance {
   dialogRef?: DialogRef;
 }
 
-// ModalService
 @Injectable({ providedIn: 'root' })
 export class ModalService {
   private modals: ModalInstance[] = [];
@@ -53,58 +49,54 @@ export class ModalService {
     private cfr: ComponentFactoryResolver
   ) {}
 
-  open(content: TemplateRef<any> | Type<any>): DialogRef | undefined {
-    if (typeof document === 'undefined') return undefined; // SSR-safe
+  open<TComponent = any, TData = any>(
+    content: TemplateRef<any> | Type<TComponent>,
+    data?: TData
+  ): DialogRef<any> | undefined {
+    if (typeof document === 'undefined') return undefined;
 
-    // Create wrapper (highest z-index)
     const wrapper = document.createElement('div');
     wrapper.className = 'fixed inset-0 z-[9999]';
 
-    // Create overlay
     const overlay = document.createElement('div');
     overlay.className =
       'absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-200';
     overlay.addEventListener('click', () => this.closeTopModal());
     wrapper.appendChild(overlay);
 
-    // Create container
     const container = document.createElement('div');
-    container.className =
-      'absolute inset-0 flex items-center justify-center';
+    container.className = 'absolute inset-0 flex items-center justify-center';
     container.addEventListener('click', (e) => e.stopPropagation());
     wrapper.appendChild(container);
 
     document.body.appendChild(wrapper);
 
     const instance: ModalInstance = { wrapper, overlay, container };
-
-    // Create DialogRef
     const dialogRef = new DialogRef((result?: any) =>
       this.closeInstance(instance, result)
     );
     instance.dialogRef = dialogRef;
 
     if (content instanceof TemplateRef) {
-      // TemplateRef
-      const viewRef = content.createEmbeddedView({ dialogRef });
+      const viewRef = content.createEmbeddedView({ dialogRef, data });
       this.appRef.attachView(viewRef);
       container.appendChild(viewRef.rootNodes[0]);
     } else {
-      // Component
-      const providers: StaticProvider[] = [{ provide: DialogRef, useValue: dialogRef }];
+      const providers: StaticProvider[] = [
+        { provide: DialogRef, useValue: dialogRef },
+        { provide: MODAL_DATA, useValue: data } // <-- inject the data
+      ];
       const inj = Injector.create({ providers, parent: this.injector });
 
       const factory = this.cfr.resolveComponentFactory(content);
       const componentRef = factory.create(inj);
       this.appRef.attachView(componentRef.hostView);
       container.appendChild((componentRef.hostView as any).rootNodes[0]);
-
       instance.componentRef = componentRef;
     }
 
     this.modals.push(instance);
 
-    // Animate in
     requestAnimationFrame(() => {
       overlay.classList.add('opacity-100');
       container.firstElementChild?.classList.add('scale-100');
@@ -120,7 +112,6 @@ export class ModalService {
   }
 
   private closeInstance(instance: ModalInstance, result?: any) {
-    // Animate out
     instance.overlay.classList.remove('opacity-100');
     instance.container.firstElementChild?.classList.remove('scale-100');
 
@@ -134,8 +125,6 @@ export class ModalService {
         instance.componentRef.destroy();
       }
 
-      // Notify subscribers
-      // instance.dialogRef?.close(result);
       instance.dialogRef?._notifyClosed(result);
     }, 200);
   }
