@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormlyModule, FormlyFieldConfig } from '@ngx-formly/core';
 import { FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { HasuraCrudService } from '@core/hasura/hasura-crud.service';
+import {EntityPacket} from '@core/models/entity-packet.model';
 
 @Component({
   selector: 'app-entity-edit-form',
@@ -11,20 +12,21 @@ import { HasuraCrudService } from '@core/hasura/hasura-crud.service';
   templateUrl: './entity-edit-form.component.html'
 })
 export class EntityEditFormComponent {
-  private _Id: string | null = null;
-
-  @Input({})
-  set Id(value: string | null) {
-    this._Id = value;
-    if (this._Id != null) {
-      this.loadData(this._Id);
-    } else {
-      this.model = {};
-      this.buildForm();
-    }
-  }
-
-  tableName = input<string>('cities');
+  // private _Id: string | null = null;
+  //
+  // @Input({})
+  // set Id(value: string | null) {
+  //   this._Id = value;
+  //   if (this._Id != null) {
+  //     this.loadData(this._Id);
+  //   } else {
+  //     this.model = {};
+  //     this.buildForm();
+  //   }
+  // }
+  //
+  // tableName = input<string>('cities');
+  entityPacket = input.required<EntityPacket>();
 
   @Output() saved = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
@@ -41,19 +43,17 @@ export class EntityEditFormComponent {
   constructor(private hasuraCrud: HasuraCrudService) {}
 
   ngAfterViewInit() {
-    this._Id = '103dd42c-a374-4ae9-be29-d5a6d1dcae54';
-    this.loadData(this._Id);
+    // this._Id = '103dd42c-a374-4ae9-be29-d5a6d1dcae54';
+    this.loadData();
   }
 
-  private async loadData(id: string) {
+  private async loadData() {
     this.loading.set(true);
     this.error.set(null);
     try {
       // 1️⃣ Build upsert form and get allowedKeys (scalar fields)
-      const { fields, mutation, allowedKeys } = await this.hasuraCrud.buildUpsertForm(
-        this.tableName(),
-        [] // updateColumns can be derived from allowedKeys directly
-      );
+      const { fields, mutation, allowedKeys }
+        = await this.hasuraCrud.buildUpsertForm(this.entityPacket().tableName);
 
       this.fields = fields;
       this._mutation = mutation;
@@ -61,9 +61,9 @@ export class EntityEditFormComponent {
 
       // 2️⃣ Fetch the record including all scalar fields
       const data = await this.hasuraCrud.fetchById(
-        this.tableName(),
+        this.entityPacket().tableName,
         'id',
-        id,
+        this.entityPacket().id,
         allowedKeys
       );
 

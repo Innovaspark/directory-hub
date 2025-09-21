@@ -12,6 +12,7 @@ import {ModalService} from '@services/modal/modal.service';
 import {CountryEditFormComponent} from '@components/country-edit-form/country-edit-form.component';
 import {LoginDialogComponent} from '@components/auth/login-dialog/login-dialog.component';
 import {EntityEditDialogComponent} from '../../admin/dialogs/entity-edit-dialog.component';
+import {EntityPacket} from '@core/models/entity-packet.model';
 
 @Component({
   selector: 'app-entity-list',
@@ -96,8 +97,13 @@ export class EntityListComponent  implements OnInit {
 
   private editEntity(entity: any) {
     // this.modalService.open(EntityEditDialogComponent);
+    const entityPacket: EntityPacket = {
+      tableName: this.entityName,
+      // id: '103dd42c-a374-4ae9-be29-d5a6d1dcae54'
+      id: entity.id
+    }
     this.modalService
-      .open(EntityEditDialogComponent, { data: { name: 'France' } })
+      .open(EntityEditDialogComponent, { data: entityPacket })
       ?.afterClosed()
       .subscribe(result => {
         if (result?.saved) {

@@ -3,6 +3,7 @@ import {DialogRef} from '@services/modal/modal.service';
 import {FormsModule} from '@angular/forms';
 import {EntityEditFormComponent} from '@components/entity-edit-form/entity-edit-form.component';
 import {MODAL_DATA} from '@services/modal/modal-data.token';
+import {EntityPacket} from '@core/models/entity-packet.model';
 
 @Component({
   selector: 'app-entity-edit-dialog',
@@ -10,7 +11,7 @@ import {MODAL_DATA} from '@services/modal/modal-data.token';
   template: `
     <div class="edit-dialog">
 
-      <app-entity-edit-form></app-entity-edit-form>
+      <app-entity-edit-form [entityPacket]="data.data"></app-entity-edit-form>
 
       <div class="button-panel flex justify-end gap-3 mt-6">
         <button class="btn btn-outline-primary"
@@ -28,10 +29,9 @@ import {MODAL_DATA} from '@services/modal/modal-data.token';
 })
 export class EntityEditDialogComponent {
   private dialogRef = inject(DialogRef);
-  private data = inject<{ name: string }>(MODAL_DATA);
+  data = inject<any>(MODAL_DATA);
 
   ngAfterViewInit() {
-    alert(JSON.stringify(this.data));
   }
 
   close() {

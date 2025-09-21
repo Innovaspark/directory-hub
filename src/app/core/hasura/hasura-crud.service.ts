@@ -80,8 +80,7 @@ export class HasuraCrudService {
 
   // ===== Upsert =====
   async buildUpsertForm(
-    tableName: string,
-    updateColumns: string[],
+    tableName: string
   ): Promise<{ fields: FormlyFieldConfig[]; mutation: string; allowedKeys: string[] }> {
     const introspectionQuery = gql`
       query {
@@ -116,6 +115,11 @@ export class HasuraCrudService {
 
     const formlyFields = this.buildFormlyFieldsFromHasura(tableName, scalarFields);
     const allowedKeys = scalarFields.map((f: any) => f.name);
+
+    // Derive updateColumns from allowedKeys, excluding system fields
+    const updateColumns = allowedKeys.filter((key: string) =>
+      !this.systemFieldNames.includes(key)
+    );
 
     // PK constraint derived from table name
     const pkConstraint = `${tableName}_pkey`;

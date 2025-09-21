@@ -45,10 +45,8 @@ export class CountryEditFormComponent {
     this.error.set(null);
     try {
       // 1️⃣ Build upsert form and get allowedKeys (scalar fields)
-      const { fields, mutation, allowedKeys } = await this.hasuraCrud.buildUpsertForm(
-        this.tableName,
-        [] // updateColumns can be derived from allowedKeys directly
-      );
+      const { fields, mutation, allowedKeys }
+        = await this.hasuraCrud.buildUpsertForm(this.tableName,);
 
       this.fields = fields;
       this._mutation = mutation;
