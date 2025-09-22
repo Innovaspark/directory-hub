@@ -9,7 +9,7 @@ import {
   QueryList,
   PLATFORM_ID,
   computed,
-  effect
+  effect, signal
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from "@angular/common";
 import { VenueStateService } from "@core/state/venue-state.service";
@@ -171,7 +171,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
 
     return (apiLoading || moreLoading) && hasVenues;
   });
-
   private seo = inject(SeoService);
   private routerState = inject(RouterStateService);
 
@@ -193,6 +192,7 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.venueState.startVenueLoading();
     const citySlug = this.routerState.$citySlug();
     const countryCode = this.routerState.$countryCode();
 
@@ -217,7 +217,6 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       // window.scrollTo({ top: 0, behavior: 'auto' });
@@ -228,6 +227,7 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     if (this.observer) {
       this.observer.disconnect();
     }
+    this.venueState.stopVenueLoading();
   }
 
   onScrollDown() {

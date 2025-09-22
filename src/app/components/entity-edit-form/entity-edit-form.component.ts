@@ -12,24 +12,7 @@ import {EntityPacket} from '@core/models/entity-packet.model';
   templateUrl: './entity-edit-form.component.html'
 })
 export class EntityEditFormComponent {
-  // private _Id: string | null = null;
-  //
-  // @Input({})
-  // set Id(value: string | null) {
-  //   this._Id = value;
-  //   if (this._Id != null) {
-  //     this.loadData(this._Id);
-  //   } else {
-  //     this.model = {};
-  //     this.buildForm();
-  //   }
-  // }
-  //
-  // tableName = input<string>('cities');
   entityPacket = input.required<EntityPacket>();
-
-  @Output() saved = new EventEmitter<void>();
-  @Output() cancelled = new EventEmitter<void>();
 
   form = new FormGroup({});
   fields: FormlyFieldConfig[] = [];
@@ -43,7 +26,6 @@ export class EntityEditFormComponent {
   constructor(private hasuraCrud: HasuraCrudService) {}
 
   ngAfterViewInit() {
-    // this._Id = '103dd42c-a374-4ae9-be29-d5a6d1dcae54';
     this.loadData();
   }
 
@@ -83,7 +65,7 @@ export class EntityEditFormComponent {
     this._allowedKeys = [];
   }
 
-  async submit() {
+  public async submit() {
     if (!this._mutation) return;
     this.loading.set(true);
     this.error.set(null);
@@ -98,7 +80,6 @@ export class EntityEditFormComponent {
         this._allowedKeys
       );
 
-      this.saved.emit();
     } catch (err: any) {
       this.error.set(err.message || 'Failed to save item');
     } finally {
@@ -106,7 +87,4 @@ export class EntityEditFormComponent {
     }
   }
 
-  cancel() {
-    this.cancelled.emit();
-  }
 }

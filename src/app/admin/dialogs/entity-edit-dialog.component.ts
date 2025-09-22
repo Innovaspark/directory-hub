@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import {Component, inject, viewChild} from '@angular/core';
 import {DialogRef} from '@services/modal/modal.service';
 import {FormsModule} from '@angular/forms';
 import {EntityEditFormComponent} from '@components/entity-edit-form/entity-edit-form.component';
@@ -11,14 +11,15 @@ import {EntityPacket} from '@core/models/entity-packet.model';
   template: `
     <div class="edit-dialog">
 
-      <app-entity-edit-form [entityPacket]="data.data"></app-entity-edit-form>
+      <app-entity-edit-form #entityEditForm [entityPacket]="data.data"></app-entity-edit-form>
 
       <div class="button-panel flex justify-end gap-3 mt-6">
         <button class="btn btn-outline-primary"
+                (click)="submit()"
         >
           OK
         </button>
-        <button class="btn btn-outline-secondary" (click)="close()">
+        <button class="btn btn-outline-secondary" (click)="cancel()">
           Cancel
         </button>
       </div>
@@ -28,18 +29,17 @@ import {EntityPacket} from '@core/models/entity-packet.model';
   `,
 })
 export class EntityEditDialogComponent {
+  entityEditForm = viewChild.required<EntityEditFormComponent>('entityEditForm');
   private dialogRef = inject(DialogRef);
   data = inject<any>(MODAL_DATA);
 
-  ngAfterViewInit() {
-  }
-
-  close() {
+  async submit() {
+    await this.entityEditForm().submit();
     this.dialogRef.close();
   }
 
-  login() {
-    alert('login')
+  cancel() {
+    this.dialogRef.close();
   }
 
 }

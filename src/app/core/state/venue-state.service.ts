@@ -1,15 +1,14 @@
 // venue-state.service.ts
-import { Injectable, computed, signal, inject, DestroyRef, effect } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import {Injectable, computed, signal, inject, DestroyRef, effect, EffectRef} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { RouterStateService } from './router-state.service';
-import { CityService } from '../services/city.service';
-import { TenantService } from '../services/tenant.service';
-import { Venue } from '../models/venue.model';
-import { City } from '../models/city.model';
-import { VenueService, VenuesResponse } from "@core/services/venue.service";
-import { AppStateService } from "@core/state/application-state.service";
+import {RouterStateService} from './router-state.service';
+import {CityService} from '@services/city.service';
+import {Venue} from '../models/venue.model';
+import {City} from '../models/city.model';
+import {VenueService, VenuesResponse} from "@core/services/venue.service";
+import {AppStateService} from "@core/state/application-state.service";
 import {catchError, Observable, of, tap} from "rxjs";
 import {VenueType} from "@core/models/tenant.model";
 
@@ -27,6 +26,9 @@ export class VenueStateService {
   private router = inject(Router);
   private routerState = inject(RouterStateService);
   private appState = inject(AppStateService);
+  private venueService = inject(VenueService);
+  private cityService = inject(CityService);
+  private route = inject(ActivatedRoute);
 
   // Raw data signals
   private allVenues = signal<Venue[]>([]);
@@ -57,13 +59,8 @@ export class VenueStateService {
   readonly $countryCode = this.routerState.$countryCode;
   readonly $searchQuery = this.routerState.$searchQuery;
   readonly $selectedFilter = this.routerState.$filterType;
+  private $effectEnabled = signal(false);
 
-  // Search state accessors
-  // readonly $searchTerm = this.searchTerm.asReadonly();
-  // readonly $keywords = this.keywords.asReadonly();
-  // readonly $isSearchActive = computed(() =>
-  //   this.searchTerm().trim().length > 0 || this.keywords().trim().length > 0
-  // );
 
   // Main venues computed signal - handles both browse and search (no server-side type filtering)
   readonly $venues = computed(() => {
@@ -123,31 +120,13 @@ export class VenueStateService {
   private citySearchTerm = signal<string>('');
   private citySuggestions = signal<City[]>([]);
 
-  // readonly $citySearchTerm = this.citySearchTerm.asReadonly();
-  // readonly $citySuggestions = this.citySuggestions.asReadonly();
-
   $viewMode = signal<'cards' | 'split'>('split');
-
   $selectedVenue = signal<Venue | null>(null);
 
-  constructor(
-    private venueService: VenueService,
-    private cityService: CityService,
-    private tenantService: TenantService
-  ) {
-    // this.initializeVenueTypes();
+  constructor() {
     this.initializeRouteEffects();
     this.loadInitialVenues();
   }
-
-  // private initializeVenueTypes(): void {
-  //   // this.tenantService.getVenueTypes()
-  //   //   .pipe(takeUntilDestroyed(this.destroyRef))
-  //   //   .subscribe(types => {
-  //   //     this.venueTypes.set(types);
-  //   //   });
-  //   // alert('have to fix init venue types');
-  // }
 
   private initializeRouteEffects(): void {
     // React to city changes
@@ -182,6 +161,7 @@ export class VenueStateService {
 
     // React to search term, keywords, and route changes (removed filter dependency)
     effect(() => {
+      if (!this.$effectEnabled()) return;
       const citySlug = this.$citySlug();
       const searchTerm = this.searchTerm();
       const keywords = this.keywords();
@@ -196,42 +176,21 @@ export class VenueStateService {
     });
   }
 
-  // Public search actions
-  // setSearchTerm(term: string): void {
-  //   this.searchTerm.set(term);
-  //   this.updateUrl({ q: term || null });
-  // }
-  //
-  // setKeywords(keywords: string): void {
-  //   this.keywords.set(keywords);
-  //   this.updateUrl({ keywords: keywords || null });
-  // }
-  //
-  // clearSearch(): void {
-  //   this.searchTerm.set('');
-  //   this.searchResults.set([]);
-  //   this.updateUrl({ q: null });
-  // }
-  //
-  // clearKeywords(): void {
-  //   this.keywords.set('');
-  //   this.updateUrl({ keywords: null });
-  // }
-  //
-  // // Public filter actions
-  // setFilter(filter: string | null): void {
-  //   this.updateUrl({ type: filter });
-  // }
+  // In your venues service
+  private venueLoadingEffect?: EffectRef;
+
+  startVenueLoading() {
+    this.$effectEnabled.set(true);
+  }
+
+  stopVenueLoading() {
+    this.$effectEnabled.set(false);
+  }
 
   // New client-side venue type filter method
   setVenueTypeFilter(venueType: string | null): void {
     this._selectedVenueType.set(venueType);
   }
-
-  // clearFilters(): void {
-  //   this.updateUrl({ q: null, keywords: null, type: null });
-  //   this._selectedVenueType.set(null);
-  // }
 
   // Public venue actions
   loadMoreVenues(): void {
@@ -245,47 +204,14 @@ export class VenueStateService {
 
     this.isLoadingMore.set(true);
     const nextPage = this.currentPage() + 1;
-    this.updateUrl({ page: nextPage.toString() });
+    this.updateUrl({page: nextPage.toString()});
   }
-
-  // refreshVenues(): void {
-  //   this.currentPage.set(0);
-  //   const searchTerm = this.searchTerm().trim();
-  //   const keywords = this.keywords().trim();
-  //   if (searchTerm || keywords) {
-  //     this.performSearch(searchTerm, keywords, this.$citySlug(), true);
-  //   } else {
-  //     this.loadVenues(true);
-  //   }
-  // }
 
   loadInitialVenues(): void {
     if (this.allVenues().length === 0) {
       this.loadVenues(true);
     }
   }
-
-  // City search methods
-  // setCitySearchTerm(term: string): void {
-  //   this.citySearchTerm.set(term);
-  //
-  //   if (term.length >= 2) {
-  //     const countryCode = this.$countryCode();
-  //
-  //     this.cityService.searchCities(term, countryCode, 10)
-  //       .pipe(takeUntilDestroyed(this.destroyRef))
-  //       .subscribe(cities => {
-  //         this.citySuggestions.set(cities);
-  //       });
-  //   } else {
-  //     this.citySuggestions.set([]);
-  //   }
-  // }
-  //
-  // selectCity(city: City): void {
-  //   this.router.navigate([city.country?.code, city.slug, 'venues']);
-  //   this.clearCitySearch();
-  // }
 
   clearCitySearch(): void {
     this.citySearchTerm.set('');
@@ -325,7 +251,7 @@ export class VenueStateService {
           setTimeout(() => {
             this.isLoadingMore.set(false);
           }, 1500);
-          },
+        },
         error: (error) => {
           console.error('Error loading venues:', error);
           this.loading.set(false);
@@ -397,7 +323,28 @@ export class VenueStateService {
 
   private updateUrl(updates: Record<string, string | null>): void {
     const currentParams = this.routerState.$queryParams();
-    const queryParams: any = { ...currentParams };
+    const queryParams: any = {...currentParams};
+
+    // Apply updates
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === '') {
+        delete queryParams[key];
+      } else {
+        queryParams[key] = value;
+      }
+    });
+
+    // Just update query params, stay on current route
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      replaceUrl: true
+    });
+  }
+
+  private updateUrlFull(updates: Record<string, string | null>): void {
+    const currentParams = this.routerState.$queryParams();
+    const queryParams: any = {...currentParams};
 
     // Apply updates
     Object.entries(updates).forEach(([key, value]) => {
@@ -438,8 +385,6 @@ export class VenueStateService {
   clearSelectedVenue() {
     this.$selectedVenue.set(null);
   }
-
-  // Add these to your existing VenueStateService
 
 // Current venue signals
   private currentVenue = signal<Venue | null>(null);

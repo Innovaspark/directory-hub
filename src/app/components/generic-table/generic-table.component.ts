@@ -50,7 +50,7 @@ export class GenericTableComponent {
     const hasActions = cols.some(c => c.id === 'actions');
     return hasActions
       ? cols
-      : [...cols, { id: 'actions', header: 'Actions', cell: () => '' }];
+      : [{ id: 'actions', header: 'Actions', cell: () => '' }, ...cols];
   });
 
   // ------------------ Table ------------------

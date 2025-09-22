@@ -30,6 +30,15 @@
   @extend .memo-field-group
 }
 
+.input-tenants-description {
+  @extend .input-description-group
+}
+
 .input-countries-description {
   @extend .input-description-group
 }
+
+.input-cities-description {
+  @extend .input-description-group
+}
+

@@ -7,12 +7,8 @@
 </div>
 
 <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loading() && !error()">
-  <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
-
-  <div style="margin-top: 16px; display: flex; gap: 8px;">
-    <button type="submit" class="btn btn-primary me-2" [disabled]="!form.valid">
-      Save
-    </button>
-    <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+  <div class="entity-edit-form">
+    <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
   </div>
+
 </form>

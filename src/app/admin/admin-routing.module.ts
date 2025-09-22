@@ -13,23 +13,19 @@ const routes: Routes = [
     component: AdminDashboardComponent
   },
   {
-    path: 'tenants/:id/edit',
-    component: TenantEditComponent
-  },
-  {
     path: 'tenants',
-    component: TenantsComponent
-  },
-  {
-    path: 'countries/:id/edit',
-    component: CountryEditComponent
+    component: EntityListComponent
   },
   {
     path: 'countries',
-    component: CountriesComponent
+    component: EntityListComponent
   },
   {
     path: 'cities',
+    component: EntityListComponent
+  },
+  {
+    path: 'venues',
     component: EntityListComponent
   }
 

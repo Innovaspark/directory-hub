@@ -96,7 +96,6 @@ export class EntityListComponent  implements OnInit {
   }
 
   private editEntity(entity: any) {
-    // this.modalService.open(EntityEditDialogComponent);
     const entityPacket: EntityPacket = {
       tableName: this.entityName,
       // id: '103dd42c-a374-4ae9-be29-d5a6d1dcae54'
