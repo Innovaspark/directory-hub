@@ -10,8 +10,7 @@
 
     <!--            <app-view-mode-buttons></app-view-mode-buttons>-->
 
-    <b>isMobile: {{isMobile}}</b>
-    <div [class]="$viewMode() === 'split' ?
+    <div [class]="$viewMode() === 'map' ?
         (!isMobile) ? 'split-layout' : 'split-layout hide-left'
         : 'full-layout'">
         <div #venueGrid class="venues-grid left-panel"
@@ -24,7 +23,7 @@
           }
         </div>
 
-      @if ($viewMode() === 'split') {
+      @if ($viewMode() === 'map') {
       <div #mapPanel class="right-panel">
           @defer {
       <ng-container *ngIf="isBrowser">

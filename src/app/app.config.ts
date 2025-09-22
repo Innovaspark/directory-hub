@@ -3,7 +3,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
   inject,
-  provideAppInitializer
+  provideAppInitializer, PLATFORM_ID
 } from '@angular/core';
 import {provideRouter, withDebugTracing} from '@angular/router';
 
@@ -19,6 +19,7 @@ import {provideToastr} from 'ngx-toastr';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {provideMapboxGL} from 'ngx-mapbox-gl';
 import {environment} from '@environments/environment';
+import {DeviceDetectorService} from 'ngx-device-detector';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -48,6 +49,11 @@ export const appConfig: ApplicationConfig = {
       positionClass: 'toast-top-right',
       preventDuplicates: true,
     }),
+    {
+      provide: DeviceDetectorService,
+      useFactory: (platformId: Object) => new DeviceDetectorService(platformId),
+      deps: [PLATFORM_ID]
+    }
 
   ]
 };

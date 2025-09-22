@@ -120,7 +120,7 @@ export class VenueStateService {
   private citySearchTerm = signal<string>('');
   private citySuggestions = signal<City[]>([]);
 
-  $viewMode = signal<'cards' | 'split'>('split');
+  $viewMode = signal<'cards' | 'map'>('cards');
   $selectedVenue = signal<Venue | null>(null);
 
   constructor() {
@@ -374,7 +374,7 @@ export class VenueStateService {
     });
   }
 
-  setViewMode(mode: "cards" | "split") {
+  setViewMode(mode: "cards" | "map") {
     this.$viewMode.set(mode);
   }
 

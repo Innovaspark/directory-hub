@@ -185,6 +185,7 @@ export class VenuesMapComponent {
           </div>
         ` : ''}
         ${venue.phone ? `<div class="phone">📞 ${venue.phone}</div>` : ''}
+<!--        <button class="btn btn-secondary">Show Details</button>-->
       </div>
     `;
   }

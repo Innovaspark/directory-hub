@@ -28,6 +28,23 @@
   }
 }
 
+@media (max-width: 480px) {
+  .venue-card {
+    max-width: inherit;
+  }
+}
+
+@media (max-width: 768px) {
+  .venue-card {
+    max-width: inherit;
+  }
+}
+
+.venue-card-mobile {
+  @extend .venue-card;
+  max-width: inherit;
+}
+
 .venue-card-selected {
   border: 2px solid #3b82f6;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);

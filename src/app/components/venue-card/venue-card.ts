@@ -3,13 +3,14 @@ import {CommonModule} from "@angular/common";
 import {Venue} from "@core/models/venue.model";
 import {VenueStateService} from "@core/state/venue-state.service";
 import {NavigationService} from "@core/services/navigation.service";
+import {MobileDetectionService} from '@services/mobile-detection.service';
 
 @Component({
   selector: 'app-venue-card',
   standalone: true,
   imports: [CommonModule],
   template: `
-      <div class="venue-card"
+      <div [class]="isMobile ? 'venue-card-mobile' : 'venue-card'"
            [ngClass]="{'venue-card-selected': isSelectedVenue()}"
            (click)="onVenueClick(venue())">
           <div class="relative">
@@ -87,6 +88,9 @@ export class VenueCardComponent {
 
   venueState = inject(VenueStateService);
   navigationService = inject(NavigationService);
+  mobileDetectionService = inject(MobileDetectionService);
+  isMobile = this.mobileDetectionService.isMobile();
+
   $selectedVenue = this.venueState.$selectedVenue;
   venue = input.required<Venue>();
 

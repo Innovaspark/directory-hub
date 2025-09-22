@@ -59,11 +59,28 @@ import {MobileDetectionService} from '@services/mobile-detection.service';
           overflow: hidden;
         }
 
-        .left-panel,
+        @media (max-width: 768px) {
+          .split-layout {
+            grid-template-columns: 0 1fr;
+            gap: 0;
+          }
+
+          .split-layout > *:first-child {
+            visibility: hidden;
+            width: 0;
+            overflow: hidden;
+          }
+        }
+
+          .left-panel,
         .right-panel {
           overflow-y: auto;   /* each panel scrolls independently */
           max-height: 100%;   /* constrain height to grid row */
           padding: 1rem;
+        }
+
+        .right-panel {
+          padding: 0;
         }
 
         .map-placeholder {
@@ -160,6 +177,7 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       // window.scrollTo({ top: 0, behavior: 'auto' });
     }
+    // this.mobileDetectionService.debug();
   }
 
   ngOnDestroy() {
