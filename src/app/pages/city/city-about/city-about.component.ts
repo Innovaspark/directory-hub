@@ -36,7 +36,6 @@ export class CityAboutComponent {
   navigateToExplore() {
     const countryCode = this.venueState.$countryCode();
     const citySlug = this.venueState.$citySlug();
-    debugger;
     this.navigationService.navigateToVenues(countryCode, citySlug);
   }
 }

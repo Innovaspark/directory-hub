@@ -111,7 +111,7 @@ export class VenueStateService {
   readonly $cityEmoji = computed(() => this.currentCity()?.emoji ?? '🏙️');
   readonly $venueCount = computed(() => this.$filteredVenues().length);
   readonly $totalVenueCount = computed(() => this.totalCount());
-  readonly $currentCity = this.currentCity;
+  readonly $currentCity = computed(() => this.currentCity());
 
   // Expose read-only state
   readonly $isLoading = this.loading.asReadonly();
@@ -133,12 +133,12 @@ export class VenueStateService {
     // React to city changes
     effect(() => {
       const citySlug = this.$citySlug();
-      if (citySlug && (citySlug != this.lastCitySlug)) {
+      // if (citySlug && (citySlug != this.lastCitySlug)) {
         this.lastCitySlug = citySlug;
         this.loadCityData(citySlug);
-      } else {
-        this.currentCity.set(null);
-      }
+      // } else {
+        // this.currentCity.set(null);
+      // }
     });
 
     // React to route search query changes
@@ -224,8 +224,7 @@ export class VenueStateService {
     this.cityService.getCityBySlug(citySlug)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(city => {
-        debugger;
-        this.currentCity.set(city);
+        this.currentCity.update(() => city);
       });
   }
 
