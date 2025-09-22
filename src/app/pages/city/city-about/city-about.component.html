@@ -22,7 +22,7 @@
     }
     @if ($currentCity()()?.description) {
     <div class="photo-item">
-    <div class="description-field">{{ $currentCity()()?.description }}
+    <div class="description-field">{{ $currentCity()?.description }}
       <div class="cta-section text-center">
         <button class="cta-btn" (click)="navigateToExplore()">
           <span class="btn-icon">🎵</span>
@@ -41,7 +41,7 @@
     <!-- City Content -->
     @if ($currentCity()()?.content) {
     <div class="content-section">
-      <div class="content-wrapper" [innerHTML]="$currentCity()()?.content"></div>
+      <div class="content-wrapper" [innerHTML]="$currentCity()?.content"></div>
     </div>
     }
 
