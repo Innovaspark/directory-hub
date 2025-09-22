@@ -37,6 +37,8 @@ export class RouterStateService {
   readonly $filterType = computed(() => this.$queryParams()['type'] || null);
   readonly $isHomePage = computed(() => this.$url() === '/' || this.$url() === '');
 
+  private previousPath: string | null = null;
+
   constructor() {
     this.initializeRouteListening();
     this.updateRouteData();
@@ -48,7 +50,16 @@ export class RouterStateService {
         filter(event => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(() => {
+      .subscribe((event: NavigationEnd) => {
+        // Extract path without query params or fragments
+        const currentPath = event.urlAfterRedirects.split('?')[0].split('#')[0];
+        if (this.previousPath !== currentPath) {
+          console.log('Navigated to a new page:', currentPath);
+          this.scrollToTop();
+          this.previousPath = currentPath;
+        } else {
+          console.log('Navigation within the same page (query/fragment only)');
+        }
         this.updateRouteData();
 
         // First browser navigation, remove 'page'
@@ -110,4 +121,12 @@ export class RouterStateService {
       });
     }
   }
+
+  scrollToTop() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo(0, 0);
+    }
+  }
+
+
 }

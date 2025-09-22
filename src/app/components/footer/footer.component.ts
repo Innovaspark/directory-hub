@@ -23,8 +23,8 @@ interface FooterSection {
           <!-- Logo and Description -->
           <div class="w-full lg:w-1/3 p-6">
             <div class="mb-6">
-              <img src="/images/logos/main-logo.svg" 
-                   alt="GigaWhat.live" 
+              <img src="/images/logos/main-logo.svg"
+                   alt="GigaWhat.live"
                    class="h-10 w-auto">
             </div>
             <p class="text-gray-400 mb-6">{{ description() }}</p>
@@ -37,7 +37,7 @@ interface FooterSection {
               <ul class="space-y-2">
                 @for (link of section.links; track link.url) {
                   <li>
-                    <a [routerLink]="link.url" 
+                    <a [routerLink]="link.url"
                        class="text-gray-400 hover:text-white">
                       {{ link.label }}
                     </a>
@@ -79,8 +79,7 @@ export class FooterComponent implements OnInit {
       {
         title: 'Cities',
         links: [
-          { label: 'Live music in Amersfoort', url: '/nl/amersfoort' },
-          { label: 'Live music in Utrecht', url: '/nl/utrecht' },
+          { label: 'Live music in Amersfoort', url: '/nl/amersfoort/about' },
           { label: 'Netherlands venues', url: '/nl' }
         ]
       },

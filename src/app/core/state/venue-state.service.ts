@@ -111,7 +111,7 @@ export class VenueStateService {
   readonly $cityEmoji = computed(() => this.currentCity()?.emoji ?? '🏙️');
   readonly $venueCount = computed(() => this.$filteredVenues().length);
   readonly $totalVenueCount = computed(() => this.totalCount());
-  readonly $currentCity = computed(() => this.currentCity);
+  readonly $currentCity = computed(() => this.currentCity());
 
   // Expose read-only state
   readonly $isLoading = this.loading.asReadonly();
@@ -224,6 +224,7 @@ export class VenueStateService {
     this.cityService.getCityBySlug(citySlug)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(city => {
+        debugger;
         this.currentCity.set(city);
       });
   }
