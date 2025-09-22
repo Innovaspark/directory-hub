@@ -22,7 +22,7 @@ export class CityAboutComponent {
   $currentCity = this.venueState.$currentCity;
 
   getPhotos(): CityPhoto[] {
-    const city = this.$currentCity()();
+    const city = this.$currentCity();
     if (!city?.photos) return [];
 
     try {
