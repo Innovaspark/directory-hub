@@ -1,0 +1,27 @@
+<!-- city-about.component.html -->
+<div class="city-about">
+  <div class="container">
+
+    <!-- City Name -->
+    <h1>{{ $currentCity()()?.name || 'Loading...' }}</h1>
+
+    <!-- City Description -->
+    <div class="description">
+      <h2>Description</h2>
+      <p>{{ $currentCity()()?.description || 'No description available' }}</p>
+    </div>
+
+    <!-- City Content -->
+    <div class="content">
+      <h2>About this city</h2>
+      <div [innerHTML]="$currentCity()()?.content || 'No content available'"></div>
+    </div>
+
+    <!-- City Photos -->
+    <div class="photos">
+      <h2>Photos</h2>
+      <p>Raw photos data: {{ $currentCity()()?.photos }}</p>
+    </div>
+
+  </div>
+</div>

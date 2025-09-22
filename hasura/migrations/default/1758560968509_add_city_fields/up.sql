@@ -1,0 +1,4 @@
+ALTER TABLE cities
+ADD COLUMN description TEXT,
+ADD COLUMN content TEXT,
+ADD COLUMN photos JSONB;

@@ -59,6 +59,9 @@ const GET_CITY_BY_SLUG = gql`
         code
         name
       }
+      description
+      content
+      photos
     }
   }
 `;
@@ -68,10 +71,10 @@ const GET_CITIES_BY_COUNTRY = gql`
     cities(
       limit: $limit,
       offset: $offset,
-      where: { 
+      where: {
         country: { code: { _eq: $countryCode } },
         is_live: { _eq: true }
-      }, 
+      },
       order_by: { name: asc }
     ) {
       id
@@ -89,7 +92,7 @@ const GET_CITIES_BY_COUNTRY = gql`
         name
       }
     }
-    cities_aggregate(where: { 
+    cities_aggregate(where: {
       country: { code: { _eq: $countryCode } },
       is_live: { _eq: true }
     }) {
@@ -105,13 +108,13 @@ const SEARCH_CITIES = gql`
   query SearchCities($searchTerm: String!, $countryCode: String, $limit: Int) {
     cities(
       limit: $limit,
-      where: { 
+      where: {
         _and: [
           { name: { _ilike: $searchTerm } },
           { is_live: { _eq: true } },
           { country: { code: { _eq: $countryCode } } }
         ]
-      }, 
+      },
       order_by: { name: asc }
     ) {
       id
@@ -133,12 +136,12 @@ const SEARCH_CITIES_ALL_COUNTRIES = gql`
   query SearchCitiesAllCountries($searchTerm: String!, $limit: Int) {
     cities(
       limit: $limit,
-      where: { 
+      where: {
         _and: [
           { name: { _ilike: $searchTerm } },
           { is_live: { _eq: true } }
         ]
-      }, 
+      },
       order_by: { name: asc }
     ) {
       id

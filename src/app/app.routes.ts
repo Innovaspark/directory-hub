@@ -6,7 +6,7 @@ import {cityGuard} from "@core/guards/city.guard";
 import {CityLandingComponent} from "@pages/city/city-landing";
 import {CountryLandingPageComponent} from "@pages/country/country";
 import {venueDetailResolver} from "@core/resolvers/venue-detail.resolver";
-import {CityAboutComponent} from "@pages/city/city-about";
+import {CityAboutComponent} from "@pages/city/city-about/city-about.component";
 import {NotFoundComponent} from "@pages/not-found/not-found.component";
 import {VenueDetails} from "@components/venue-details/venue-details";
 import {VenueDashboardComponent} from "@pages/venue-hub/dashboard/venue-dashboard.component";

@@ -36,9 +36,10 @@ export class HasuraCrudService {
         type = 'select';
       } else if (f.type.name === 'Boolean') {
         type = 'checkbox';
-      } else if (f.type.name === 'String') {
+      } else if ((f.type.name === 'String') || (f.type.name === 'jsonb')) {
         const desc = (f.description || '').toLowerCase();
-        const memoKeywords = ['memo', 'notes', 'description', 'comments'];
+        /* TODO:  should pull these memo keywords from metadata, probably the tenant table */
+        const memoKeywords = ['memo', 'notes', 'description', 'comments', 'content', 'images', 'photos'];
         type = memoKeywords.some(k => f.name.includes(k)) ? 'textarea' : '';
         if (type === '') {
           type = memoKeywords.some(k => desc.includes(k)) ? 'textarea' : 'input';
