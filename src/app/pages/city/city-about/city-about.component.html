@@ -20,7 +20,7 @@
       </div>
     </div>
     }
-    @if ($currentCity()()?.description) {
+    @if ($currentCity()?.description) {
     <div class="photo-item">
     <div class="description-field">{{ $currentCity()?.description }}
       <div class="cta-section text-center">
@@ -39,7 +39,7 @@
     }
 
     <!-- City Content -->
-    @if ($currentCity()()?.content) {
+    @if ($currentCity()?.content) {
     <div class="content-section">
       <div class="content-wrapper" [innerHTML]="$currentCity()?.content"></div>
     </div>

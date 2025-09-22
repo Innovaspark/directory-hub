@@ -111,7 +111,7 @@ export class VenueStateService {
   readonly $cityEmoji = computed(() => this.currentCity()?.emoji ?? '🏙️');
   readonly $venueCount = computed(() => this.$filteredVenues().length);
   readonly $totalVenueCount = computed(() => this.totalCount());
-  readonly $currentCity = computed(() => this.currentCity());
+  readonly $currentCity = this.currentCity;
 
   // Expose read-only state
   readonly $isLoading = this.loading.asReadonly();
