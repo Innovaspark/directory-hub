@@ -2,26 +2,50 @@
 <div class="city-about">
   <div class="container">
 
-    <!-- City Name -->
-    <h1>{{ $currentCity()()?.name || 'Loading...' }}</h1>
-
-    <!-- City Description -->
-    <div class="description">
-      <h2>Description</h2>
-      <p>{{ $currentCity()()?.description || 'No description available' }}</p>
+    <!-- City Header -->
+    <div class="city-header">
+      <h1>{{ $currentCity()()?.name || 'Loading...' }}</h1>
     </div>
+
+    <!-- Photo Gallery -->
+    @if (getPhotos().length > 0) {
+    <div class="photo-gallery">
+      <div class="photo-grid">
+        @for (photo of getPhotos(); track photo.url) {
+    <div class="photo-item" [class.primary]="photo.primary">
+      <img [src]="photo.url" [alt]="photo.alt" class="photo-image">
+      <div class="photo-overlay">
+        <div class="photo-caption">{{ photo.alt }}</div>
+        <div class="photo-credit">{{ photo.credit }}</div>
+      </div>
+    </div>
+    }
+    @if ($currentCity()()?.description) {
+    <div class="photo-item">
+    <div class="description-field">{{ $currentCity()()?.description }}
+      <div class="cta-section text-center">
+        <button class="cta-btn" (click)="navigateToExplore()">
+          <span class="btn-icon">🎵</span>
+          <span class="btn-text">Explore Live Music Venues</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <p class="subtitle">Discover gigs, open mics, jam session, bands and concerts</p>
+      </div>
+    </div>
+    </div>
+    }
+    </div>
+  </div>
+    }
 
     <!-- City Content -->
-    <div class="content">
-      <h2>About this city</h2>
-      <div [innerHTML]="$currentCity()()?.content || 'No content available'"></div>
+    @if ($currentCity()()?.content) {
+    <div class="content-section">
+      <div class="content-wrapper" [innerHTML]="$currentCity()()?.content"></div>
     </div>
+    }
 
-    <!-- City Photos -->
-    <div class="photos">
-      <h2>Photos</h2>
-      <p>Raw photos data: {{ $currentCity()()?.photos }}</p>
-    </div>
+
 
   </div>
 </div>

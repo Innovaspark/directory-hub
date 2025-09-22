@@ -1,9 +1,11 @@
 // city-about.component.ts
-import {Component, inject, Signal, computed} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {VenueStateService} from "@core/state/venue-state.service";
 import {City, CityPhoto} from '@core/models/city.model';
+import {NavigationService} from '@services/navigation.service';
+import {LocationStateService} from '@core/state/location-state.service';
 
 @Component({
   selector: 'app-city-about',
@@ -14,26 +16,27 @@ import {City, CityPhoto} from '@core/models/city.model';
 })
 export class CityAboutComponent {
   venueState = inject(VenueStateService);
+  navigationService = inject(NavigationService);
+  locationService = inject(LocationStateService);
+
   $currentCity = this.venueState.$currentCity;
 
-  // Computed properties for photos
-  $primaryPhoto = computed(() => {
+  getPhotos(): CityPhoto[] {
     const city = this.$currentCity()();
-    return city?.photos?.find((photo: CityPhoto) => photo.primary) || null;
-  });
+    if (!city?.photos) return [];
 
-  $secondaryPhotos = computed(() => {
-    const city = this.$currentCity()();
-    return city?.photos?.filter((photo: CityPhoto) => !photo.primary) || [];
-  });
+    try {
+      return typeof city.photos === 'string' ? JSON.parse(city.photos) : city.photos;
+    } catch (e) {
+      console.error('Error parsing photos:', e);
+      return [];
+    }
+  }
 
-  // City stats for display
-  getCityStats() {
-    const city = this.$currentCity()();  // Call the signal!
-    return {
-      venueCount: city?.venueCount ?? 0,
-      timezone: city?.timezone ?? 'Europe/Amsterdam',
-      country: city?.country?.name ?? 'Netherlands'
-    };
+  navigateToExplore() {
+    const countryCode = this.venueState.$countryCode();
+    const citySlug = this.venueState.$citySlug();
+    debugger;
+    this.navigationService.navigateToVenues(countryCode, citySlug);
   }
 }
