@@ -20,85 +20,14 @@ import {VenueCardComponent} from "@components/venue-card/venue-card";
 import {RouterStateService} from "@core/state/router-state.service";
 import {SeoService} from "@core/services/seo.service";
 import {FloatingToolbarComponent} from '@components/floating-toolbar';
+import {MobileDetectionService} from '@services/mobile-detection.service';
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
   imports: [CommonModule, ViewModeButtons, InfiniteScrollDirective, VenuesMapComponent, VenueCardComponent, FloatingToolbarComponent],
-  template: `
-      <section>
-          <div #mapContainer class="container mx-auto px-4"
-               infiniteScroll
-               [scrollWindow]="true"
-               (scrolled)="onScrollDown()">
-
-            <app-floating-toolbar [parent]="mapContainer">
-              <app-view-mode-buttons></app-view-mode-buttons>
-            </app-floating-toolbar>
-
-<!--            <app-view-mode-buttons></app-view-mode-buttons>-->
-
-              <div [class]="$viewMode() === 'split' ? 'split-layout' : 'full-layout'">
-                  <div #venueGrid class="venues-grid left-panel"
-                       infiniteScroll
-                       [scrollWindow]="false"
-                       (scrolled)="onScrollDown()">
-
-                      @for (venue of $venues(); track venue.id; let i = $index) {
-                      <app-venue-card [venue]="venue" #venueCard></app-venue-card>
-                      }
-
-                  </div>
-
-                  @if ($viewMode() === 'split') {
-                  <div #mapPanel class="right-panel">
-                      @defer {
-                <ng-container *ngIf="isBrowser">
-                  <app-venues-map></app-venues-map>
-                </ng-container>
-                  } @placeholder {
-                  <div class="map-placeholder">Loading map...</div>
-                  }
-                  </div>
-                  }
-
-              </div>
-
-              <!-- Trigger element for intersection observer -->
-              <div #loadTrigger class="load-trigger h-4"></div>
-
-              <!-- End of results indicator -->
-              @if (!$showLoadingSpinner() && $venues().length >= $totalVenueCount() && $venues().length > 0) {
-              <div class="text-center py-8">
-                <p class="text-gray-500">You've reached the end of the results</p>
-                <p class="text-sm text-gray-400">Showing {{$venues().length}} of {{$totalVenueCount()}} venues</p>
-                </div>
-              }
-
-              <!-- No results message -->
-              @if (!$isLoading() && $venues().length === 0) {
-              <div class="text-center py-12">
-                <p class="text-gray-500 text-lg">No venues found</p>
-                <p class="text-gray-400">Try adjusting your search or filters</p>
-              </div>
-              }
-          </div>
-
-      </section>
-
-      <!-- Keep spinner OUTSIDE section so it's not affected by parent scroll -->
-      @if ($showLoadingSpinner()) {
-      <div class="fixed inset-0 flex justify-center items-end z-[9999] bg-black/20 pointer-events-none">
-      <div class="flex flex-col items-center mb-20 pointer-events-auto" style="background-color: rgba(255,255,255,0.85); padding: 1rem 1.5rem; border-radius: 0.5rem;">
-      <!-- Spinner -->
-      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mb-4"></div>
-      <!-- Custom green text -->
-      <span style="color: #10b981; font-weight: 600; font-size: 1.125rem;">Loading more venues...</span>
-      </div>
-      </div>
-      }
-
-  `, styles: [`
+  templateUrl: './venue-list.component.html',
+  styles: [`
         .full-layout {
             display: block;
         }
@@ -114,12 +43,20 @@ import {FloatingToolbarComponent} from '@components/floating-toolbar';
           grid-template-columns: 1fr 1fr;
           gap: 2rem;
           height: 100vh; /* full viewport height so panels can scroll independently */
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
           max-height: 100vh; /* total viewport height */
           overflow-y: auto;  /* container scrolls if content exceeds viewport */
           padding: 1rem;
+        }
+
+        .split-layout.hide-left {
+          grid-template-columns: 0 1fr;
+          gap: 0;
+        }
+
+        .split-layout.hide-left > *:first-child {
+          visibility: hidden;
+          width: 0;
+          overflow: hidden;
         }
 
         .left-panel,
@@ -148,6 +85,8 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mapPanel') mapPanel!: ElementRef<HTMLDivElement>;
 
   private venueState = inject(VenueStateService);
+  private mobileDetectionService = inject(MobileDetectionService);
+  isMobile = this.mobileDetectionService.isMobile();
   private platformId = inject(PLATFORM_ID);
   private observer?: IntersectionObserver;
   $viewMode = this.venueState.$viewMode;

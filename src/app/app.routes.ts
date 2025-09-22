@@ -13,6 +13,8 @@ import {VenueDashboardComponent} from "@pages/venue-hub/dashboard/venue-dashboar
 import {AdminGuard} from '@core/guards/admin.guard';
 import {AdminLayoutComponent} from '@layouts/admin-layout/admin-layout.component';
 import {AuthLayoutComponent} from '@layouts/auth-layout/auth-layout.component';
+import {InvalidCity} from '@pages/city/invalid-city';
+import {cityGuardActivate} from '@core/guards/city-activate.guard';
 
 
 export const routes: Routes = [
@@ -45,6 +47,11 @@ export const routes: Routes = [
         path: ':country',
         canMatch: [countryGuard],
         component: CountryLandingPageComponent,
+        data: {prerender: false}
+      },
+      {
+        path: ':country/invalid',
+        component: InvalidCity,
         data: {prerender: false}
       },
       {

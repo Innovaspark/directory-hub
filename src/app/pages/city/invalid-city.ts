@@ -9,182 +9,223 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="invalid-city">
-      <div class="local-container">
-        <div class="header">
-          <h1>This city isn't available yet</h1>
-          <p class="subtitle">We're working on expanding to more cities in {{ countryName }}</p>
-        </div>
+<!--    <div class="invalid-city">-->
+<!--      <div class="local-container">-->
+<!--        <div class="header">-->
+<!--          <h1>This city isn't available yet</h1>-->
+<!--          <p class="subtitle">We're working on expanding to more cities in {{ countryName }}</p>-->
+<!--        </div>-->
 
-        <div class="suggestions-section">
-          <h2>Available cities nearby</h2>
-          <div class="city-grid">
-            <a [routerLink]="['/nl', 'amsterdam']" class="city-card">
-              <span class="city-emoji">🏙️</span>
-              <span class="city-name">Amsterdam</span>
-              <span class="venue-count">89 venues</span>
-            </a>
-            <a [routerLink]="['/nl', 'utrecht']" class="city-card">
-              <span class="city-emoji">🌿</span>
-              <span class="city-name">Utrecht</span>
-              <span class="venue-count">34 venues</span>
-            </a>
-            <a [routerLink]="['/nl', 'rotterdam']" class="city-card">
-              <span class="city-emoji">🚢</span>
-              <span class="city-name">Rotterdam</span>
-              <span class="venue-count">23 venues</span>
-            </a>
-            <a [routerLink]="['/nl', 'the-hague']" class="city-card">
-              <span class="city-emoji">🏛️</span>
-              <span class="city-name">The Hague</span>
-              <span class="venue-count">18 venues</span>
-            </a>
-          </div>
-        </div>
+<!--        <div class="suggestions-section">-->
+<!--          <h2>Available cities nearby</h2>-->
+<!--          <div class="city-grid">-->
+<!--            <a [routerLink]="['/nl', 'amsterdam']" class="city-card">-->
+<!--              <span class="city-emoji">🏙️</span>-->
+<!--              <span class="city-name">Amsterdam</span>-->
+<!--              <span class="venue-count">89 venues</span>-->
+<!--            </a>-->
+<!--            <a [routerLink]="['/nl', 'utrecht']" class="city-card">-->
+<!--              <span class="city-emoji">🌿</span>-->
+<!--              <span class="city-name">Utrecht</span>-->
+<!--              <span class="venue-count">34 venues</span>-->
+<!--            </a>-->
+<!--            <a [routerLink]="['/nl', 'rotterdam']" class="city-card">-->
+<!--              <span class="city-emoji">🚢</span>-->
+<!--              <span class="city-name">Rotterdam</span>-->
+<!--              <span class="venue-count">23 venues</span>-->
+<!--            </a>-->
+<!--            <a [routerLink]="['/nl', 'the-hague']" class="city-card">-->
+<!--              <span class="city-emoji">🏛️</span>-->
+<!--              <span class="city-name">The Hague</span>-->
+<!--              <span class="venue-count">18 venues</span>-->
+<!--            </a>-->
+<!--          </div>-->
+<!--        </div>-->
 
-        <div class="actions-section">
-          <a [routerLink]="['/']" class="btn-primary">Browse all locations</a>
-          <a [href]="'mailto:hello@gigawhat.live?subject=Add ' + cityName"
-             class="btn-secondary">Request {{ cityName }}</a>
-        </div>
-      </div>
+<!--        <div class="actions-section">-->
+<!--          <a [routerLink]="['/']" class="btn-primary">Browse all locations</a>-->
+<!--          <a [href]="'mailto:hello@gigawhat.live?subject=Add ' + cityName"-->
+<!--             class="btn-secondary">Request {{ cityName }}</a>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!-- src/app/pages/city-unavailable/city-unavailable.component.html -->
+<!-- city-unavailable.component.html -->
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200 text-gray-900 p-6">
+  <div class="text-center max-w-2xl">
+    <h1 class="text-5xl md:text-6xl font-extrabold text-red-600 mb-4 drop-shadow-md">
+      🎵 City Not Yet Available
+    </h1>
+    <p class="text-lg md:text-xl text-gray-700 mb-6 leading-relaxed">
+      We’re building the ultimate guide to live music venues in the Netherlands, and this city hasn’t joined the stage yet. Don’t worry — amazing concerts, clubs, and live events are coming soon!
+    </p>
+    <p class="text-base md:text-lg text-gray-600 mb-8">
+      Meanwhile, you can explore our <a routerLink="/nl/all/venues" class="text-blue-600 font-semibold underline hover:text-blue-800">full list of venues</a> to discover live music experiences happening right now across the country.
+    </p>
+
+    <!-- Illustration / Icon -->
+    <div class="mb-8">
+      <img src="/images/city-not-available-stage.svg" alt="Live music stage illustration" class="not-available-image mx-auto animate-fade-in">
     </div>
+
+    <a routerLink="/nl/all/venues" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1">
+      Browse Available Venues
+    </a>
+  </div>
+</div>
+
   `,
   styles: [`
-    .invalid-city {
-      min-height: 100vh;
-      background: #f8fafc;
-      padding: 4rem 0;
+    .not-available-image {
+      width: 460px;
+    }
+    /*.invalid-city {*/
+    /*  min-height: 100vh;*/
+    /*  background: #f8fafc;*/
+    /*  padding: 4rem 0;*/
+    /*}*/
+
+    /*.header {*/
+    /*  text-align: center;*/
+    /*  margin-bottom: 4rem;*/
+    /*}*/
+
+    /*h1 {*/
+    /*  font-size: 3rem;*/
+    /*  color: #1e293b;*/
+    /*  margin-bottom: 1rem;*/
+    /*  font-weight: 800;*/
+    /*}*/
+
+    /*.subtitle {*/
+    /*  font-size: 1.2rem;*/
+    /*  color: #64748b;*/
+    /*  margin: 0;*/
+    /*}*/
+
+    /*.suggestions-section {*/
+    /*  margin-bottom: 4rem;*/
+    /*}*/
+
+    /*h2 {*/
+    /*  font-size: 1.5rem;*/
+    /*  color: #334155;*/
+    /*  margin-bottom: 2rem;*/
+    /*  text-align: center;*/
+    /*}*/
+
+    /*.city-grid {*/
+    /*  display: grid;*/
+    /*  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));*/
+    /*  gap: 1.5rem;*/
+    /*}*/
+
+    /*.city-card {*/
+    /*  background: white;*/
+    /*  padding: 2rem 1.5rem;*/
+    /*  border-radius: 16px;*/
+    /*  text-decoration: none;*/
+    /*  text-align: center;*/
+    /*  transition: all 0.3s ease;*/
+    /*  border: 1px solid #e2e8f0;*/
+    /*  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);*/
+    /*}*/
+
+    /*.city-card:hover {*/
+    /*  transform: translateY(-4px);*/
+    /*  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);*/
+    /*  border-color: #667eea;*/
+    /*}*/
+
+    /*.city-emoji {*/
+    /*  font-size: 2.5rem;*/
+    /*  display: block;*/
+    /*  margin-bottom: 1rem;*/
+    /*}*/
+
+    /*.city-name {*/
+    /*  display: block;*/
+    /*  font-size: 1.1rem;*/
+    /*  font-weight: 600;*/
+    /*  color: #1e293b;*/
+    /*  margin-bottom: 0.5rem;*/
+    /*}*/
+
+    /*.venue-count {*/
+    /*  font-size: 0.9rem;*/
+    /*  color: #64748b;*/
+    /*}*/
+
+    /*.actions-section {*/
+    /*  text-align: center;*/
+    /*  padding-top: 2rem;*/
+    /*  border-top: 1px solid #e2e8f0;*/
+    /*}*/
+
+    /*.btn-primary, .btn-secondary {*/
+    /*  display: inline-block;*/
+    /*  padding: 1rem 2rem;*/
+    /*  margin: 0 0.5rem;*/
+    /*  border-radius: 12px;*/
+    /*  text-decoration: none;*/
+    /*  font-weight: 600;*/
+    /*  font-size: 1rem;*/
+    /*  transition: all 0.2s ease;*/
+    /*}*/
+
+    /*.btn-primary {*/
+    /*  background: #667eea;*/
+    /*  color: white;*/
+    /*}*/
+
+    /*.btn-secondary {*/
+    /*  background: transparent;*/
+    /*  color: #667eea;*/
+    /*  border: 2px solid #667eea;*/
+    /*}*/
+
+    /*.btn-primary:hover {*/
+    /*  background: #5a67d8;*/
+    /*  transform: translateY(-1px);*/
+    /*}*/
+
+    /*.btn-secondary:hover {*/
+    /*  background: #667eea;*/
+    /*  color: white;*/
+    /*  transform: translateY(-1px);*/
+    /*}*/
+
+    /*@media (max-width: 640px) {*/
+    /*  .invalid-city {*/
+    /*    padding: 2rem 0;*/
+    /*  }*/
+
+    /*  h1 {*/
+    /*    font-size: 2rem;*/
+    /*  }*/
+
+    /*  .city-grid {*/
+    /*    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));*/
+    /*    gap: 1rem;*/
+    /*  }*/
+
+    /*  .btn-primary, .btn-secondary {*/
+    /*    display: block;*/
+    /*    margin: 0.5rem 0;*/
+    /*  }*/
+    /*}*/
+
+    /* city-unavailable.component.scss */
+
+    /* Subtle fade-in animation for the illustration */
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-
-    h1 {
-      font-size: 3rem;
-      color: #1e293b;
-      margin-bottom: 1rem;
-      font-weight: 800;
-    }
-
-    .subtitle {
-      font-size: 1.2rem;
-      color: #64748b;
-      margin: 0;
-    }
-
-    .suggestions-section {
-      margin-bottom: 4rem;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-      color: #334155;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .city-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .city-card {
-      background: white;
-      padding: 2rem 1.5rem;
-      border-radius: 16px;
-      text-decoration: none;
-      text-align: center;
-      transition: all 0.3s ease;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .city-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      border-color: #667eea;
-    }
-
-    .city-emoji {
-      font-size: 2.5rem;
-      display: block;
-      margin-bottom: 1rem;
-    }
-
-    .city-name {
-      display: block;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 0.5rem;
-    }
-
-    .venue-count {
-      font-size: 0.9rem;
-      color: #64748b;
-    }
-
-    .actions-section {
-      text-align: center;
-      padding-top: 2rem;
-      border-top: 1px solid #e2e8f0;
-    }
-
-    .btn-primary, .btn-secondary {
-      display: inline-block;
-      padding: 1rem 2rem;
-      margin: 0 0.5rem;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-      background: #667eea;
-      color: white;
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: #667eea;
-      border: 2px solid #667eea;
-    }
-
-    .btn-primary:hover {
-      background: #5a67d8;
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary:hover {
-      background: #667eea;
-      color: white;
-      transform: translateY(-1px);
-    }
-
-    @media (max-width: 640px) {
-      .invalid-city {
-        padding: 2rem 0;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      .city-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 1rem;
-      }
-
-      .btn-primary, .btn-secondary {
-        display: block;
-        margin: 0.5rem 0;
-      }
+    .animate-fade-in {
+      animation: fade-in 1s ease forwards;
     }
   `]
 })

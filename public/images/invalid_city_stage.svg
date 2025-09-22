@@ -1,0 +1,98 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#1a1a2e"/>
+  
+  <!-- Floor -->
+  <rect x="0" y="450" width="800" height="150" fill="#2d2d44"/>
+  
+  <!-- Stage Platform -->
+  <path d="M100 450 L700 450 L680 420 L120 420 Z" fill="#4a4a6a" stroke="#666" stroke-width="2"/>
+  
+  <!-- Stage Front Edge -->
+  <rect x="120" y="415" width="560" height="10" fill="#5a5a7a" rx="2"/>
+  
+  <!-- Main Stage Area -->
+  <rect x="120" y="250" width="560" height="170" fill="#3a3a5a" stroke="#555" stroke-width="2"/>
+  
+  <!-- Stage Backdrop -->
+  <rect x="130" y="100" width="540" height="160" fill="#2a2a4a" stroke="#444" stroke-width="2"/>
+  
+  <!-- Curtains - darkened -->
+  <path d="M130 100 Q140 110 130 120 Q140 130 130 140 Q140 150 130 160 Q140 170 130 180 Q140 190 130 200 Q140 210 130 220 Q140 230 130 240 Q140 250 130 260" 
+        fill="none" stroke="#4a0000" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+  <path d="M670 100 Q660 110 670 120 Q660 130 670 140 Q660 150 670 160 Q660 170 670 180 Q660 190 670 200 Q660 210 670 220 Q660 230 670 240 Q660 250 670 260" 
+        fill="none" stroke="#4a0000" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Stage Lights - mostly off -->
+  <g opacity="0.3">
+    <!-- Light Bars -->
+    <rect x="150" y="85" width="500" height="8" fill="#444" rx="4"/>
+    <rect x="150" y="65" width="500" height="6" fill="#555" rx="3"/>
+    
+    <!-- Individual Lights - mostly dark -->
+    <circle cx="200" cy="89" r="12" fill="#666" opacity="0.5"/>
+    <circle cx="280" cy="89" r="12" fill="#666" opacity="0.5"/>
+    <circle cx="360" cy="89" r="12" fill="#666" opacity="0.5"/>
+    <circle cx="440" cy="89" r="12" fill="#666" opacity="0.5"/>
+    <circle cx="520" cy="89" r="12" fill="#666" opacity="0.5"/>
+    <circle cx="600" cy="89" r="12" fill="#666" opacity="0.5"/>
+    
+    <!-- Single red warning light -->
+    <circle cx="400" cy="68" r="8" fill="#ff4444" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Side Stage Equipment -->
+  <rect x="50" y="350" width="60" height="100" fill="#333" rx="5"/>
+  <rect x="690" y="350" width="60" height="100" fill="#333" rx="5"/>
+  <rect x="55" y="360" width="50" height="5" fill="#555"/>
+  <rect x="55" y="370" width="50" height="5" fill="#555"/>
+  <rect x="695" y="360" width="50" height="5" fill="#555"/>
+  <rect x="695" y="370" width="50" height="5" fill="#555"/>
+  
+  <!-- Spotlights from sides - dim -->
+  <circle cx="80" cy="300" r="15" fill="#888" stroke="#666" stroke-width="2"/>
+  <circle cx="720" cy="300" r="15" fill="#888" stroke="#666" stroke-width="2"/>
+  
+  <!-- Center Stage Microphone Stand -->
+  <rect x="398" y="320" width="4" height="80" fill="#666"/>
+  <circle cx="400" cy="315" r="8" fill="#333"/>
+  <circle cx="400" cy="310" r="5" fill="#555"/>
+  
+  <!-- Stage Steps -->
+  <rect x="350" y="420" width="100" height="15" fill="#444" rx="2"/>
+  <rect x="360" y="435" width="80" height="15" fill="#3a3a3a" rx="2"/>
+  
+  <!-- "Invalid City" Text -->
+  <text x="400" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#ff4444">
+    INVALID CITY
+  </text>
+  <text x="400" y="400" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#888">
+    Please check your spelling
+  </text>
+  <text x="400" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#666">
+    and try again
+  </text>
+  
+  <!-- Error Icon -->
+  <circle cx="400" cy="330" r="18" fill="none" stroke="#ff4444" stroke-width="3"/>
+  <path d="M390 325 L410 340" stroke="#ff4444" stroke-width="3" stroke-linecap="round"/>
+  <path d="M410 325 L390 340" stroke="#ff4444" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Question marks floating -->
+  <g fill="#ff4444" opacity="0.6" font-family="Arial, sans-serif" font-size="24" font-weight="bold">
+    <text x="200" y="200">?</text>
+    <text x="600" y="180">?</text>
+    <text x="180" y="300">?</text>
+    <text x="620" y="320">?</text>
+  </g>
+  
+  <!-- Gradient Definitions -->
+  <defs>
+    <linearGradient id="errorBeam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff4444;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#ff4444;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+</svg>

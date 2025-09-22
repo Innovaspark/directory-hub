@@ -1,0 +1,110 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#1a1a2e"/>
+  
+  <!-- Floor -->
+  <rect x="0" y="450" width="800" height="150" fill="#2d2d44"/>
+  
+  <!-- Stage Platform -->
+  <path d="M100 450 L700 450 L680 420 L120 420 Z" fill="#4a4a6a" stroke="#666" stroke-width="2"/>
+  
+  <!-- Stage Front Edge -->
+  <rect x="120" y="415" width="560" height="10" fill="#5a5a7a" rx="2"/>
+  
+  <!-- Main Stage Area -->
+  <rect x="120" y="250" width="560" height="170" fill="#3a3a5a" stroke="#555" stroke-width="2"/>
+  
+  <!-- Stage Backdrop -->
+  <rect x="130" y="100" width="540" height="160" fill="#2a2a4a" stroke="#444" stroke-width="2"/>
+  
+  <!-- Curtains - slightly dimmed -->
+  <path d="M130 100 Q140 110 130 120 Q140 130 130 140 Q140 150 130 160 Q140 170 130 180 Q140 190 130 200 Q140 210 130 220 Q140 230 130 240 Q140 250 130 260" 
+        fill="none" stroke="#6b0000" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+  <path d="M670 100 Q660 110 670 120 Q660 130 670 140 Q660 150 670 160 Q660 170 670 180 Q660 190 670 200 Q660 210 670 220 Q660 230 670 240 Q660 250 670 260" 
+        fill="none" stroke="#6b0000" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+  
+  <!-- Stage Lights - dimmed -->
+  <g opacity="0.6">
+    <!-- Light Bars -->
+    <rect x="150" y="85" width="500" height="8" fill="#666" rx="4"/>
+    <rect x="150" y="65" width="500" height="6" fill="#777" rx="3"/>
+    
+    <!-- Individual Lights -->
+    <circle cx="200" cy="89" r="12" fill="#cccc60" opacity="0.6"/>
+    <circle cx="280" cy="89" r="12" fill="#cc6060" opacity="0.6"/>
+    <circle cx="360" cy="89" r="12" fill="#6060cc" opacity="0.6"/>
+    <circle cx="440" cy="89" r="12" fill="#60cc60" opacity="0.6"/>
+    <circle cx="520" cy="89" r="12" fill="#cccc60" opacity="0.6"/>
+    <circle cx="600" cy="89" r="12" fill="#cc6060" opacity="0.6"/>
+    
+    <!-- Light Beams - dimmed -->
+    <path d="M200 101 L180 380 L220 380 Z" fill="url(#dimLightBeam1)" opacity="0.2"/>
+    <path d="M280 101 L260 380 L300 380 Z" fill="url(#dimLightBeam2)" opacity="0.2"/>
+    <path d="M360 101 L340 380 L380 380 Z" fill="url(#dimLightBeam3)" opacity="0.2"/>
+    <path d="M440 101 L420 380 L460 380 Z" fill="url(#dimLightBeam4)" opacity="0.2"/>
+    <path d="M520 101 L500 380 L540 380 Z" fill="url(#dimLightBeam1)" opacity="0.2"/>
+    <path d="M600 101 L580 380 L620 380 Z" fill="url(#dimLightBeam2)" opacity="0.2"/>
+  </g>
+  
+  <!-- Side Stage Equipment -->
+  <rect x="50" y="350" width="60" height="100" fill="#333" rx="5"/>
+  <rect x="690" y="350" width="60" height="100" fill="#333" rx="5"/>
+  <rect x="55" y="360" width="50" height="5" fill="#666"/>
+  <rect x="55" y="370" width="50" height="5" fill="#666"/>
+  <rect x="695" y="360" width="50" height="5" fill="#666"/>
+  <rect x="695" y="370" width="50" height="5" fill="#666"/>
+  
+  <!-- Spotlights from sides -->
+  <circle cx="80" cy="300" r="15" fill="#ddd" stroke="#999" stroke-width="2"/>
+  <circle cx="720" cy="300" r="15" fill="#ddd" stroke="#999" stroke-width="2"/>
+  
+  <!-- Center Stage Microphone Stand -->
+  <rect x="398" y="320" width="4" height="80" fill="#888"/>
+  <circle cx="400" cy="315" r="8" fill="#333"/>
+  <circle cx="400" cy="310" r="5" fill="#666"/>
+  
+  <!-- Stage Steps -->
+  <rect x="350" y="420" width="100" height="15" fill="#555" rx="2"/>
+  <rect x="360" y="435" width="80" height="15" fill="#4a4a4a" rx="2"/>
+  
+  <!-- "City Not Available" Text -->
+  <text x="400" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#cc8800">
+    CITY NOT AVAILABLE
+  </text>
+  <text x="400" y="400" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#888">
+    We don't serve this location yet
+  </text>
+  <text x="400" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#666">
+    Check back soon for updates
+  </text>
+  
+  <!-- Warning Icon -->
+  <circle cx="400" cy="330" r="18" fill="none" stroke="#cc8800" stroke-width="3"/>
+  <text x="400" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#cc8800">!</text>
+  
+  <!-- Decorative Elements - muted -->
+  <g fill="#cc8800" opacity="0.4">
+    <path d="M150 150 L152 156 L158 156 L153 160 L155 166 L150 162 L145 166 L147 160 L142 156 L148 156 Z"/>
+    <path d="M650 180 L652 186 L658 186 L653 190 L655 196 L650 192 L645 196 L647 190 L642 186 L648 186 Z"/>
+  </g>
+  
+  <!-- Gradient Definitions -->
+  <defs>
+    <linearGradient id="dimLightBeam1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#cccc60;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#cccc60;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="dimLightBeam2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#cc6060;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#cc6060;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="dimLightBeam3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6060cc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6060cc;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient id="dimLightBeam4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#60cc60;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#60cc60;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+</svg>
