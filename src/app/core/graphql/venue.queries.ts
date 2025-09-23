@@ -477,3 +477,15 @@ export const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS_APPROVED = gql`
     }
   }
 `;
+
+export const BULK_UPDATE_VENUES = gql`
+  mutation BulkUpdateVenues($updates: [venues_updates!]!) {
+    update_venues_many(updates: $updates) {
+      affected_rows
+      returning {
+        ${VENUE_FIELDS}
+      }
+    }
+  }
+`;
+

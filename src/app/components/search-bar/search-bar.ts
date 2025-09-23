@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { NavigationService } from '@core/services/navigation.service';
 import { RouterStateService } from "@core/state/router-state.service";
 import { VenueStateService } from "@core/state/venue-state.service";
+import {MultiSelectComponent} from '@components/multi-select/multi-select.component';
 
 @Component({
   selector: 'app-search-bar',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MultiSelectComponent],
   template: `
       <div class="search-panel">
           <div class="search-container">
@@ -58,6 +59,9 @@ import { VenueStateService } from "@core/state/venue-state.service";
                           ✕
                       </button>
                   </div>
+                <div class="form-group keywords-input-group">
+                  <app-multi-select [keywords]="keywords"></app-multi-select>
+                </div>
 
                   <!-- Search Button -->
                   <div class="form-group button-group">
@@ -242,6 +246,8 @@ export class SearchBarComponent {
   selectedCitySlug = '';
   searchTerm = '';
   keywordsTerm = '';
+
+  keywords: string[] = ["jazz clubs","live jazz","evening performances"];
 
   // Local hardcoded cities - replace with data service later
   cities = [

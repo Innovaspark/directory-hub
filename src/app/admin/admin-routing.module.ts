@@ -6,6 +6,7 @@ import {TenantEditComponent} from './pages/tenant-edit/tenant-edit.component';
 import {CountriesComponent} from './pages/countries/countries.component';
 import {CountryEditComponent} from './pages/country-edit/country-edit.component';
 import {EntityListComponent} from '@pages/entity-list/entity-list.component';
+import {BulkUpdateVenuesComponent} from './pages/bulk-update-venues/bulk-update-venues';
 
 const routes: Routes = [
   {
@@ -27,6 +28,10 @@ const routes: Routes = [
   {
     path: 'venues',
     component: EntityListComponent
+  },
+  {
+    path: 'venues-bulk-update',
+    component: BulkUpdateVenuesComponent
   }
 
 ];

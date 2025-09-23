@@ -1,0 +1,16 @@
+<!-- multi-select.component.html -->
+<div class="relative w-64">
+  <button (click)="toggleDropdown()" class="w-full border rounded px-3 py-2 text-left bg-white shadow flex justify-between items-center">
+    <span>{{ selected.length ? selected.join(', ') : 'Select keywords' }}</span>
+    <span>▾</span>
+  </button>
+
+  <div *ngIf="open" class="absolute mt-1 w-full bg-white border rounded shadow z-10 max-h-60 overflow-auto">
+    <div *ngFor="let keyword of keywords" class="px-3 py-2 hover:bg-gray-100 flex items-center">
+      <input type="checkbox" [value]="keyword" [(ngModel)]="selectedMap[keyword]" (change)="updateSelected()" class="mr-2">
+      <span>{{ keyword }}</span>
+    </div>
+  </div>
+</div>
+
+<p class="mt-2 text-sm text-gray-600">Selected: {{ selected.join(', ') }}</p>
