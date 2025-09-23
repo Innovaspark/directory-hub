@@ -53,8 +53,7 @@ import {RouterStateService} from "@core/state/router-state.service";
                                           reviews)</span>
                                   </div>
                               </div>
-                              <p class="text-gray-700 leading-relaxed">
-                                  {{ venueState.$currentVenue()?.review_summary }}
+                              <p [innerHTML]="venueState.$currentVenue()?.content" class="text-gray-700 leading-relaxed">
                               </p>
                           </div>
                       </div>

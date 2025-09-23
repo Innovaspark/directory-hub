@@ -3,6 +3,8 @@ import { gql } from '@apollo/client/core';
 export const VENUE_FIELDS = `
   id
   name
+  description
+  content
   keywords
   province
   cityByCityId {
@@ -34,6 +36,7 @@ export const VENUE_FIELDS = `
   working_hours
   business_status
   location_link
+  approved
   created_at
   updated_at
 `;
@@ -44,6 +47,22 @@ export const GET_VENUES = gql`
       ${VENUE_FIELDS}
     }
     venues_aggregate {
+      aggregate { count }
+    }
+  }
+`;
+
+export const GET_VENUES_APPROVED = gql`
+  query GetVenuesApproved($limit: Int, $offset: Int, $approved: Boolean!) {
+    venues(
+      limit: $limit,
+      offset: $offset,
+      where: { approved: { _eq: $approved } },
+      order_by: {name: asc}
+    ) {
+      ${VENUE_FIELDS}
+    }
+    venues_aggregate(where: { approved: { _eq: $approved } }) {
       aggregate { count }
     }
   }
@@ -65,6 +84,32 @@ export const GET_VENUES_BY_CITY = gql`
   }
 `;
 
+export const GET_VENUES_BY_CITY_APPROVED = gql`
+  query GetVenuesByCityApproved($limit: Int, $offset: Int, $citySlug: String!, $approved: Boolean!) {
+    venues(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        _and: [
+          { cityByCityId: { slug: { _eq: $citySlug } } },
+          { approved: { _eq: $approved } }
+        ]
+      },
+      order_by: {name: asc}
+    ) {
+      ${VENUE_FIELDS}
+    }
+    venues_aggregate(where: {
+      _and: [
+        { cityByCityId: { slug: { _eq: $citySlug } } },
+        { approved: { _eq: $approved } }
+      ]
+    }) {
+      aggregate { count }
+    }
+  }
+`;
+
 export const GET_VENUES_BY_COUNTRY = gql`
   query GetVenuesByCountry($limit: Int, $offset: Int, $countryCode: String!) {
     venues(
@@ -76,6 +121,32 @@ export const GET_VENUES_BY_COUNTRY = gql`
       ${VENUE_FIELDS}
     }
     venues_aggregate(where: { cityByCityId: { country: { code: { _eq: $countryCode } } } }) {
+      aggregate { count }
+    }
+  }
+`;
+
+export const GET_VENUES_BY_COUNTRY_APPROVED = gql`
+  query GetVenuesByCountryApproved($limit: Int, $offset: Int, $countryCode: String!, $approved: Boolean!) {
+    venues(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        _and: [
+          { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+          { approved: { _eq: $approved } }
+        ]
+      },
+      order_by: {name: asc}
+    ) {
+      ${VENUE_FIELDS}
+    }
+    venues_aggregate(where: {
+      _and: [
+        { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+        { approved: { _eq: $approved } }
+      ]
+    }) {
       aggregate { count }
     }
   }
@@ -108,6 +179,34 @@ export const SEARCH_VENUES_BY_CITY_AND_NAME = gql`
       _and: [
         { cityByCityId: { slug: { _eq: $citySlug } } },
         { name: { _ilike: $venueName } }
+      ]
+    }) {
+      aggregate { count }
+    }
+  }
+`;
+
+export const SEARCH_VENUES_BY_CITY_AND_NAME_APPROVED = gql`
+  query SearchVenuesByCityAndNameApproved($citySlug: String!, $venueName: String!, $limit: Int, $offset: Int, $approved: Boolean!) {
+    venues(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        _and: [
+          { cityByCityId: { slug: { _eq: $citySlug } } },
+          { name: { _ilike: $venueName } },
+          { approved: { _eq: $approved } }
+        ]
+      },
+      order_by: {name: asc}
+    ) {
+      ${VENUE_FIELDS}
+    }
+    venues_aggregate(where: {
+      _and: [
+        { cityByCityId: { slug: { _eq: $citySlug } } },
+        { name: { _ilike: $venueName } },
+        { approved: { _eq: $approved } }
       ]
     }) {
       aggregate { count }
@@ -151,6 +250,44 @@ export const SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS = gql`
   }
 `;
 
+export const SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS_APPROVED = gql`
+  query SearchVenuesByCityNameAndKeywordsApproved($citySlug: String!, $venueName: String, $keywords: String, $limit: Int, $offset: Int, $approved: Boolean!) {
+    venues(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        _and: [
+          { cityByCityId: { slug: { _eq: $citySlug } } },
+          {
+            _or: [
+              { name: { _ilike: $venueName } },
+              { keywords: { _ilike: $keywords } }
+            ]
+          },
+          { approved: { _eq: $approved } }
+        ]
+      },
+      order_by: {name: asc}
+    ) {
+      ${VENUE_FIELDS}
+    }
+    venues_aggregate(where: {
+      _and: [
+        { cityByCityId: { slug: { _eq: $citySlug } } },
+        {
+          _or: [
+            { name: { _ilike: $venueName } },
+            { keywords: { _ilike: $keywords } }
+          ]
+        },
+        { approved: { _eq: $approved } }
+      ]
+    }) {
+      aggregate { count }
+    }
+  }
+`;
+
 export const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS = gql`
   query SearchVenuesByCountryAndKeywords($countryCode: String!, $searchTerm: String!, $limit: Int, $offset: Int) {
     venues(
@@ -187,6 +324,44 @@ export const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS = gql`
   }
 `;
 
+export const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS_APPROVED = gql`
+  query SearchVenuesByCountryAndKeywordsApproved($countryCode: String!, $searchTerm: String!, $limit: Int, $offset: Int, $approved: Boolean!) {
+    venues(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        _and: [
+          { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+          {
+            _or: [
+              { name: { _ilike: $searchTerm } },
+              { keywords: { _ilike: $searchTerm } }
+            ]
+          },
+          { approved: { _eq: $approved } }
+        ]
+      },
+      order_by: {name: asc}
+    ) {
+      ${VENUE_FIELDS}
+    }
+    venues_aggregate(where: {
+      _and: [
+        { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } },
+            { keywords: { _ilike: $searchTerm } }
+          ]
+        },
+        { approved: { _eq: $approved } }
+      ]
+    }) {
+      aggregate { count }
+    }
+  }
+`;
+
 export const SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS = gql`
   query SearchVenuesByCityWithBothParams($citySlug: String!, $venueName: String!, $keywords: String!, $limit: Int, $offset: Int) {
     venues(
@@ -215,6 +390,36 @@ export const SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS = gql`
   }
 `;
 
+export const SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS_APPROVED = gql`
+  query SearchVenuesByCityWithBothParamsApproved($citySlug: String!, $venueName: String!, $keywords: String!, $limit: Int, $offset: Int, $approved: Boolean!) {
+    venues(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        _and: [
+          { cityByCityId: { slug: { _eq: $citySlug } } },
+          { name: { _ilike: $venueName } },
+          { keywords: { _ilike: $keywords } },
+          { approved: { _eq: $approved } }
+        ]
+      },
+      order_by: {name: asc}
+    ) {
+      ${VENUE_FIELDS}
+    }
+    venues_aggregate(where: {
+      _and: [
+        { cityByCityId: { slug: { _eq: $citySlug } } },
+        { name: { _ilike: $venueName } },
+        { keywords: { _ilike: $keywords } },
+        { approved: { _eq: $approved } }
+      ]
+    }) {
+      aggregate { count }
+    }
+  }
+`;
+
 export const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS = gql`
   query SearchVenuesByCountryWithBothParams($countryCode: String!, $searchTerm: String!, $keywords: String!, $limit: Int, $offset: Int) {
     venues(
@@ -236,6 +441,36 @@ export const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS = gql`
         { cityByCityId: { country: { code: { _eq: $countryCode } } } },
         { name: { _ilike: $searchTerm } },
         { keywords: { _ilike: $keywords } }
+      ]
+    }) {
+      aggregate { count }
+    }
+  }
+`;
+
+export const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS_APPROVED = gql`
+  query SearchVenuesByCountryWithBothParamsApproved($countryCode: String!, $searchTerm: String!, $keywords: String!, $limit: Int, $offset: Int, $approved: Boolean!) {
+    venues(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        _and: [
+          { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+          { name: { _ilike: $searchTerm } },
+          { keywords: { _ilike: $keywords } },
+          { approved: { _eq: $approved } }
+        ]
+      },
+      order_by: {name: asc}
+    ) {
+      ${VENUE_FIELDS}
+    }
+    venues_aggregate(where: {
+      _and: [
+        { cityByCityId: { country: { code: { _eq: $countryCode } } } },
+        { name: { _ilike: $searchTerm } },
+        { keywords: { _ilike: $keywords } },
+        { approved: { _eq: $approved } }
       ]
     }) {
       aggregate { count }

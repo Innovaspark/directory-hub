@@ -3,6 +3,9 @@ import {City} from "@core/models/city.model";
 export interface Venue {
   id: string;
   name: string;
+  approved: boolean;
+  description: string;
+  content: string;
   keywords?: string;
   province?: string;
   city?: string;

@@ -19,21 +19,36 @@ export class VenueService {
     offset: number = 0,
     citySlug?: string,
     countryCode?: string,
-    approved?: boolean // optional
+    approved?: boolean
   ): Observable<VenuesResponse> {
-    let query = Queries.GET_VENUES;
+    let query;
     const variables: any = { limit, offset };
 
     if (citySlug && citySlug !== 'all') {
-      query = Queries.GET_VENUES_BY_CITY;
-      variables.citySlug = citySlug;
+      if (approved === true || approved === false) {
+        query = Queries.GET_VENUES_BY_CITY_APPROVED;
+        variables.citySlug = citySlug;
+        variables.approved = approved;
+      } else {
+        query = Queries.GET_VENUES_BY_CITY;
+        variables.citySlug = citySlug;
+      }
     } else if (countryCode) {
-      query = Queries.GET_VENUES_BY_COUNTRY;
-      variables.countryCode = countryCode;
-    }
-
-    if (approved === true || approved === false) {
-      variables.approved = approved;
+      if (approved === true || approved === false) {
+        query = Queries.GET_VENUES_BY_COUNTRY_APPROVED;
+        variables.countryCode = countryCode;
+        variables.approved = approved;
+      } else {
+        query = Queries.GET_VENUES_BY_COUNTRY;
+        variables.countryCode = countryCode;
+      }
+    } else {
+      if (approved === true || approved === false) {
+        query = Queries.GET_VENUES_APPROVED;
+        variables.approved = approved;
+      } else {
+        query = Queries.GET_VENUES;
+      }
     }
 
     return this.apollo.query<any>({
@@ -63,14 +78,25 @@ export class VenueService {
     );
   }
 
-  getFeaturedVenues(citySlug?: string, limit: number = 3): Observable<Venue[]> {
-    return this.getVenues(limit, 0, citySlug).pipe(map(response => response.venues));
+  getFeaturedVenues(citySlug?: string, limit: number = 3, approved?: boolean): Observable<Venue[]> {
+    return this.getVenues(limit, 0, citySlug, undefined, approved).pipe(
+      map(response => response.venues)
+    );
   }
 
-  getVenuesByCity(citySlug: string, limit: number = 20, offset: number = 0): Observable<VenuesResponse> {
+  getVenuesByCity(citySlug: string, limit: number = 20, offset: number = 0, approved?: boolean): Observable<VenuesResponse> {
+    const query = (approved === true || approved === false)
+      ? Queries.GET_VENUES_BY_CITY_APPROVED
+      : Queries.GET_VENUES_BY_CITY;
+
+    const variables: any = { citySlug, limit, offset };
+    if (approved === true || approved === false) {
+      variables.approved = approved;
+    }
+
     return this.apollo.query<any>({
-      query: Queries.GET_VENUES_BY_CITY,
-      variables: { citySlug, limit, offset },
+      query,
+      variables,
       errorPolicy: 'ignore',
       fetchPolicy: 'no-cache'
     }).pipe(
@@ -90,13 +116,17 @@ export class VenueService {
     approved?: boolean
   ): Observable<VenuesResponse> {
     const searchPattern = `%${venueName}%`;
+    const query = (approved === true || approved === false)
+      ? Queries.SEARCH_VENUES_BY_CITY_AND_NAME_APPROVED
+      : Queries.SEARCH_VENUES_BY_CITY_AND_NAME;
+
     const variables: any = { citySlug, venueName: searchPattern, limit, offset };
     if (approved === true || approved === false) {
       variables.approved = approved;
     }
 
     return this.apollo.query<any>({
-      query: Queries.SEARCH_VENUES_BY_CITY_AND_NAME,
+      query,
       variables,
       errorPolicy: 'ignore',
       fetchPolicy: 'no-cache'
@@ -149,7 +179,18 @@ export class VenueService {
 
     const combinedSearch = trimmedSearchTerm || trimmedKeywords;
     const searchPattern = `%${combinedSearch}%`;
-    const query = filterType === 'city' ? Queries.SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS : Queries.SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS;
+
+    let query;
+    if (filterType === 'city') {
+      query = (approved === true || approved === false)
+        ? Queries.SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS_APPROVED
+        : Queries.SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS;
+    } else {
+      query = (approved === true || approved === false)
+        ? Queries.SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS_APPROVED
+        : Queries.SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS;
+    }
+
     const variables: any = filterType === 'city'
       ? { citySlug: filterValue, venueName: searchPattern, keywords: searchPattern, limit, offset }
       : { countryCode: filterValue, searchTerm: searchPattern, limit, offset };
@@ -183,7 +224,18 @@ export class VenueService {
   ): Observable<VenuesResponse> {
     const searchTermPattern = `%${searchTerm}%`;
     const keywordsPattern = `%${keywords}%`;
-    const query = filterType === 'city' ? Queries.SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS : Queries.SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS;
+
+    let query;
+    if (filterType === 'city') {
+      query = (approved === true || approved === false)
+        ? Queries.SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS_APPROVED
+        : Queries.SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS;
+    } else {
+      query = (approved === true || approved === false)
+        ? Queries.SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS_APPROVED
+        : Queries.SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS;
+    }
+
     const variables: any = filterType === 'city'
       ? { citySlug: filterValue, venueName: searchTermPattern, keywords: keywordsPattern, limit, offset }
       : { countryCode: filterValue, searchTerm: searchTermPattern, keywords: keywordsPattern, limit, offset };
