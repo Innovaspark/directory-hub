@@ -1,0 +1,37 @@
+fragment VenueFields on Venue {
+  id
+  name
+  keywords
+  province
+  cityByCityId {
+    id
+    name
+    slug
+    is_live
+    country {
+      code
+      name
+    }
+  }
+  full_address
+  street
+  postal_code
+  state
+  country
+  phone
+  site
+  review_count
+  review_summary
+  rating
+  latitude
+  longitude
+  photo
+  street_view
+  primary_type
+  venue_types
+  working_hours
+  business_status
+  location_link
+  created_at
+  updated_at
+}

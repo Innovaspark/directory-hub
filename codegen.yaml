@@ -1,0 +1,17 @@
+overwrite: true
+schema: "https://jneykstixikhsieyjsjd.hasura.eu-central-1.nhost.run/v1/graphql" # Your Hasura endpoint
+documents: "src/graphql/**/*.graphql"
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-apollo-angular"
+    config:
+      withHooks: false
+      withHOC: false
+      withComponent: false
+      addExplicitOverride: true
+      namingConvention:
+        typeNames: pascal-case#
+        enumValues: upper-case#

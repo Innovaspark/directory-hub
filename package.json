@@ -65,6 +65,11 @@
     "@angular/build": "^20.3.1",
     "@angular/cli": "^20.3.1",
     "@angular/compiler-cli": "^20.3.0",
+    "@graphql-codegen/cli": "^6.0.0",
+    "@graphql-codegen/typescript": "^5.0.0",
+    "@graphql-codegen/typescript-apollo-angular": "^4.0.1",
+    "@graphql-codegen/typescript-operations": "^5.0.0",
+    "@rollup/plugin-graphql": "^2.0.5",
     "@types/express": "^5.0.3",
     "@types/jasmine": "~5.1.0",
     "@types/mapbox-gl": "^3.4.1",
@@ -75,7 +80,9 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.8.2"
+    "typescript": "~5.8.2",
+    "vite-plugin-graphql": "^0.1.0",
+    "vite-plugin-raw": "^1.0.3"
   },
   "engines": {
     "node": ">=20.0.0"

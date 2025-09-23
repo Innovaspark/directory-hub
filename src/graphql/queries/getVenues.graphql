@@ -1,0 +1,12 @@
+# import VenueFields from '../fragments/venueFields.graphql'
+
+query GetVenues($limit: Int, $offset: Int) {
+  venues(limit: $limit, offset: $offset, order_by: { name: asc }) {
+    ...VenueFields
+  }
+  venues_aggregate {
+    aggregate {
+      count
+    }
+  }
+}
