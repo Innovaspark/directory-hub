@@ -30,25 +30,35 @@
   @extend .memo-field-group
 }
 
-.input-tenants-description {
+//.input-tenants-description {
+//  @extend .input-description-group
+//}
+//
+//.input-countries-description {
+//  @extend .input-description-group
+//}
+//
+//.input-cities-description {
+//  @extend .input-description-group
+//}
+//
+//.input-cities-content {
+//  @extend .input-description-group
+//}
+//
+//.input-cities-photos {
+//  @extend .input-description-group
+//}
+
+.input-description {
   @extend .input-description-group
 }
 
-.input-countries-description {
+.input-content {
   @extend .input-description-group
 }
 
-.input-cities-description {
+.input-photos {
   @extend .input-description-group
 }
-
-.input-cities-content {
-  @extend .input-description-group
-}
-
-.input-cities-photos {
-  @extend .input-description-group
-}
-
-
 

@@ -57,7 +57,7 @@ export class HasuraCrudService {
           required: f.type.kind === 'NON_NULL',
           readonly: this.systemFieldNames.includes(f.name)
         },
-        className: `input-admin input-${tableName}-${f.name}`
+        className: `input-admin input-${f.name} input-${tableName}-${f.name}`
       } as FormlyFieldConfig;
     });
   }

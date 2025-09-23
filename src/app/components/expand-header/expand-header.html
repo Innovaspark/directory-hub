@@ -33,6 +33,10 @@
               (click)="login()">
         Login
       </button>
+      <button class="btn-login" [class.btn-small]="isContracted"
+              (click)="testConfirm()">
+        Test confirm
+      </button>
       } @else {
       <div class="user-dropdown" [class.dropdown-small]="isContracted">
         <button class="btn-profile" [class.btn-small]="isContracted"

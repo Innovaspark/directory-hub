@@ -18,7 +18,7 @@ const COUNTRY_NAMES: { code: string; name: string }[] = [
   template: `
       <div class="bg-gray-50 border-b border-gray-200">
           <div class="max-w-7xl mx-auto px-4 py-3">
-              <nav class="flex" aria-label="Breadcrumb">
+              <nav class="flex cursor-pointer" aria-label="Breadcrumb">
                   <ol class="flex items-center space-x-2">
                       <li>
                         <a class="breadcrumb" [routerLink]="['/', routerState.$countryCode()]">{{ countryName() }}</a>

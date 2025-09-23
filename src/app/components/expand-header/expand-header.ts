@@ -16,6 +16,7 @@ import { RouterStateService } from "@core/state/router-state.service";
 import { ModalService } from '@services/modal/modal.service';
 import { LoginDialogComponent } from '@components/auth/login-dialog/login-dialog.component';
 import { UserStateService } from '@core/state/user-state.service';
+import {ConfirmDialogComponent} from '../../dialogs/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-expand-header',
@@ -116,5 +117,9 @@ export class ExpandHeader implements OnInit, OnDestroy {
 
   goToAdmin() {
     this.navigationService.navigateToAdmin();
+  }
+
+  testConfirm() {
+    this.modalService.open(ConfirmDialogComponent);
   }
 }
