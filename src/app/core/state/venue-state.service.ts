@@ -238,7 +238,9 @@ export class VenueStateService {
 
     const actualCitySlug = citySlug === 'all' ? undefined : citySlug;
 
-    this.venueService.getVenues(limit, offset, actualCitySlug, countryCode)
+    const showOnlyApproved = true;
+
+    this.venueService.getVenues(limit, offset, actualCitySlug, countryCode, showOnlyApproved)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response: VenuesResponse) => {
