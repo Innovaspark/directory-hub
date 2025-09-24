@@ -7,7 +7,8 @@ import {FormsModule} from '@angular/forms';
   selector: 'app-multi-select',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './multi-select.component.html'
+  templateUrl: './multi-select.component.html',
+  styleUrls: ['/multi-select.component.scss']
 })
 export class MultiSelectComponent {
   @Input() keywords: string[] = [];

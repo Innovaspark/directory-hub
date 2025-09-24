@@ -1,0 +1,79 @@
+<div class="search-panel">
+  <div class="search-container">
+    <div class="search-form flex flex-wrap gap-4 items-end">
+
+      <!-- City Dropdown -->
+      <div class="form-group flex-1 min-w-[200px]">
+        <select
+          id="citySelect"
+          [(ngModel)]="selectedCitySlug"
+          class="city-select w-full"
+        >
+          <option value="">All Cities</option>
+          <option *ngFor="let city of cities" [value]="city.slug">
+            {{ city.emoji }} {{ city.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Search Input -->
+      <div class="form-group search-input-group flex-1 min-w-[250px] relative">
+        <input
+          id="searchInput"
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search for venues..."
+          class="search-input w-full"
+          (keyup.enter)="onSearch()"
+        />
+        <button class="clear-btn" (click)="clearSearch()" *ngIf="searchTerm.trim()">✕</button>
+      </div>
+
+      <!-- Keywords Input -->
+      <div class="form-group keywords-input-group flex-1 min-w-[250px] relative">
+        <input
+          id="keywordsInput"
+          type="text"
+          [(ngModel)]="keywordsTerm"
+          placeholder="Keywords (jazz, rock, etc.)"
+          class="search-input w-full"
+          (keyup.enter)="onSearch()"
+        />
+        <button class="clear-btn" (click)="clearKeywords()" *ngIf="keywordsTerm.trim()">✕</button>
+      </div>
+
+      <!-- Multi-Select -->
+<!--      <div class="form-group flex-1 min-w-[250px]">-->
+<!--        <app-multi-select [keywords]="keywords" class="w-full"></app-multi-select>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Search Button &ndash;&gt;-->
+<!--      <div class="form-group button-group flex-shrink-0">-->
+<!--        <button type="button" (click)="onSearch()" class="search-button">-->
+<!--          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">-->
+<!--            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />-->
+<!--          </svg>-->
+<!--          Search-->
+<!--        </button>-->
+<!--      </div>-->
+
+      <div class="form-group button-group flex-shrink-0">
+        <button type="button" (click)="onSearch()" class="search-button" [disabled]="$isSearching()">
+          <!-- Show spinner when searching, search icon when not -->
+          <svg *ngIf="!$isSearching()" class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+          </svg>
+
+          <svg *ngIf="$isSearching()" class="search-icon animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+
+          {{ $isSearching() ? 'Searching...' : 'Search' }}
+        </button>
+      </div>
+
+
+    </div>
+  </div>
+</div>

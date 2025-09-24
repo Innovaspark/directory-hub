@@ -6,6 +6,7 @@ export const VENUE_FIELDS = `
   description
   content
   keywords
+  keywords_text
   province
   cityByCityId {
     id
@@ -225,7 +226,7 @@ export const SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS = gql`
           {
             _or: [
               { name: { _ilike: $venueName } },
-              { keywords: { _ilike: $keywords } }
+              { keywords_text: { _ilike: $keywords } }
             ]
           }
         ]
@@ -240,7 +241,7 @@ export const SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS = gql`
         {
           _or: [
             { name: { _ilike: $venueName } },
-            { keywords: { _ilike: $keywords } }
+            { keywords_text: { _ilike: $keywords } }
           ]
         }
       ]
@@ -261,7 +262,7 @@ export const SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS_APPROVED = gql`
           {
             _or: [
               { name: { _ilike: $venueName } },
-              { keywords: { _ilike: $keywords } }
+              { keywords_text: { _ilike: $keywords } }
             ]
           },
           { approved: { _eq: $approved } }
@@ -277,7 +278,7 @@ export const SEARCH_VENUES_BY_CITY_NAME_AND_KEYWORDS_APPROVED = gql`
         {
           _or: [
             { name: { _ilike: $venueName } },
-            { keywords: { _ilike: $keywords } }
+            { keywords_text: { _ilike: $keywords } }
           ]
         },
         { approved: { _eq: $approved } }
@@ -299,7 +300,7 @@ export const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS = gql`
           {
             _or: [
               { name: { _ilike: $searchTerm } },
-              { keywords: { _ilike: $searchTerm } }
+              { keywords_text: { _ilike: $searchTerm } }
             ]
           }
         ]
@@ -314,7 +315,7 @@ export const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS = gql`
         {
           _or: [
             { name: { _ilike: $searchTerm } },
-            { keywords: { _ilike: $searchTerm } }
+            { keywords_text: { _ilike: $searchTerm } }
           ]
         }
       ]
@@ -335,7 +336,7 @@ export const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS_APPROVED = gql`
           {
             _or: [
               { name: { _ilike: $searchTerm } },
-              { keywords: { _ilike: $searchTerm } }
+              { keywords_text: { _ilike: $searchTerm } }
             ]
           },
           { approved: { _eq: $approved } }
@@ -351,7 +352,7 @@ export const SEARCH_VENUES_BY_COUNTRY_AND_KEYWORDS_APPROVED = gql`
         {
           _or: [
             { name: { _ilike: $searchTerm } },
-            { keywords: { _ilike: $searchTerm } }
+            { keywords_text: { _ilike: $searchTerm } }
           ]
         },
         { approved: { _eq: $approved } }
@@ -371,7 +372,7 @@ export const SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS = gql`
         _and: [
           { cityByCityId: { slug: { _eq: $citySlug } } },
           { name: { _ilike: $venueName } },
-          { keywords: { _ilike: $keywords } }
+          { keywords_text: { _ilike: $keywords } }
         ]
       },
       order_by: {name: asc}
@@ -382,7 +383,7 @@ export const SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS = gql`
       _and: [
         { cityByCityId: { slug: { _eq: $citySlug } } },
         { name: { _ilike: $venueName } },
-        { keywords: { _ilike: $keywords } }
+        { keywords_text: { _ilike: $keywords } }
       ]
     }) {
       aggregate { count }
@@ -399,7 +400,7 @@ export const SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS_APPROVED = gql`
         _and: [
           { cityByCityId: { slug: { _eq: $citySlug } } },
           { name: { _ilike: $venueName } },
-          { keywords: { _ilike: $keywords } },
+          { keywords_text: { _ilike: $keywords } },
           { approved: { _eq: $approved } }
         ]
       },
@@ -411,7 +412,7 @@ export const SEARCH_VENUES_BY_CITY_WITH_BOTH_PARAMS_APPROVED = gql`
       _and: [
         { cityByCityId: { slug: { _eq: $citySlug } } },
         { name: { _ilike: $venueName } },
-        { keywords: { _ilike: $keywords } },
+        { keywords_text: { _ilike: $keywords } },
         { approved: { _eq: $approved } }
       ]
     }) {
@@ -429,7 +430,7 @@ export const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS = gql`
         _and: [
           { cityByCityId: { country: { code: { _eq: $countryCode } } } },
           { name: { _ilike: $searchTerm } },
-          { keywords: { _ilike: $keywords } }
+          { keywords_text: { _ilike: $keywords } }
         ]
       },
       order_by: {name: asc}
@@ -440,7 +441,7 @@ export const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS = gql`
       _and: [
         { cityByCityId: { country: { code: { _eq: $countryCode } } } },
         { name: { _ilike: $searchTerm } },
-        { keywords: { _ilike: $keywords } }
+        { keywords_text: { _ilike: $keywords } }
       ]
     }) {
       aggregate { count }
@@ -457,7 +458,7 @@ export const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS_APPROVED = gql`
         _and: [
           { cityByCityId: { country: { code: { _eq: $countryCode } } } },
           { name: { _ilike: $searchTerm } },
-          { keywords: { _ilike: $keywords } },
+          { keywords_text: { _ilike: $keywords } },
           { approved: { _eq: $approved } }
         ]
       },
@@ -469,7 +470,7 @@ export const SEARCH_VENUES_BY_COUNTRY_WITH_BOTH_PARAMS_APPROVED = gql`
       _and: [
         { cityByCityId: { country: { code: { _eq: $countryCode } } } },
         { name: { _ilike: $searchTerm } },
-        { keywords: { _ilike: $keywords } },
+        { keywords_text: { _ilike: $keywords } },
         { approved: { _eq: $approved } }
       ]
     }) {

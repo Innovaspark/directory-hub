@@ -9,7 +9,7 @@ import {Venue} from '../models/venue.model';
 import {City} from '../models/city.model';
 import {VenueService, VenuesResponse} from "@core/services/venue.service";
 import {AppStateService} from "@core/state/application-state.service";
-import {catchError, Observable, of, tap} from "rxjs";
+import {catchError, delay, Observable, of, tap} from "rxjs";
 import {VenueType} from "@core/models/tenant.model";
 
 export interface FilterOption {
@@ -17,6 +17,8 @@ export interface FilterOption {
   label: string;
   icon: string;
 }
+
+const QUERY_DELAY = 0;
 
 @Injectable({
   providedIn: 'root'
@@ -222,7 +224,9 @@ export class VenueStateService {
   // Private methods
   private loadCityData(citySlug: string): void {
     this.cityService.getCityBySlug(citySlug)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(city => {
         this.currentCity.update(() => city);
       });
@@ -241,7 +245,10 @@ export class VenueStateService {
     const showOnlyApproved = true;
 
     this.venueService.getVenues(limit, offset, actualCitySlug, countryCode, showOnlyApproved)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        delay(QUERY_DELAY),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (response: VenuesResponse) => {
           if (replace) {
@@ -281,7 +288,10 @@ export class VenueStateService {
 
       // Use server-side country-wide search with separate params
       this.venueService.searchVenuesByCountryAndKeywords(countryCode, searchTerm, keywords, limit, offset)
-        .pipe(takeUntilDestroyed(this.destroyRef))
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          delay(QUERY_DELAY),
+        )
         .subscribe({
           next: (response: VenuesResponse) => {
             if (replace) {
@@ -304,7 +314,10 @@ export class VenueStateService {
 
     // City-specific search using the existing API method with separate params
     this.venueService.searchVenuesByCityNameAndKeywords(citySlug, searchTerm, keywords, limit, offset)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        delay(QUERY_DELAY)
+      )
       .subscribe({
         next: (response: VenuesResponse) => {
           if (replace) {

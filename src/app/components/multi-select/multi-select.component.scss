@@ -1,0 +1,10 @@
+.multi-select-wrapper {
+  display: flex;
+  align-items: stretch; /* Ensures children stretch vertically */
+  height: 100%; /* Inherits from parent */
+}
+
+.multi-select-button {
+  // height: 100%; /* Matches parent height */
+  height: 48px;
+}
