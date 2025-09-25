@@ -11,6 +11,7 @@ import {VenueService, VenuesResponse} from "@core/services/venue.service";
 import {AppStateService} from "@core/state/application-state.service";
 import {catchError, delay, Observable, of, tap} from "rxjs";
 import {VenueType} from "@core/models/tenant.model";
+import {VenueNewService} from '@services/venue-new.service';
 
 export interface FilterOption {
   slug: string;
@@ -29,6 +30,7 @@ export class VenueStateService {
   private routerState = inject(RouterStateService);
   private appState = inject(AppStateService);
   private venueService = inject(VenueService);
+  private venueNewService = inject(VenueNewService);
   private cityService = inject(CityService);
   private route = inject(ActivatedRoute);
 
@@ -172,7 +174,9 @@ export class VenueStateService {
 
       // Load appropriate data
       if (searchTerm.trim() || keywords.trim()) {
-        this.performSearch(searchTerm, keywords, citySlug, currentPage === 0);
+        /* TODO: review.  we are replacing the old search with the new! */
+        // this.performSearch(searchTerm, keywords, citySlug, currentPage === 0);
+        this.performSearchNewByCity(citySlug, searchTerm, keywords, currentPage === 0)
       } else {
         this.loadVenues(currentPage === 0);
       }
@@ -441,6 +445,50 @@ export class VenueStateService {
     this.currentVenue.set(null);
     this.currentVenueError.set(null);
     this.currentVenueLoading.set(false);
+  }
+
+
+  /* New Search methods using new venue service */
+  private performSearchNewByCity(citySlug: string, searchTerm: string, keywords: string,
+                                 replace: boolean = true): void {
+
+    const offset = this.currentPage() * this.pageSize();
+    const limit = this.pageSize();
+
+    const countryCode = 'nl';
+
+    this.venueNewService.searchVenuesByCity({
+      countryCode,
+      citySlug,
+      searchTerm,
+      keywords,
+      limit,
+      offset
+    })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        delay(QUERY_DELAY),
+      )
+      .subscribe({
+        next: (response: VenuesResponse) => {
+          if (replace) {
+            this.searchResults.set(response.venues);
+          } else {
+            this.searchResults.update(current => [...current, ...response.venues]);
+          }
+          this.totalCount.set(response.totalCount);
+          this.loading.set(false);
+          this.isLoadingMore.set(false);
+        },
+        error: (error) => {
+          console.error('Error searching venues by country:', error);
+          this.loading.set(false);
+          this.isLoadingMore.set(false);
+        }
+      });
+    return;
+
+
   }
 
 
