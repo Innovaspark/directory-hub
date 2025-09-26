@@ -1,9 +1,14 @@
 import {Injectable} from '@angular/core';
 import {Apollo} from 'apollo-angular';
 import {buildCitySearchWhere, SEARCH_VENUES_BY_CITY} from '@core/graphql/venue-new.queries';
-import {map, of} from 'rxjs';
+import {map, Observable, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
+import {Venue} from '@core/models/venue.model';
 
+export interface SearchResponse<T> {
+  items: T[],
+  totalCount: number
+}
 @Injectable({providedIn: 'root'})
 export class VenueNewService {
   constructor(private apollo: Apollo) {
@@ -18,7 +23,7 @@ export class VenueNewService {
     showOnlyApproved?: boolean;
     limit?: number;
     offset?: number;
-  }) {
+  }): Observable<SearchResponse<Venue>> {
     const { countryCode, citySlug, searchTerm, keywords, showOnlyApproved, limit, offset } = params;
 
     // Only pass the parameters the helper function expects
@@ -31,10 +36,10 @@ export class VenueNewService {
       fetchPolicy: 'no-cache'
     }).pipe(
       map(result => ({
-        venues: result.data?.venues || [],
+        items: result.data?.venues || [],
         totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
       })),
-      catchError(() => of({venues: [], totalCount: 0}))
+      catchError(() => of({items: [], totalCount: 0}))
     );
   }
 

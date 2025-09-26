@@ -1,7 +1,6 @@
 import {Component, inject, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavigationService } from '@core/services/navigation.service';
 import { RouterStateService } from "@core/state/router-state.service";
 import { VenueStateService } from "@core/state/venue-state.service";
 import {MultiSelectComponent} from '@components/multi-select/multi-select.component';
@@ -14,7 +13,6 @@ import {MultiSelectComponent} from '@components/multi-select/multi-select.compon
   styleUrls: ['./search-bar.scss']
 })
 export class SearchBarComponent {
-  private navigationService = inject(NavigationService);
   private routerState = inject(RouterStateService);
   venueState = inject(VenueStateService);
 
@@ -49,30 +47,16 @@ export class SearchBarComponent {
 
   onSearch(): void {
     const countryCode = 'nl';
-    // this.venueState.doSearch(countryCode, this.selectedCitySlug, this.searchTerm, this.keywordsTerm)
-    this.venueState.setStatus(true);
-    this.venueState.setStatus(false);
+    // this.venueState.setStatus(true);
+    // this.venueState.setStatus(false);
+    this.venueState.doSearchNew(countryCode, this.selectedCitySlug, this.searchTerm, this.keywordsTerm)
   }
 
   clearSearch(): void {
     this.searchTerm = '';
-    // Immediately update URL with empty search but keep keywords
-    this.navigationService.navigateToSearch(
-      '', // Empty search term
-      'nl',
-      this.selectedCitySlug || undefined,
-      this.keywordsTerm // Keep existing keywords
-    );
   }
 
   clearKeywords(): void {
     this.keywordsTerm = '';
-    // Immediately update URL with empty keywords but keep search term
-    this.navigationService.navigateToSearch(
-      this.searchTerm, // Keep existing search term
-      'nl',
-      this.selectedCitySlug || undefined,
-      '' // Empty keywords
-    );
   }
 }

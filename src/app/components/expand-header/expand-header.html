@@ -34,6 +34,10 @@
         Login
       </button>
       <button class="btn-login" [class.btn-small]="isContracted"
+              (click)="toggleApproved()">
+        {{$showOnlyApproved() ? 'Only Approved' : 'All'}}
+      </button>
+      <button class="btn-login" [class.btn-small]="isContracted"
               (click)="testConfirm()">
         Test confirm
       </button>

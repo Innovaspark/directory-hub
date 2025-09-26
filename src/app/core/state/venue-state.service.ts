@@ -11,7 +11,7 @@ import {VenueService, VenuesResponse} from "@core/services/venue.service";
 import {AppStateService} from "@core/state/application-state.service";
 import {BehaviorSubject, catchError, delay, Observable, of, tap} from "rxjs";
 import {VenueType} from "@core/models/tenant.model";
-import {VenueNewService} from '@services/venue-new.service';
+import {SearchResponse, VenueNewService} from '@services/venue-new.service';
 import {NavigationService} from '@services/navigation.service';
 import {enforceMinimumOnDuration} from '@core/utils/timers';
 
@@ -21,7 +21,22 @@ export interface FilterOption {
   icon: string;
 }
 
+interface SearchParams {
+  countryCode: string;
+  citySlug: string;
+  searchTerm: string;
+  keywords: string;
+  replace: boolean;
+  showOnlyApproved: boolean;
+}
+
+interface SearchParamsWithPaging extends SearchParams {
+  limit: number;
+  offset: number;
+}
+
 const QUERY_DELAY = 0;
+const FEEDBACK_DELAY = 1000;
 
 @Injectable({
   providedIn: 'root'
@@ -137,56 +152,112 @@ export class VenueStateService {
     this.loadInitialVenues();
   }
 
+  // private initializeRouteEffects(): void {
+  //   // React to city changes
+  //   // effect(() => {
+  //   //   const citySlug = this.$citySlug();
+  //   //   // if (citySlug && (citySlug != this.lastCitySlug)) {
+  //   //     this.lastCitySlug = citySlug;
+  //   //     this.loadCityData(citySlug);
+  //   //   // } else {
+  //   //     // this.currentCity.set(null);
+  //   //   // }
+  //   // });
+  //
+  //   // React to route search query changes
+  //   effect(() => {
+  //     const routeSearchQuery = this.$searchQuery();
+  //     this.searchTerm.set(routeSearchQuery);
+  //   });
+  //
+  //   // React to route keywords changes
+  //   effect(() => {
+  //     const routeKeywords = this.routerState.$queryParams()?.['keywords'] || '';
+  //     this.keywords.set(routeKeywords);
+  //   });
+  //
+  //   // React to route page changes
+  //   effect(() => {
+  //     const routePage = this.routerState.$queryParams()?.['page'] || '0';
+  //     const pageNumber = parseInt(routePage, 10);
+  //     this.currentPage.set(pageNumber);
+  //   });
+  //
+  //   // React to search term, keywords, and route changes (removed filter dependency)
+  //   effect(() => {
+  //     if (!this.$effectEnabled()) return;
+  //     const countryCode = 'nl';
+  //     const citySlug = this.$citySlug();
+  //     const searchTerm = this.searchTerm();
+  //     const keywords = this.keywords();
+  //     const currentPage = this.currentPage();
+  //
+  //     // Load appropriate data
+  //     if (searchTerm.trim() || keywords.trim()) {
+  //       /* TODO: review.  we are replacing the old search with the new! */
+  //       // this.performSearch(searchTerm, keywords, citySlug, currentPage === 0);
+  //       this.performSearchNewByCity(countryCode, citySlug, searchTerm, keywords, currentPage === 0)
+  //     } else {
+  //       this.loadVenues(currentPage === 0);
+  //     }
+  //   });
+  // }
+
   private initializeRouteEffects(): void {
-    // React to city changes
+    // Effect 1: Update signals from route params
     effect(() => {
-      const citySlug = this.$citySlug();
-      // if (citySlug && (citySlug != this.lastCitySlug)) {
-        this.lastCitySlug = citySlug;
-        this.loadCityData(citySlug);
-      // } else {
-        // this.currentCity.set(null);
-      // }
+      const queryParams = this.routerState.$queryParams() || {};
+      this.searchTerm.set(queryParams['q'] || '');
+      this.keywords.set(queryParams['keywords'] || '');
+      this.currentPage.set(parseInt(queryParams['page'] || '0', 10));
     });
 
-    // React to route search query changes
-    effect(() => {
-      const routeSearchQuery = this.$searchQuery();
-      this.searchTerm.set(routeSearchQuery);
-    });
-
-    // React to route keywords changes
-    effect(() => {
-      const routeKeywords = this.routerState.$queryParams()?.['keywords'] || '';
-      this.keywords.set(routeKeywords);
-    });
-
-    // React to route page changes
-    effect(() => {
-      const routePage = this.routerState.$queryParams()?.['page'] || '0';
-      const pageNumber = parseInt(routePage, 10);
-      this.currentPage.set(pageNumber);
-    });
-
-    // React to search term, keywords, and route changes (removed filter dependency)
+    // Effect 2: Call search whenever signals change
     effect(() => {
       if (!this.$effectEnabled()) return;
+
       const countryCode = 'nl';
       const citySlug = this.$citySlug();
       const searchTerm = this.searchTerm();
       const keywords = this.keywords();
       const currentPage = this.currentPage();
 
-      // Load appropriate data
-      if (searchTerm.trim() || keywords.trim()) {
-        /* TODO: review.  we are replacing the old search with the new! */
-        // this.performSearch(searchTerm, keywords, citySlug, currentPage === 0);
-        this.performSearchNewByCity(countryCode, citySlug, searchTerm, keywords, currentPage === 0)
+      if (!citySlug) {
+        this.performSearchNewByCity(
+          {
+            countryCode,
+            citySlug,
+            searchTerm,
+            keywords,
+            replace: currentPage === 0,
+            showOnlyApproved: true
+          },
+          (params: SearchParamsWithPaging) => {
+            // alert('search');
+            // return of({ items: [], totalCount: 0 }); // <-- dummy VenuesResponse
+            return this.venueNewService.searchVenuesByCity(params);
+          }
+        );
       } else {
-        this.loadVenues(currentPage === 0);
+        this.performSearchNewByCity(
+          {
+            countryCode,
+            citySlug,
+            searchTerm,
+            keywords,
+            replace: currentPage === 0,
+            showOnlyApproved: true
+          },
+          (params: SearchParamsWithPaging) => {
+            // alert('search');
+            // return of({ items: [], totalCount: 0 }); // <-- dummy VenuesResponse
+            return this.venueNewService.searchVenuesByCity(params);
+          }
+        );
       }
     });
   }
+
 
   // In your venues service
   private venueLoadingEffect?: EffectRef;
@@ -261,9 +332,9 @@ export class VenueStateService {
       .subscribe({
         next: (response: VenuesResponse) => {
           if (replace) {
-            this.allVenues.set(response.venues);
+            this.allVenues.set(response.items);
           } else {
-            this.allVenues.update(current => [...current, ...response.venues]);
+            this.allVenues.update(current => [...current, ...response.items]);
           }
           this.totalCount.set(response.totalCount);
           this.loading.set(false);
@@ -304,9 +375,9 @@ export class VenueStateService {
         .subscribe({
           next: (response: VenuesResponse) => {
             if (replace) {
-              this.searchResults.set(response.venues);
+              this.searchResults.set(response.items);
             } else {
-              this.searchResults.update(current => [...current, ...response.venues]);
+              this.searchResults.update(current => [...current, ...response.items]);
             }
             this.totalCount.set(response.totalCount);
             this.loading.set(false);
@@ -330,9 +401,9 @@ export class VenueStateService {
       .subscribe({
         next: (response: VenuesResponse) => {
           if (replace) {
-            this.searchResults.set(response.venues);
+            this.searchResults.set(response.items);
           } else {
-            this.searchResults.update(current => [...current, ...response.venues]);
+            this.searchResults.update(current => [...current, ...response.items]);
           }
           this.totalCount.set(response.totalCount);
           this.loading.set(false);
@@ -455,64 +526,68 @@ export class VenueStateService {
 
   /* New Search methods using new venue service */
 
-  public doSearch(countryCode: string, citySlug: string, searchTerm: string, keywords: string) {
-    // this.navigationService.navigateToSearch(
-    //   searchTerm,
-    //   countryCode,
-    //   citySlug,
-    //   keywords
-    // );
-    this.performSearchNewByCity(countryCode, citySlug, searchTerm, keywords);
-  }
-
-  private performSearchNewByCity(countryCode: string, citySlug: string, searchTerm: string, keywords: string,
-                                 replace: boolean = true): void {
-
-    const offset = this.currentPage() * this.pageSize();
-    const limit = this.pageSize();
-
-    this.venueNewService.searchVenuesByCity({
+  public doSearchNew(countryCode: string, citySlug: string, searchTerm: string, keywords: string) {
+    this.setStatus(true);
+    // this.setStatus(false);
+    this.navigationService.navigateToSearch(
+      searchTerm,
       countryCode,
       citySlug,
-      searchTerm,
-      keywords,
-      limit,
-      offset
+      keywords
+    ).subscribe(didNavigate => {
+      if (!didNavigate) {
+        this.setStatus(false);
+      }
     })
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        delay(QUERY_DELAY),
-      )
-      .subscribe({
-        next: (response: VenuesResponse) => {
-          if (replace) {
-            this.searchResults.set(response.venues);
-          } else {
-            this.searchResults.update(current => [...current, ...response.venues]);
-          }
-          this.totalCount.set(response.totalCount);
-          this.loading.set(false);
-          this.isLoadingMore.set(false);
-        },
-        error: (error) => {
-          console.error('Error searching venues by country:', error);
-          this.loading.set(false);
-          this.isLoadingMore.set(false);
-        }
-      });
-    return;
-
+    // this.setStatus(true);
+    // this.setStatus(false);
+    // this.performSearchNewByCity(countryCode, citySlug, searchTerm, keywords);
   }
+
+
+
+private performSearchNewByCity(params: SearchParams, searchFunction: (params: SearchParamsWithPaging) => Observable<VenuesResponse>): void {
+  const { countryCode, citySlug, searchTerm, keywords, replace } = params;
+
+  const offset = this.currentPage() * this.pageSize();
+  const limit = this.pageSize();
+  const showOnlyApproved = this.appState.$showOnlyApprovedVenues();
+
+  const paramsWithPaging = {...params, showOnlyApproved, offset, limit};
+
+  searchFunction(paramsWithPaging)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (response: VenuesResponse) => {
+        if (replace) {
+          this.searchResults.set(response.items);
+        } else {
+          this.searchResults.update(current => [...current, ...response.items]);
+        }
+        this.totalCount.set(response.totalCount);
+        this.loading.set(false);
+        this.isLoadingMore.set(false);
+      },
+      error: (error) => {
+        console.error('Error searching venues:', error);
+        this.loading.set(false);
+        this.isLoadingMore.set(false);
+      },
+      complete: () => this.setStatus(false)
+    });
+}
+
 
   private statusSubject = new BehaviorSubject<boolean>(false);
 
   readonly status$: Observable<boolean> =
-    enforceMinimumOnDuration(this.statusSubject.asObservable(), 1000);
+    enforceMinimumOnDuration(this.statusSubject.asObservable(), FEEDBACK_DELAY);
   $isLoading2 = toSignal(this.status$);
 
   setStatus(value: boolean) {
     this.statusSubject.next(value);
   }
 
-
 }
+
+

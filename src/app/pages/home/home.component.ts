@@ -14,11 +14,11 @@ import {PopularCountriesComponent} from '@components/popular-countries/popular-c
   standalone: true,
   imports: [HeroSectionComponent, SearchBarComponent, FeaturedVenuesComponent, CountryCitiesComponent, CountriesComponent, PopularCountriesComponent],
   template: `
-      <div class="home">
-          <app-search-bar></app-search-bar>
-          <app-hero-section></app-hero-section>
-          <app-featured-venues></app-featured-venues>
-      </div>
+    <div class="home">
+      <app-search-bar></app-search-bar>
+      <app-hero-section></app-hero-section>
+      <app-featured-venues></app-featured-venues>
+    </div>
 
   `,
   styles: [`

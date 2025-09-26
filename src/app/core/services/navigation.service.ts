@@ -2,6 +2,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {Venue} from "@core/models/venue.model";
+import {from, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,7 @@ export class NavigationService {
   }
 
   // For search - always requires country context
-  navigateToSearch(query: string, countryCode: string, citySlug?: string, keywords?: string): void {
+  navigateToSearch(query: string, countryCode: string, citySlug?: string, keywords?: string): Observable<boolean> {
     const trimmedQuery = query.trim();
     const trimmedKeywords = keywords?.trim();
 
@@ -51,22 +52,22 @@ export class NavigationService {
 
     if (citySlug) {
       // Search in specific city
-      this.router.navigate([countryCode, citySlug, 'venues'], {
+      return from(this.router.navigate([countryCode, citySlug, 'venues'], {
         queryParams
-      });
+      }));
     } else {
       // Search in all cities of country using "all"
-      this.router.navigate([countryCode, 'all', 'venues'], {
+      return from(this.router.navigate([countryCode, 'all', 'venues'], {
         queryParams
-      });
+      }));
     }
   }
 
   // Convenience method for country-wide venue browsing
-  navigateToCountryVenues(countryCode: string, queryParams?: Record<string, string>): void {
-    this.router.navigate([countryCode, 'all', 'venues'], {
+  navigateToCountryVenues(countryCode: string, queryParams?: Record<string, string>): Observable<boolean> {
+    return from(this.router.navigate([countryCode, 'all', 'venues'], {
       queryParams: queryParams || {}
-    });
+    }));
   }
 
   navigateToReturnUrl(returnUrl: string) {

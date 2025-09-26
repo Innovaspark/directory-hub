@@ -5,11 +5,9 @@ import {map, catchError} from 'rxjs/operators';
 import {Venue} from '@core/models/venue.model';
 import * as Queries from '../graphql/venue.queries';
 import {BULK_UPDATE_VENUES} from '../graphql/venue.queries';
+import {SearchResponse} from '@services/venue-new.service';
 
-export interface VenuesResponse {
-  venues: Venue[];
-  totalCount: number;
-}
+export type VenuesResponse = SearchResponse<Venue>;
 
 export interface VenueUpdateInput {
   id: string;
@@ -99,10 +97,10 @@ export class VenueService {
       notifyOnNetworkStatusChange: false
     }).pipe(
       map(result => ({
-        venues: result.data?.venues || [],
+        items: result.data?.venues || [],
         totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
       })),
-      catchError(() => of({venues: [], totalCount: 0}))
+      catchError(() => of({items: [], totalCount: 0}))
     );
   }
 
@@ -120,7 +118,7 @@ export class VenueService {
 
   getFeaturedVenues(citySlug?: string, limit: number = 3, approved?: boolean): Observable<Venue[]> {
     return this.getVenues(limit, 0, citySlug, undefined, approved).pipe(
-      map(response => response.venues)
+      map(response => response.items)
     );
   }
 
@@ -141,10 +139,10 @@ export class VenueService {
       fetchPolicy: 'no-cache'
     }).pipe(
       map(result => ({
-        venues: result.data?.venues || [],
+        items: result.data?.venues || [],
         totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
       })),
-      catchError(() => of({venues: [], totalCount: 0}))
+      catchError(() => of({items: [], totalCount: 0}))
     );
   }
 
@@ -172,10 +170,10 @@ export class VenueService {
       fetchPolicy: 'no-cache'
     }).pipe(
       map(result => ({
-        venues: result.data?.venues || [],
+        items: result.data?.venues || [],
         totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
       })),
-      catchError(() => of({venues: [], totalCount: 0}))
+      catchError(() => of({items: [], totalCount: 0}))
     );
   }
 
@@ -246,10 +244,10 @@ export class VenueService {
       fetchPolicy: 'no-cache'
     }).pipe(
       map(result => ({
-        venues: result.data?.venues || [],
+        items: result.data?.venues || [],
         totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
       })),
-      catchError(() => of({venues: [], totalCount: 0}))
+      catchError(() => of({items: [], totalCount: 0}))
     );
   }
 
@@ -291,10 +289,10 @@ export class VenueService {
       fetchPolicy: 'no-cache'
     }).pipe(
       map(result => ({
-        venues: result.data?.venues || [],
+        items: result.data?.venues || [],
         totalCount: result.data?.venues_aggregate?.aggregate?.count || 0
       })),
-      catchError(() => of({venues: [], totalCount: 0}))
+      catchError(() => of({items: [], totalCount: 0}))
     );
   }
 

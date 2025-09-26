@@ -13,6 +13,7 @@ export class AppStateService {
 
   // Public readonly signal for tenant
   readonly $tenant = this._tenant.asReadonly();
+  $showOnlyApprovedVenues = signal(false);
 
   constructor(private tenantService: TenantService) {}
 

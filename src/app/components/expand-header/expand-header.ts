@@ -17,6 +17,7 @@ import { ModalService } from '@services/modal/modal.service';
 import { LoginDialogComponent } from '@components/auth/login-dialog/login-dialog.component';
 import { UserStateService } from '@core/state/user-state.service';
 import {ConfirmDialogComponent} from '../../dialogs/confirm-dialog/confirm-dialog.component';
+import {AppStateService} from '@core/state/application-state.service';
 
 @Component({
   selector: 'app-expand-header',
@@ -30,10 +31,13 @@ export class ExpandHeader implements OnInit, OnDestroy {
   showButtons = input<boolean>(true);
 
   private platformId = inject(PLATFORM_ID);
+  private appState = inject(AppStateService);
   private navigationService = inject(NavigationService);
   private modalService = inject(ModalService);
   private routerStateService = inject(RouterStateService);
   private userStateService = inject(UserStateService);
+
+  $showOnlyApproved = this.appState.$showOnlyApprovedVenues;
 
   $isOnHomePage = this.routerStateService.$isHomePage;
   $isLoggedIn = this.userStateService.$isLoggedIn;
@@ -121,5 +125,9 @@ export class ExpandHeader implements OnInit, OnDestroy {
 
   testConfirm() {
     this.modalService.open(ConfirmDialogComponent);
+  }
+
+  toggleApproved() {
+    this.appState.$showOnlyApprovedVenues.set(!this.appState.$showOnlyApprovedVenues());
   }
 }
