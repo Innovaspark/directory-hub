@@ -87,3 +87,17 @@ a {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
+.sticky-container1 {
+  position: sticky;
+}
+
+.sticky-container2 {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  background: white;
+  padding: 0.5rem;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}

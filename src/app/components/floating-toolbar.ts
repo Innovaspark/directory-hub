@@ -12,7 +12,6 @@ import { CommonModule } from '@angular/common';
   `,
   styles: [`
     .floating-toolbar {
-      position: fixed;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -53,7 +52,7 @@ export class FloatingToolbarComponent implements AfterViewInit {
   @ViewChild('toolbar') toolbar!: ElementRef<HTMLDivElement>;
 
   /** Pass the parent container explicitly */
-  @Input() parent!: HTMLElement;
+  // @Input() parent!: HTMLElement;
 
   ngAfterViewInit() {
     // const toolbarEl = this.toolbar.nativeElement;

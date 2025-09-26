@@ -220,7 +220,7 @@ interface CountrySearchParams {
 
 // Helper function to build where clause for city-based searches (country + city required)
 export const buildCitySearchWhere = (params: CitySearchParams) => {
-  const { countryCode, citySlug, searchTerm, keywords, showOnlyApproved } = params;
+  const { countryCode, citySlug, searchTerm, keywords, showOnlyApproved = false } = params;
 
   const conditions: any[] = [
     { cityByCityId: { country: { code: { _eq: countryCode } } } },
@@ -249,8 +249,8 @@ export const buildCitySearchWhere = (params: CitySearchParams) => {
     }
   }
 
-  if (typeof showOnlyApproved === 'boolean') {
-    conditions.push({ approved: { _eq: showOnlyApproved } });
+  if (showOnlyApproved) {
+    conditions.push({ approved: { _eq: true } });
   }
 
   return { _and: conditions };
@@ -258,7 +258,7 @@ export const buildCitySearchWhere = (params: CitySearchParams) => {
 
 // Helper function to build where clause for country-only searches (country required, no city)
 export const buildCountrySearchWhere = (params: CountrySearchParams) => {
-  const { countryCode, searchTerm, keywords, showOnlyApproved } = params;
+  const { countryCode, searchTerm, keywords, showOnlyApproved = false } = params;
 
   const conditions: any[] = [
     { cityByCityId: { country: { code: { _eq: countryCode } } } }
@@ -286,8 +286,8 @@ export const buildCountrySearchWhere = (params: CountrySearchParams) => {
     }
   }
 
-  if (typeof showOnlyApproved === 'boolean') {
-    conditions.push({ approved: { _eq: showOnlyApproved } });
+  if (showOnlyApproved) {
+    conditions.push({ approved: { _eq: true } });
   }
 
   return { _and: conditions };
