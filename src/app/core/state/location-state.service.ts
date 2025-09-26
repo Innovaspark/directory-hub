@@ -27,7 +27,13 @@ export class LocationStateService {
     }
   ]);
 
-  private cities = signal<City[]>([]);
+  // { id: 1, slug: 'amersfoort', name: 'Amersfoort', emoji: '🏙️' },
+  private cities = signal<Partial<City>[]>([
+    {
+      countryCode: 'nl',
+      name: 'Amersfoort',
+    }
+  ]);
 
   readonly $currentCountryCode = this.routerState.$countryCode;
   readonly $allCountries = computed(() => this.countries());
@@ -56,6 +62,7 @@ export class LocationStateService {
   private loadCities(): void {
     this.cityService.getCities().subscribe({
       next: (response) => {
+        debugger;
         this.cities.set(response.cities);
       },
       error: (error) => {

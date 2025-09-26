@@ -147,14 +147,22 @@ export class VenueStateService {
   $viewMode = signal<'cards' | 'map'>('cards');
   $selectedVenue = signal<Venue | null>(null);
 
-  private statusSubject = new BehaviorSubject<boolean>(false);
+  private searchingSubject = new BehaviorSubject<boolean>(false);
+  readonly isSearching$: Observable<boolean> =
+    enforceMinimumOnDuration(this.searchingSubject.asObservable(), FEEDBACK_DELAY);
+  $isSearching = toSignal(this.isSearching$);
 
-  readonly status$: Observable<boolean> =
-    enforceMinimumOnDuration(this.statusSubject.asObservable(), FEEDBACK_DELAY);
-  $isLoading2 = toSignal(this.status$);
+  setIsSearching(value: boolean) {
+    this.searchingSubject.next(value);
+  }
 
-  setStatus(value: boolean) {
-    this.statusSubject.next(value);
+  private loadingCitySubject = new BehaviorSubject<boolean>(false);
+  readonly isLoadingCity$: Observable<boolean> =
+    enforceMinimumOnDuration(this.loadingCitySubject.asObservable(), FEEDBACK_DELAY);
+  $isLoadingCity = toSignal(this.isLoadingCity$);
+
+  setIsLoadingCity(value: boolean) {
+    this.loadingCitySubject.next(value);
   }
 
   constructor() {
@@ -170,6 +178,17 @@ export class VenueStateService {
       this.keywords.set(queryParams['keywords'] || '');
       this.currentPage.set(parseInt(queryParams['page'] || '0', 10));
     });
+
+      // React to city changes
+      effect(() => {
+        const citySlug = this.$citySlug();
+        // if (citySlug && (citySlug != this.lastCitySlug)) {
+          this.lastCitySlug = citySlug;
+          this.loadCityData(citySlug);
+        // } else {
+          // this.currentCity.set(null);
+        // }
+      })
 
     // Effect 2: Call search whenever signals change
     effect(() => {
@@ -324,7 +343,7 @@ export class VenueStateService {
   /* New Search methods using new venue service */
 
   public doSearchNew(countryCode: string, citySlug: string, searchTerm: string, keywords: string) {
-    this.setStatus(true);
+    this.setIsSearching(true);
     // this.setStatus(false);
     this.navigationService.navigateToSearch(
       searchTerm,
@@ -333,7 +352,7 @@ export class VenueStateService {
       keywords
     ).subscribe(didNavigate => {
       if (!didNavigate) {
-        this.setStatus(false);
+        this.setIsSearching(false);
       }
     })
   }
@@ -365,7 +384,20 @@ export class VenueStateService {
           this.loading.set(false);
           this.isLoadingMore.set(false);
         },
-        complete: () => this.setStatus(false)
+        complete: () => this.setIsSearching(false)
+      });
+  }
+
+  private loadCityData(citySlug: string): void {
+    this.setIsLoadingCity(true);
+    this.cityService.getCityBySlug(citySlug)
+      .pipe(
+        delay(QUERY_DELAY),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(city => {
+        this.currentCity.update(() => city);
+        this.setIsLoadingCity(false);
       });
   }
 

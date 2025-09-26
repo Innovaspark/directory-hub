@@ -4,7 +4,11 @@
 
     <!-- City Header -->
     <div class="city-header">
-      <h1>{{ $currentCity()?.name || 'Loading...' }}</h1>
+      @if($isLoadingCity()) {
+        <div class="loading-spinner"></div>
+      } @else {
+        <h1>{{ $currentCity()?.name }}</h1>
+      }
     </div>
 
     <!-- Photo Gallery -->
@@ -20,22 +24,17 @@
       </div>
     </div>
     }
-    @if ($currentCity()?.description) {
-    <div class="photo-item">
-    <div class="description-field">{{ $currentCity()?.description }}
-      <div class="cta-section text-center">
-        <button class="cta-btn" (click)="navigateToExplore()">
-          <span class="btn-icon">🎵</span>
-          <span class="btn-text">Explore Live Music Venues</span>
-          <span class="btn-arrow">→</span>
-        </button>
-      </div>
-    </div>
-    </div>
-    }
     </div>
   </div>
     }
+
+    <div class="cta-section text-center">
+      <button class="cta-btn floating-button" (click)="navigateToExplore()">
+        <span class="btn-icon">🎵</span>
+        <span class="btn-text">Explore Live Music Venues</span>
+        <span class="btn-arrow">→</span>
+      </button>
+    </div>
 
     <!-- City Content -->
     @if ($currentCity()?.content) {

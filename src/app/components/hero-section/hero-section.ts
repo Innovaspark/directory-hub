@@ -41,7 +41,7 @@ import { RouterLink } from '@angular/router';
 
               <!-- Centered CTA -->
               <div class="cta-section text-center">
-                  <button class="cta-btn" (click)="navigateToExplore()">
+                  <button class="cta-btn cta-button-normal" (click)="navigateToExplore()">
                       <span class="btn-icon">🎵</span>
                       <span class="btn-text">Explore Live Music Venues</span>
                       <span class="btn-arrow">→</span>

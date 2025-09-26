@@ -51,6 +51,7 @@ import {MobileDetectionService} from '@services/mobile-detection.service';
         .split-layout.hide-left {
           grid-template-columns: 0 1fr;
           gap: 0;
+          padding: 0;
         }
 
         .split-layout.hide-left > *:first-child {
@@ -134,12 +135,12 @@ export class VenueListComponent implements AfterViewInit, OnDestroy {
   constructor() {
     // Auto-scroll to selected venue
     effect(() => {
-      // const selectedVenue = this.$selectedVenue();
-      // if (selectedVenue) {
-      //   setTimeout(() => {
-      //     this.scrollToSelectedVenue(selectedVenue.id);
-      //   }, 100);
-      // }
+      const selectedVenue = this.$selectedVenue();
+      if (selectedVenue) {
+        setTimeout(() => {
+          this.scrollToSelectedVenue(selectedVenue.id);
+        }, 100);
+      }
       // const viewMode = this.$viewMode();
       // if (viewMode && selectedVenue) {
       //   this.scrollToSelectedVenue(selectedVenue.id);

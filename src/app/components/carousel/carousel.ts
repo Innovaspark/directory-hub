@@ -41,6 +41,8 @@ import { CommonModule } from '@angular/common';
           align-items: center;
           gap: 0.5rem;
           width: 100%;
+        padding-left: 360px;
+        padding-right: 360px;
       }
 
       .carousel-track {

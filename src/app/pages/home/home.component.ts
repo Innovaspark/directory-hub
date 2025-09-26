@@ -17,6 +17,7 @@ import {PopularCountriesComponent} from '@components/popular-countries/popular-c
     <div class="home">
       <app-search-bar></app-search-bar>
       <app-hero-section></app-hero-section>
+      <app-country-cities></app-country-cities>
       <app-featured-venues></app-featured-venues>
     </div>
 

@@ -22,7 +22,7 @@ export class SearchBarComponent {
 
   // private keywords: string[] = ["jazz clubs","live jazz","evening performances"]
   $isSearching = this.venueState.$isLoading;
-  $isSearching2 = this.venueState.$isLoading2;
+  $isSearching2 = this.venueState.$isSearching;
 
   // Local hardcoded cities - replace with data service later
   cities = [
@@ -42,7 +42,7 @@ export class SearchBarComponent {
     if (citySlug && citySlug !== 'all') {
       this.selectedCitySlug = citySlug;
     }
-    this.venueState.status$.subscribe(val => console.log('STATUS$', val));
+    this.venueState.isSearching$.subscribe(val => console.log('STATUS$', val));
   }
 
   onSearch(): void {

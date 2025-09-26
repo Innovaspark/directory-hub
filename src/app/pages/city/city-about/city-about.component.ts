@@ -20,6 +20,7 @@ export class CityAboutComponent {
   locationService = inject(LocationStateService);
 
   $currentCity = this.venueState.$currentCity;
+  $isLoadingCity = this.venueState.$isLoadingCity;
 
   getPhotos(): CityPhoto[] {
     const city = this.$currentCity();

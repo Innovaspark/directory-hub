@@ -31,7 +31,7 @@ export class RouterStateService {
   readonly $queryParams = computed(() => this._routeData().queryParams);
   readonly $url = computed(() => this._routeData().url);
 
-  readonly $countryCode = computed(() => this.$params()['country'] || null);
+  readonly $countryCode = computed(() => this.$params()['country'] || 'nl');
   readonly $citySlug = computed(() => this.$params()['city'] || null);
   readonly $searchQuery = computed(() => this.$queryParams()['q'] || '');
   readonly $filterType = computed(() => this.$queryParams()['type'] || null);

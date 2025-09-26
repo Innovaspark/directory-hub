@@ -5,6 +5,8 @@ import { ScrollToTop } from "@components/scroll-to-top/scroll-to-top";
 import { SearchBarComponent } from "@components/search-bar/search-bar";
 import {VenueFiltersComponent} from "@components/venue-filters/venue-filters";
 import {ViewModeButtons} from '@components/view-mode-buttons/view-mode-buttons';
+import {FloatingToolbarComponent} from '@components/floating-toolbar';
+import {InViewDirective} from '@core/directives/in-view.directive';
 
 @Component({
   selector: 'app-venue-hub',
@@ -14,9 +16,17 @@ import {ViewModeButtons} from '@components/view-mode-buttons/view-mode-buttons';
     VenueListComponent,
     SearchBarComponent,
     VenueFiltersComponent,
+    FloatingToolbarComponent,
+    ViewModeButtons,
+    InViewDirective
   ],
   template: `
-    <app-search-bar></app-search-bar>
+    <app-search-bar appInView (inViewChanged)="isSearchBarVisible = $event"></app-search-bar>
+
+    <div class="floating-toolbar" [class.toolbar-up]="!isSearchBarVisible">
+      <app-view-mode-buttons></app-view-mode-buttons>
+    </div>
+
 
     <div class="mt-5">
       <div>
@@ -29,4 +39,5 @@ import {ViewModeButtons} from '@components/view-mode-buttons/view-mode-buttons';
 })
 export class VenueDashboardComponent {
   // Pure layout container - no logic needed
+  isSearchBarVisible = true;
 }

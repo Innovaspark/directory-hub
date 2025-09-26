@@ -19,7 +19,7 @@ export class NavigationService {
   }
 
   navigateToCity(countryCode: string, citySlug: string): void {
-    this.router.navigate([countryCode, citySlug]);
+    this.router.navigate([countryCode, citySlug, 'about']);
   }
 
   navigateToVenues(countryCode: string, citySlug: string = 'all'): void {

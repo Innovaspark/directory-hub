@@ -88,16 +88,46 @@ a {
   padding-bottom: 10px;
 }
 
-.sticky-container1 {
-  position: sticky;
+//.sticky-container1 {
+//  position: sticky;
+//}
+//
+//.sticky-container {
+//  position: absolute;
+//  top: 100px;
+//  right: 50px;
+//  z-index: 10;
+//  background: white;
+//  padding: 0.5rem;
+//  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+//}
+
+.floating-toolbar {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  min-width: 3.5rem;
+  z-index: 1000;
+  transition: top 0.2s ease, left 0.2s ease;
+  top: 190px;
+  right: 30px;
 }
 
-.sticky-container2 {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 10;
-  background: white;
-  padding: 0.5rem;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+.toolbar-up {
+  top: 66px;
+}
+
+@media (max-width: 768px) {
+  .floating-toolbar {
+    top: 390px;
+    right: 10px;
+  }
+  .toolbar-up {
+    top: 72px;
+  }
 }

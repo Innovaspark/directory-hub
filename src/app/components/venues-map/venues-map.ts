@@ -240,7 +240,7 @@ export class VenuesMapComponent {
   }
 
   whenPopupCloses(venue: Venue) {
-    // this.venueState.clearSelectedVenue()
+    this.venueState.clearSelectedVenue()
   }
 
   selectVenue(venue: Venue) {
