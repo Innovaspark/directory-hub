@@ -22,9 +22,9 @@ export class SearchBarComponent {
   searchTerm = '';
   keywordsTerm = '';
 
-  keywords: string[] = ["jazz clubs","live jazz","evening performances"]
-  // $isSearching = signal<boolean>(false);
+  // private keywords: string[] = ["jazz clubs","live jazz","evening performances"]
   $isSearching = this.venueState.$isLoading;
+  $isSearching2 = this.venueState.$isLoading2;
 
   // Local hardcoded cities - replace with data service later
   cities = [
@@ -44,16 +44,14 @@ export class SearchBarComponent {
     if (citySlug && citySlug !== 'all') {
       this.selectedCitySlug = citySlug;
     }
+    this.venueState.status$.subscribe(val => console.log('STATUS$', val));
   }
 
   onSearch(): void {
-    // this.$isSearching.set(true);
-    this.navigationService.navigateToSearch(
-      this.searchTerm, // Can be empty string
-      'nl',
-      this.selectedCitySlug || undefined,
-      this.keywordsTerm // Pass keywords to navigation
-    );
+    const countryCode = 'nl';
+    // this.venueState.doSearch(countryCode, this.selectedCitySlug, this.searchTerm, this.keywordsTerm)
+    this.venueState.setStatus(true);
+    this.venueState.setStatus(false);
   }
 
   clearSearch(): void {

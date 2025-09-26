@@ -1,6 +1,6 @@
 // venue-state.service.ts
 import {Injectable, computed, signal, inject, DestroyRef, effect, EffectRef} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {ActivatedRoute, Router} from '@angular/router';
 
 import {RouterStateService} from './router-state.service';
@@ -9,9 +9,11 @@ import {Venue} from '../models/venue.model';
 import {City} from '../models/city.model';
 import {VenueService, VenuesResponse} from "@core/services/venue.service";
 import {AppStateService} from "@core/state/application-state.service";
-import {catchError, delay, Observable, of, tap} from "rxjs";
+import {BehaviorSubject, catchError, delay, Observable, of, tap} from "rxjs";
 import {VenueType} from "@core/models/tenant.model";
 import {VenueNewService} from '@services/venue-new.service';
+import {NavigationService} from '@services/navigation.service';
+import {enforceMinimumOnDuration} from '@core/utils/timers';
 
 export interface FilterOption {
   slug: string;
@@ -33,6 +35,7 @@ export class VenueStateService {
   private venueNewService = inject(VenueNewService);
   private cityService = inject(CityService);
   private route = inject(ActivatedRoute);
+  private navigationService = inject(NavigationService);
 
   // Raw data signals
   private allVenues = signal<Venue[]>([]);
@@ -72,7 +75,8 @@ export class VenueStateService {
     const keywordsSearch = this.keywords().trim();
 
     // Choose data source based on search state only
-    return (search || keywordsSearch) ? this.searchResults() : this.allVenues();
+    // return (search || keywordsSearch) ? this.searchResults() : this.allVenues();
+    return this.searchResults();
   });
 
   // New filtered venues signal for client-side filtering
@@ -167,6 +171,7 @@ export class VenueStateService {
     // React to search term, keywords, and route changes (removed filter dependency)
     effect(() => {
       if (!this.$effectEnabled()) return;
+      const countryCode = 'nl';
       const citySlug = this.$citySlug();
       const searchTerm = this.searchTerm();
       const keywords = this.keywords();
@@ -176,7 +181,7 @@ export class VenueStateService {
       if (searchTerm.trim() || keywords.trim()) {
         /* TODO: review.  we are replacing the old search with the new! */
         // this.performSearch(searchTerm, keywords, citySlug, currentPage === 0);
-        this.performSearchNewByCity(citySlug, searchTerm, keywords, currentPage === 0)
+        this.performSearchNewByCity(countryCode, citySlug, searchTerm, keywords, currentPage === 0)
       } else {
         this.loadVenues(currentPage === 0);
       }
@@ -274,7 +279,7 @@ export class VenueStateService {
       });
   }
 
-  private performSearch(searchTerm: string, keywords: string, citySlug: string | null, replace: boolean = true): void {
+  performSearch(searchTerm: string, keywords: string, citySlug: string | null, replace: boolean = true): void {
     this.loading.set(true);
 
     const offset = this.currentPage() * this.pageSize();
@@ -449,13 +454,22 @@ export class VenueStateService {
 
 
   /* New Search methods using new venue service */
-  private performSearchNewByCity(citySlug: string, searchTerm: string, keywords: string,
+
+  public doSearch(countryCode: string, citySlug: string, searchTerm: string, keywords: string) {
+    // this.navigationService.navigateToSearch(
+    //   searchTerm,
+    //   countryCode,
+    //   citySlug,
+    //   keywords
+    // );
+    this.performSearchNewByCity(countryCode, citySlug, searchTerm, keywords);
+  }
+
+  private performSearchNewByCity(countryCode: string, citySlug: string, searchTerm: string, keywords: string,
                                  replace: boolean = true): void {
 
     const offset = this.currentPage() * this.pageSize();
     const limit = this.pageSize();
-
-    const countryCode = 'nl';
 
     this.venueNewService.searchVenuesByCity({
       countryCode,
@@ -488,7 +502,16 @@ export class VenueStateService {
       });
     return;
 
+  }
 
+  private statusSubject = new BehaviorSubject<boolean>(false);
+
+  readonly status$: Observable<boolean> =
+    enforceMinimumOnDuration(this.statusSubject.asObservable(), 1000);
+  $isLoading2 = toSignal(this.status$);
+
+  setStatus(value: boolean) {
+    this.statusSubject.next(value);
   }
 
 

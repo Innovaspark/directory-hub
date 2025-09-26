@@ -5,19 +5,21 @@ import {HeroSectionComponent} from "@components/hero-section/hero-section";
 import {SearchBarComponent} from "@components/search-bar/search-bar";
 import {SeoService} from "@core/services/seo.service";
 import {environment} from "@environments/environment";
+import {CountryCitiesComponent} from '@components/country-cities/country-cities';
+import {CountriesComponent} from '../../admin/pages/countries/countries.component';
+import {PopularCountriesComponent} from '@components/popular-countries/popular-countries';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HeroSectionComponent, SearchBarComponent, FeaturedVenuesComponent],
+  imports: [HeroSectionComponent, SearchBarComponent, FeaturedVenuesComponent, CountryCitiesComponent, CountriesComponent, PopularCountriesComponent],
   template: `
       <div class="home">
           <app-search-bar></app-search-bar>
           <app-hero-section></app-hero-section>
-<!--          <app-popular-countries></app-popular-countries>-->
           <app-featured-venues></app-featured-venues>
       </div>
-      
+
   `,
   styles: [`
     .home {
